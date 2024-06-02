@@ -73,45 +73,121 @@
     </div>
 </div>
 
-        <div id="studentContainer">
-            <div class="card mt-2">
-                <div class="card-body">
-                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                        <!-- Save Attendance button -->
-                        <div class="row mb-2">
-                            <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save
-                                    Attendance</button>
-                            </div>
+<div id="studentContainer">
+    <div class="card mt-2">
+        <div class="card-body">
+            <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <!-- Save Attendance button -->
+                <div class="row mb-2">
+                    <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                    </div>
+                </div>
+                <!-- Search input -->
+                <div class="row mb-2">
+                    <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
+                        <div style="position: relative;">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search">
+                            <span id="clearSearchInput" class="position-absolute top-50 end-0 translate-middle-y text-muted" style="cursor: pointer;">&times;</span>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-md-12 col-12">
-                                <div class="report-table-container">
-                                    <div class="table-responsive">
-                                        <table id="student-table"
-                                            class="table table-bordered table-striped dataTable dtr-inline"
-                                            aria-describedby="example1_info">
-                                            <thead>
-                                                <tr>
-                                                    <th>Admission No</th>
-                                                    <th>Roll No</th>
-                                                    <th>Name</th>
-                                                    <th>Attendance</th>
-                                                    <th>Note</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="studentTableBody">
-                                                <!-- Student data will be dynamically added here -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-12">
+                        <div class="report-table-container">
+                            <div class="table-responsive">
+                                <table id="student-table" class="table table-bordered table-striped dataTable dtr-inline"
+                                    aria-describedby="example1_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Admission No</th>
+                                            <th>Roll No</th>
+                                            <th>Name</th>
+                                            <th>Attendance</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody">
+                                        <!-- Student data will be dynamically added here -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Function to fetch students dynamically
+        function fetchStudents() {
+            $.ajax({
+                url: '/admin/student/get', 
+                type: 'POST',
+                success: function(response) {
+                    updateTable(response.students); 
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching student data:', error);
+                }
+            });
+        }
+
+        // Function to update table based on student data
+        function updateTable(students) {
+            const tableBody = $('#studentTableBody');
+            tableBody.empty();
+
+            if (students.length === 0) {
+                tableBody.append('<tr><td colspan="5" class="text-center">No results found</td></tr>');
+                return;
+            }
+
+            students.forEach(student => {
+                const row = `<tr>
+                    <td>${student.admission_no}</td>
+                    <td>${student.roll_no}</td>
+                    <td>${student.f_name}</td>
+                    <td>${student.attendance_type_id}</td>
+                    <td>${student.remarks}</td>
+                </tr>`;
+                tableBody.append(row);
+            });
+        }
+
+        fetchStudents();
+
+        $('#searchInput').on('input', function () {
+            const query = $(this).val().toLowerCase();
+            updateTableBasedOnSearch(query);
+        });
+
+        $('#clearSearchInput').on('click', function () {
+            $('#searchInput').val('');
+            fetchStudents();
+        });
+
+        // Function to update table based on search input
+        function updateTableBasedOnSearch(query) {
+            const tableRows = $('#studentTableBody').find('tr');
+
+            tableRows.each(function() {
+                const studentName = $(this).find('td:nth-child(3)').text().toLowerCase();
+                if (studentName.includes(query)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+</script>
+
 
     @section('scripts')
     @include('backend.includes.nepalidate')
@@ -167,16 +243,12 @@
                                 // Append new rows based on the fetched students
                                 $.each(data.original, function(index, studentData) {
                                     // console.log(data.original)
-                                    var student = studentData
-                                        .student; // Extract student data
+                                    var student = studentData.student; // Extract student data
                                     var user = studentData.user; // Extract user data
-                                    // console.log(user);
-                                    var row = '<tr data-student-id="' + student.id +
-                                        '">' +
+                                    var row = '<tr data-student-id="' + student.id + '">' +
                                         '<td>' + student.admission_no + '</td>' +
                                         '<td>' + student.roll_no + '</td>' +
-                                        '<td>' + (user ? user.f_name : '') + '</td>' +
-                                        // Access f_name through user property
+                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>';
 
                                     // // Check if attendance_types is defined
