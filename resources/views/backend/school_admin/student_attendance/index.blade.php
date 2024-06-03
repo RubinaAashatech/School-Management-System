@@ -69,10 +69,13 @@
             <div class="form-group col-md-12 d-flex justify-content-end pt-2">
                 <button type="button" class="btn btn-primary" id="searchButton">Search</button>
             </div>
+
+            {{-- <div class="form-group col-md-12 d-flex justify-content-end pt-2">
+                <button type="button" class="btn btn-primary" id="searchButton1">Search</button>
+            </div> --}}
         </form>
     </div>
 </div>
-
         <div id="studentContainer">
             <div class="card mt-2">
                 <div class="card-body">
@@ -80,8 +83,13 @@
                         <!-- Save Attendance button -->
                         <div class="row mb-2">
                             <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save
-                                    Attendance</button>
+                                <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                            </div>
+                        </div>
+                        <!-- Search input -->
+                        <div class="row mb-2">
+                            <div class="col-sm-6 col-md-6 col-6 d-flex justify-content-start">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search by First Name">
                             </div>
                         </div>
                         <div class="row">
@@ -112,7 +120,70 @@
                 </div>
             </div>
         </div>
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Function to fetch students dynamically
+        function fetchStudents() {
+            // Perform AJAX request to fetch student data
+            $.ajax({
+                url: '/admin/student/get', // Adjust the URL to match your backend endpoint
+                type: 'POST',
+                success: function(response) {
+                    // Once data is successfully fetched, call updateTable function with the fetched data
+                    updateTable(response.students); // Assuming response contains an array of students
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching student data:', error);
+                }
+            });
+        }
+        // Function to update table based on student data
+        function updateTable(students) {
+            const tableBody = $('#studentTableBody');
+            tableBody.empty();
+            if (students.length === 0) {
+                tableBody.append('<tr><td colspan="5" class="text-center">No results found</td></tr>');
+                return;
+            }
+            students.forEach(student => {
+                const row = `<tr>
+                    <td>${student.admission_no}</td>
+                    <td>${student.roll_no}</td>
+                    <td>${student.f_name}</td>
+                    <td>${student.attendance_type_id}</td>
+                    <td>${student.remarks}</td>
+                </tr>`;
+                tableBody.append(row);
+            });
+        }
+        // Initial table population (fetch students)
+        fetchStudents();
+        // Event listener for input in search field
+        $('#searchInput').on('input', function () {
+            const query = $(this).val().toLowerCase();
+            updateTableBasedOnSearch(query);
+        });
+        // Event listener for clearing search input
+        $('#clearSearchInput').on('click', function () {
+            $('#searchInput').val('');
+            // Re-fetch students to update the table with original data
+            fetchStudents();
+        });
+        // Function to update table based on search input
+        function updateTableBasedOnSearch(query) {
+            const tableRows = $('#studentTableBody').find('tr');
+            tableRows.each(function() {
+                const studentName = $(this).find('td:nth-child(3)').text().toLowerCase();
+                if (studentName.includes(query)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+</script>
     @section('scripts')
     @include('backend.includes.nepalidate')
         <script>
@@ -167,16 +238,12 @@
                                 // Append new rows based on the fetched students
                                 $.each(data.original, function(index, studentData) {
                                     // console.log(data.original)
-                                    var student = studentData
-                                        .student; // Extract student data
+                                    var student = studentData.student; // Extract student data
                                     var user = studentData.user; // Extract user data
-                                    // console.log(user);
-                                    var row = '<tr data-student-id="' + student.id +
-                                        '">' +
+                                    var row = '<tr data-student-id="' + student.id + '">' +
                                         '<td>' + student.admission_no + '</td>' +
                                         '<td>' + student.roll_no + '</td>' +
-                                        '<td>' + (user ? user.f_name : '') + '</td>' +
-                                        // Access f_name through user property
+                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>';
 
                                     // // Check if attendance_types is defined
@@ -442,6 +509,9 @@
 
                     });
                 });
+
+
+               
 
 
             });
