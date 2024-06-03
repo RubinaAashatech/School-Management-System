@@ -53,7 +53,7 @@
                                 <div class="p-2 input-label">
                                     <label>Inventory Category<span class="must">*</span></label>
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('inventory_category') }}" name="name"
+                                        <input type="text" value="{{ old('name') }}" name="name"
                                             class="input-text single-input-text" id="dynamic_inventory_category" autofocus required>
                                     </div>
                                 </div>

@@ -53,7 +53,7 @@
                                 <div class="p-2 input-label">
                                     <label>Income Category<span class="must">*</span></label>
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('income_category') }}" name="income_category"
+                                        <input type="text" value="{{ old('name') }}" name="name"
                                             class="input-text single-input-text" id="dynamic_income_category" autofocus required>
                                     </div>
                                 </div>
