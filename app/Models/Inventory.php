@@ -13,12 +13,9 @@ class Inventory extends Model
         'school_id',
         'inventory_head_id',
         'name',
-        'invoice_number',
-        'date',
-        'amount',
+        'unit',
         'description',
-        'document',
-        'is_active',
+        'status',
     ];
     public function inventoryHead()
     {
