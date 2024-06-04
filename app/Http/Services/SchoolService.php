@@ -95,8 +95,8 @@ class SchoolService
 
     public function schoolWiseReportDetails($date = null)
     {
-        $municipalityId= Auth::user()->municipality_id;
 
+        $municipalityId = Auth::user()->municipality_id;
         //get all schools details associated to municipality
         // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
         $schools = $this->getSchoolDetailsByCriteria(null, null, $municipalityId);
