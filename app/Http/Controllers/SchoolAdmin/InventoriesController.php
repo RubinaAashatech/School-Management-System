@@ -59,12 +59,9 @@ class InventoriesController extends Controller
             'school_id' => 'required',
             'inventory_head_id' => 'required|string',
             'name' => 'required|string',
-            'invoice_number' => 'required|string',
-            'date' => 'required|date',
-            'amount' => 'required|string',
+            'unit' => 'required|string',
             'description' => 'nullable|string',
-            'document' => 'nullable|file|mimes:jpeg,pdf',
-            'is_active' => 'required',
+            'status' => 'required',
         ]);
 
         if ($validatedData->fails()) {
