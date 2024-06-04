@@ -61,7 +61,7 @@
                                             class="inventoryhead_id_id" required>
                                             <option disabled selected value="{{ old('inventory_head_id') }}">Select Inventory Head
                                             </option>
-                                            @foreach ($inventoryhead as $inventory)
+                                            @foreach ($inventorieshead as $inventory)
                                                 <option value="{{ $inventory->id }}">{{ $inventory->name }}</option>
                                             @endforeach
                                         </select>
