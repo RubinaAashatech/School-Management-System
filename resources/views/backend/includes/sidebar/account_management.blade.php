@@ -46,7 +46,7 @@
                 </li>
             @endcan
             
-            {{-- @can('list_inventories')
+            @can('list_inventories')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'inventoriess' ? 'active' : '' }}"
                         href="{{ route('admin.inventories.index') }}">
                         <div class="d-flex align-items-center"><i class="fa fa-angle-double-right"></i>{{ __('Inventory')}}
@@ -54,7 +54,7 @@
                         </div>
                     </a>
                 </li>
-            @endcan --}}
+            @endcan
 
             @can('list_expenses_head')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'expenses-head' ? 'active' : '' }}"
