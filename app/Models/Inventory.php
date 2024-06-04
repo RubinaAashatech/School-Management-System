@@ -20,7 +20,7 @@ class Inventory extends Model
         'document',
         'is_active',
     ];
-    public function incomeHead()
+    public function inventoryHead()
     {
         return $this->belongsTo(InventoryHead::class, 'inventory_head_id');
     }
