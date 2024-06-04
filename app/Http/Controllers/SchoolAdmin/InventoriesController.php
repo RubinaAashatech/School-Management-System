@@ -24,7 +24,7 @@ class InventoriesController extends Controller
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'inventory_head_id' => 'required|string',
             'name' => 'required|string',
             'unit' => 'required|string',
@@ -41,6 +41,7 @@ class InventoriesController extends Controller
             $inventoryData['school_id'] = session('school_id');
             
             $savedData = Inventory::create($inventoryData);
+            $inventoryId = $savedData->id;
 
             return redirect()->back()->withToastSuccess('Inventory Saved Successfully!');
         } catch (\Exception $e) {
@@ -56,7 +57,7 @@ class InventoriesController extends Controller
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'inventory_head_id' => 'required|string',
             'name' => 'required|string',
             'unit' => 'required|string',
