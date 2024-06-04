@@ -39,24 +39,12 @@
                         <strong class="text-danger">{{ $message }}</strong>
                     @enderror
                 </div>
-                {{-- <div class="col-lg-3 col-sm-3 mt-2">
-                    <label for="date"> Date:</label>
-                    <div class="selectinput">
-                        <input type="text" name="date" id="date">
-                    </div>
-                    @error('date')
-                        <strong class="text-danger">{{ $message }}</strong>
-                    @enderror
-                </div> --}}
-
 
                 <div class="col-lg-3 col-sm-3 mt-2">
                     <label for="datetimepicker">Date:</label>
                     <div class="form-group">
-                        <div class="input-group date" id="admission-datetimepicker"
-                            data-target-input="nearest">
-                            <input id="admission-datepicker" name="date" type="text"
-                                class="form-control datetimepicker-input" />
+                        <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                            <input id="admission-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
                         </div>
                         @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
@@ -191,37 +179,34 @@
 
     @section('scripts')
     @include('backend.includes.nepalidate')
-        <script>
-            $(document).ready(function() {
-                // Attach change event handler to the class dropdown
-                $('select[name="class_id"]').change(function() {
-                    // Get the selected class ID
-                    var classId = $(this).val();
-                    // Fetch sections based on the selected class ID
-                    $.ajax({
-                        url: 'get-section-by-class/' +
-                            classId, // Replace with the actual route
-                        type: 'GET',
-                        success: function(data) {
-                            // Clear existing options
-                            $('select[name="section_id"]').empty();
-
-                            // Add the default option
-                            $('select[name="section_id"]').append(
-                                '<option disabled selected>Select Section</option>');
-
-                            // Add new options based on the fetched sections
-                            $.each(data, function(key, value) {
-                                $('select[name="section_id"]').append('<option value="' +
-                                    key + '">' + value + '</option>');
-                            });
-                        }
-                    });
+    <script>
+        $(document).ready(function() {
+            // Attach change event handler to the class dropdown
+            $('select[name="class_id"]').change(function() {
+                // Get the selected class ID
+                var classId = $(this).val();
+                // Fetch sections based on the selected class ID
+                $.ajax({
+                    url: 'get-section-by-class/' + classId, // Replace with the actual route
+                    type: 'GET',
+                    success: function(data) {
+                        // Clear existing options
+                        $('select[name="section_id"]').empty();
+    
+                        // Add the default option
+                        $('select[name="section_id"]').append('<option value="" selected>Select Section</option>');
+    
+                        // Add new options based on the fetched sections
+                        $.each(data, function(key, value) {
+                            $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
                 });
+            });
 
                 // Initially hide the Save Attendance button
                 $('#saveAttendanceButton').hide();
-
+                
                 $('#searchButton').click(function() {
                     // Get the selected class ID and section ID
                     var classId = $('select[name="class_id"]').val();
@@ -234,7 +219,6 @@
                         url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
                         type: 'GET',
                         success: function(data) {
-                            // console.log("Data received:", data);
                             // Clear existing content in the student container
                             $('#studentTableBody').empty();
 
@@ -246,8 +230,10 @@
                                     var student = studentData.student; // Extract student data
                                     var user = studentData.user; // Extract user data
                                     var row = '<tr data-student-id="' + student.id + '">' +
+                                    var row = '<tr data-student-id="' + student.id + '">' +
                                         '<td>' + student.admission_no + '</td>' +
                                         '<td>' + student.roll_no + '</td>' +
+                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>';
 
@@ -336,6 +322,7 @@
                         }
                     });
                 });
+        
 
                 // Function to populate existing attendance data in the form
                 // Function to populate existing attendance data in the form
@@ -514,8 +501,6 @@
 
                     });
                 });
-
-
             });
         </script>
     @endsection
