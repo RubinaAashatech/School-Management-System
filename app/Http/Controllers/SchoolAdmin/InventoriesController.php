@@ -61,8 +61,7 @@ class InventoriesController extends Controller
             'name' => 'required|string',
             'unit' => 'required|string',
             'description' => 'nullable|string',
-            'document' => 'nullable|file|mimes:jpeg,pdf',
-            'is_active' => 'required',
+            'status' => 'required',
         ]);
 
         if ($validatedData->fails()) {
