@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\SchoolAdmin;
 
+namespace App\Http\Controllers\SchoolAdmin;
+
 use Alert;
 use App\Models\InventoryHead;
 use Validator;
-use Carbon\Carbon;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Auth;
 
 class InventoriesController extends Controller
 {
@@ -21,10 +21,11 @@ class InventoriesController extends Controller
         $inventorieshead = InventoryHead::orderBy('created_at', 'desc')->paginate(10);
         return view('backend.school_admin.inventory.index', compact('page_title', 'inventorieshead'));
     }
+
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'filled|numeric',
+            
             'inventory_head_id' => 'required|string',
             'name' => 'required|string',
             'unit' => 'required|string',
@@ -38,10 +39,20 @@ class InventoriesController extends Controller
 
         try {
             $inventoryData = $request->all();
-            $inventoryData['school_id'] = session('school_id');
-            
-            $savedData = Inventory::create($inventoryData);
-            $inventoryId = $savedData->id;
+
+            // Ensure the user is authenticated and has a school_id
+            if (!Auth::check()) {
+                return back()->withToastError('User not authenticated.');
+            }
+
+            $school_id = Auth::user()->school_id; 
+            if (is_null($school_id)) {
+                return back()->withToastError('School ID is not set for the user.');
+            }
+
+            $inventoryData['school_id'] = $school_id;
+
+            Inventory::create($inventoryData);
 
             return redirect()->back()->withToastSuccess('Inventory Saved Successfully!');
         } catch (\Exception $e) {
@@ -51,13 +62,13 @@ class InventoriesController extends Controller
 
     public function edit(string $id)
     {
-        $inventory= Inventory::find($id);
-        return view('backend.school_admin.inventory.index', compact('inventory'));
+        $inventory = Inventory::find($id);
+        return view('backend.school_admin.inventory.edit', compact('inventory'));
     }
+
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'filled|numeric',
             'inventory_head_id' => 'required|string',
             'name' => 'required|string',
             'unit' => 'required|string',
@@ -73,16 +84,25 @@ class InventoriesController extends Controller
 
         try {
             $data = $request->all();
-            $data['school_id'] = session('school_id');
-            
-            $updateNow = $inventory->update($data);
+
+            // Ensure the user is authenticated and has a school_id
+            if (!Auth::check()) {
+                return back()->withToastError('User not authenticated.');
+            }
+
+            $school_id = Auth::user()->school_id; // Assuming the user is authenticated and has a school_id
+            if (is_null($school_id)) {
+                return back()->withToastError('School ID is not set for the user.');
+            }
+
+            $data['school_id'] = $school_id;
+
+            $inventory->update($data);
 
             return redirect()->back()->withToastSuccess('Successfully Updated Inventory!');
         } catch (\Exception $e) {
             return back()->withToastError($e->getMessage())->withInput();
         }
-
-        return back()->withToastError('Cannot Update Inventory. Please try again')->withInput();
     }
 
     public function destroy(string $id)
@@ -90,14 +110,13 @@ class InventoriesController extends Controller
         $inventory = Inventory::find($id);
 
         try {
-            $updateNow = $inventory->delete();
+            $inventory->delete();
             return redirect()->back()->withToastSuccess('Inventory has been Successfully Deleted!');
         } catch (\Exception $e) {
             return back()->withToastError($e->getMessage());
         }
-
-        return back()->withToastError('Something went wrong. Please try again');
     }
+
     public function getAllInventories(Request $request)
     {
         $inventories = $this->getForDataTable($request->all());
@@ -105,7 +124,7 @@ class InventoriesController extends Controller
         return Datatables::of($inventories)
             ->escapeColumns([])
             ->addColumn('inventory_head_id', function ($inventory) {
-                return $inventory->inventoryHead->name; //incomeHead is  public function incomeHead(){ } relationship from Income.php Model
+                return $inventory->inventoryHead->name;
             })
             ->addColumn('name', function ($inventory) {
                 return $inventory->name;
@@ -113,11 +132,9 @@ class InventoriesController extends Controller
             ->addColumn('unit', function ($inventory) {
                 return $inventory->unit;
             })
-           
             ->addColumn('description', function ($inventory) {
                 return $inventory->description;
             })
-           
             ->addColumn('created_at', function ($inventory) {
                 return $inventory->created_at->diffForHumans();
             })
@@ -137,7 +154,7 @@ class InventoriesController extends Controller
                 $query->where('id', $request->id);
             }
         })
-            ->get();
+        ->get();
 
         return $dataTableQuery;
     }
