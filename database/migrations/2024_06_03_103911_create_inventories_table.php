@@ -19,12 +19,9 @@ return new class extends Migration
             $table->foreign('inventory_head_id')->references('id')->on('inventory_head');
 
             $table->string('name');
-            $table->string('invoice_number');
-            $table->date('date');
-            $table->string('amount');
+            $table->string('unit');
             $table->string('description');
-            $table->string('document')->nullable();
-            $table->boolean('is_active')->default(0)->comment('0=>no, 1=>yes');
+            $table->boolean('status')->default(0)->comment('0=>no, 1=>yes');
             $table->timestamps();
         });
     }
