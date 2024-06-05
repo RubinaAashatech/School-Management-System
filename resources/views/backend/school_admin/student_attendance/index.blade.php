@@ -321,10 +321,6 @@
                     });
                 }
 
-
-
-
-
                 // Attach change event handler to the section dropdown
                 // $('#searchButton').click(function() {
                 //     // Get the selected class ID and section ID
@@ -429,7 +425,7 @@
 
                 // Check all holiday radio buttons
                $('input[type="radio"][value="4"]').prop('checked', true);
-               
+
         },
                error: function(xhr, status, error) {
            
@@ -439,8 +435,6 @@
         }
     });
 });
-
-
 
                 // Attach click event handler to the Save Attendance button
                 $('#saveAttendanceButton').click(function() {

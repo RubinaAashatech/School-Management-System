@@ -32,18 +32,28 @@
                                 <input type="text" name="date" id="date" class="form-control">
                             </div>
                         </div> --}}
-                        <div class="col-md-6">
+                        <div class="col-lg-3 col-sm-3 mt-2">
                             <label for="datetimepicker">Date:</label>
                             <div class="form-group">
-                                <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                                    <input id="nepali-datepicker" name="date" type="text"
-                                        class="form-control datetimepicker-input" />
+                                <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                                    <input id="admission-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
                                 </div>
                                 @error('date')
-                                    <strong class="text-danger">{{ $message }}</strong>
+                                <strong class="text-danger">{{ $message }}</strong>
                                 @enderror
                             </div>
                         </div>
+                       
+                        <script>
+                            $(document).ready(function () {
+                                // Fetch current Nepali date
+                                var currentDate = NepaliFunctions.GetCurrentBsDate();
+                                // Format the current date
+                                var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                                // Set the formatted date to the input field
+                                $('#admission-datepicker').val(formattedDate);
+                            });
+                        </script>
                     </div>
             </div>
             <div class="row">
@@ -63,6 +73,7 @@
                         <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
                             <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save
                                 Attendance</button>
+                                <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
                         </div>
                     </div>
                     <div class="row">
@@ -131,6 +142,7 @@
                                 if (typeof attendance_types !== 'undefined') {
                                     $.each(attendance_types, function(i,
                                         attendance_type) {
+                                            var isChecked = staff.attendance_type_id == attendance_type.id || (staff.attendance_type_id === undefined && attendance_type.id == 1);
                                         row += '<label for="attendance_type_' +
                                             staffData.staff_id + '_' +
                                             attendance_type
@@ -143,9 +155,8 @@
                                             .staff_id + '_' + attendance_type
                                             .id +
                                             '" ' +
-                                            (staff.attendance_type_id ==
-                                                attendance_type.id ? 'checked' :
-                                                '') + '> ' +
+                                            (isChecked ? 'checked' : '') +
+                                '> ' +
                                             '<span>' + attendance_type.type +
                                             '</span>' +
                                             '</label>';
@@ -262,7 +273,15 @@
                     }
                 });
             });
+
+            $('#markHolidayButton').click(function() {
+                    // Check all holiday radio buttons
+                    $('input[type="radio"][value="4"]').prop('checked', true);
+                });
+        
         });
     </script>
 @endsection
 @endsection
+
+
