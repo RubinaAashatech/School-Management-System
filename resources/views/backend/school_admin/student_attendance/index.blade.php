@@ -83,7 +83,6 @@
                         <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
                     </div>
                 </div>
-                        
                 <!-- Search input -->
                 <div class="row mb-2">
                     <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
@@ -304,31 +303,25 @@
         
                 // Function to populate existing attendance data in the form
                 // Function to populate existing attendance data in the form
-function populateExistingAttendance(students) {
-    $.each(students, function(index, studentData) {
-        var student = studentData.student;
-        var user = studentData.user;
+                function populateExistingAttendance(students) {
+                    $.each(students, function(index, studentData) {
+                        var student = studentData.student;
+                        var user = studentData.user;
 
-        // Assuming there is only one attendance record per student for the given date
-        if (studentData.student_attendances && studentData.student_attendances.length > 0) {
-            var attendance = studentData.student_attendances[0];
-            var attendanceTypeId = attendance.attendance_type_id;
+                        // Assuming there is only one attendance record per student for the given date
+                        if (studentData.student_attendances && studentData.student_attendances.length > 0) {
+                            var attendance = studentData.student_attendances[0];
+                            var attendanceTypeId = attendance.attendance_type_id;
 
-            // Assuming the attendance_type_id and remarks correspond to the existing data
-            $('input[name="attendance_type_id[' + student.id + ']"][value="' +
-                attendanceTypeId + '"]').prop('checked', true);
-            $('input[name="remarks[' + student.id + ']"]').val(attendance.remarks);
-        }
-    });
-}
+                            // Assuming the attendance_type_id and remarks correspond to the existing data
+                            $('input[name="attendance_type_id[' + student.id + ']"][value="' +
+                                attendanceTypeId + '"]').attr('checked', true);
+                            $('input[name="remarks[' + student.id + ']"]').val(attendance.remarks);
+                        }
+                    });
+                }
 
-// Function to toggle attendance status to "holiday"
-function markAllAsHoliday() {
-    // Iterate through each radio button and set its value to "holiday"
-    $('input[name^="attendance_type_id"]').each(function() {
-        $(this).val('attendance_type_id').prop('checked', true);
-    });
-}
+
 
 
 
