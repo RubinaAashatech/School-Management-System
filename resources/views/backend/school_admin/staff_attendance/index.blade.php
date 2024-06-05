@@ -26,12 +26,6 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="date">Date:</label>
-                                <input type="text" name="date" id="date" class="form-control">
-                            </div>
-                        </div> --}}
                         <div class="col-lg-3 col-sm-3 mt-2">
                             <label for="datetimepicker">Date:</label>
                             <div class="form-group">
@@ -71,11 +65,12 @@
                 <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
                     <div class="row mb-2">
                         <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save
-                                Attendance</button>
-                                <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
+                            <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                            <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
+                            <button type="button" class="btn btn-primary" id="exportDataButton" style="margin-left: 5px;">Export Data</button>
                         </div>
                     </div>
+                    
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-12">
                             <div class="report-table-container">
@@ -114,7 +109,7 @@
             $('#searchButton').click(function() {
                 var formData = $('#filterForm').serialize();
                 var role = $('select[name="role"]').val();
-                var date = $('#nepali-datepicker').val();
+                var date = $('#admission-datepicker').val();
 
                 getStaffDetails(attendance_types, role, date);
             });
@@ -220,31 +215,56 @@
                 });
             }
 
+             // Mark holiday button click event
+
+             $('#markHolidayButton').click(function() {
+
+// Send an AJAX request to mark holiday
+
+                        $.ajax({
+                        url: '',
+                        type: 'POST',
+                        headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+
+                        // Handle the success response
+                        alert('Holiday marked successfully!');
+
+                        // Check all holiday radio buttons
+                        $('input[type="radio"][value="4"]').prop('checked', true);
+
+                        },
+                        error: function(xhr, status, error) {
+
+                        // Handle the error response
+                        console.error('Error marking holiday:', error);
+                        alert('Error marking holiday. Please try again.');
+                        }
+                        });
+                        });
 
 
-            // Attach click event handler to the Save Attendance button
+
             $('#saveAttendanceButton').click(function() {
-
                 var role = $('select[name="role"]').val();
-                var date = $('#nepali-datepicker').val();
+                var date = $('#admission-datepicker').val();
                 var attendanceData = [];
                 $('#staffTable tbody tr').each(function() {
                     var staffId = $(this).find('td:eq(0)').text();
-                    var attendanceTypeId = $('input[name="attendance_type_id[' + staffId +
-                        ']"]:checked').val();
+                    var attendanceTypeId = $('input[name="attendance_type_id[' + staffId + ']"]:checked').val();
                     var remarks = $('input[name="remarks[' + staffId + ']"]').val();
                     attendanceData.push({
                         staff_id: staffId,
                         attendance_type_id: attendanceTypeId,
                         date: date,
                         remarks: remarks
-
                     });
                 });
 
                 // Send an AJAX request to save the staff attendance data
                 $.ajax({
-
                     url: 'staff-attendances/save-attendance',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -267,18 +287,51 @@
                     error: function(error) {
                         // Handle errors (e.g., show an error message)
                         console.error(error);
-                        toastr.error(
-                            'Error occurred while saving attendance. Please try again later.'
-                        );
+                        toastr.error('Error occurred while saving attendance. Please try again later.');
                     }
                 });
             });
 
-            $('#markHolidayButton').click(function() {
-                    // Check all holiday radio buttons
-                    $('input[type="radio"][value="4"]').prop('checked', true);
+            $('#exportDataButton').click(function() {
+                var data = [];
+                // Add headers
+                data.push(["Staff Id", "Staff Name", "Attendance", "Remarks"]);
+                
+                // Add table rows
+                $('#staffTable tbody tr').each(function() {
+                    var row = [];
+                    row.push($(this).find('td:eq(0)').text()); // Staff Id
+                    row.push($(this).find('td:eq(1)').text()); // Staff Name
+                    
+                    // Attendance
+                    var attendanceType = $(this).find('input[type="radio"]:checked').next('span').text();
+                    row.push(attendanceType);
+                    
+                    // Remarks
+                    row.push($(this).find('input[name^="remarks"]').val());
+                    
+                    data.push(row);
                 });
-        
+
+                // Convert data array to CSV string
+                let csvContent = "data:text/csv;charset=utf-8,";
+                data.forEach(rowArray => {
+                    let row = rowArray.join(",");
+                    csvContent += row + "\r\n";
+                });
+
+                // Create a link element
+                const link = document.createElement("a");
+                link.setAttribute("href", encodeURI(csvContent));
+                link.setAttribute("download", "attendance_data.csv");
+
+                // Append the link element to the body and trigger the download
+                document.body.appendChild(link);
+                link.click();
+
+                // Remove the link element from the document
+                document.body.removeChild(link);
+            });
         });
     </script>
 @endsection

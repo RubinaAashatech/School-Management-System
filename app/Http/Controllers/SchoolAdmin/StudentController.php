@@ -492,9 +492,12 @@ class StudentController extends Controller
             $classId = $request->input('class_id');
             $sectionId = $request->input('section_id');
 
-            $students = $this->studentUserService->getStudentsForDataTable($request->all())
+            //  $students = $this->studentUserService->getStudentsForDataTable($request->all())
+              $students = Student::with(['classes','user']) 
+               
                 ->where('class_id', $classId)
                 ->where('section_id', $sectionId);
+               
 
 
             if ($students instanceof \Illuminate\Database\Query\Builder) {
@@ -507,22 +510,25 @@ class StudentController extends Controller
             return Datatables::of($students)
                 ->escapeColumns([])
 
-
+            
                 ->editColumn('f_name', function ($row) {
-                    return $row->f_name;
+                    return $row->user->f_name;
                 })
 
                 ->editColumn('l_name', function ($row) {
-                    return $row->l_name;
+                    return $row->user->l_name;
+                })
+                ->editColumn('class', function ($row) {
+                    return $row->classes->class;
                 })
                 ->editColumn('roll_no', function ($row) {
                     return $row->roll_no;
                 })
                 ->editColumn('father_name', function ($row) {
-                    return $row->father_name;
+                    return $row->user->father_name;
                 })
                 ->editColumn('mother_name', function ($row) {
-                    return $row->mother_name;
+                    return $row->user->mother_name;
                 })
                 ->editColumn('guardian_is', function ($row) {
                     return $row->guardian_is;
@@ -548,6 +554,8 @@ class StudentController extends Controller
                 ->make(true);
         }
     }
+
+
 
     // public function getAllStudent(Request $request)
     // {
