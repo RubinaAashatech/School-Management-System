@@ -410,6 +410,38 @@
                 //     });
                 // });
 
+                 // Mark holiday button click event
+
+                $('#markHolidayButton').click(function() {
+
+                // Send an AJAX request to mark holiday
+   
+                $.ajax({
+                url: '',
+                type: 'POST',
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+                success: function(response) {
+
+                // Handle the success response
+                alert('Holiday marked successfully!');
+
+                // Check all holiday radio buttons
+               $('input[type="radio"][value="4"]').prop('checked', true);
+               
+        },
+               error: function(xhr, status, error) {
+           
+                // Handle the error response
+                console.error('Error marking holiday:', error);
+                alert('Error marking holiday. Please try again.');
+        }
+    });
+});
+
+
+
                 // Attach click event handler to the Save Attendance button
                 $('#saveAttendanceButton').click(function() {
                     // Get the selected class ID, section ID, and date
