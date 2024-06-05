@@ -95,9 +95,13 @@ class SchoolService
 
     public function schoolWiseReportDetails($date = null)
     {
+
+        $municipalityId = Auth::user()->municipality_id;
+
         //get all schools details associated to municipality
         // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
-        $schools = $this->getSchoolDetailsByCriteria(null, null, 1);
+
+        $schools = $this->getSchoolDetailsByCriteria(null, null, $municipalityId);
         $reportDetails = [];
         foreach ($schools as $school) {
             $students = $this->getSchoolWiseStudentAttendence($school->id, $date);
@@ -124,6 +128,30 @@ class SchoolService
         }
         return $reportDetails;
     }
+
+    public function InventoryReportDetails($school_id, $date = null)
+{
+    $SchoolId = Auth::user()->municipality_id;
+
+    //get all schools details associated to municipality
+    // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
+
+    $schools = $this->getSchoolDetailsByCriteria(null, null, $SchoolId);
+   
+
+}
+
+public function IncomeReportDetails($school_id, $date = null)
+{
+    $SchoolId = Auth::user()->municipality_id;
+
+    //get all schools details associated to municipality
+    // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
+
+    $schools = $this->getSchoolDetailsByCriteria(null, null, $SchoolId);
+   
+
+}
 
     public static function getSchoolWiseHeadTeacherLogsDetails($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {

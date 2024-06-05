@@ -51,18 +51,17 @@
                         @enderror
                     </div>
                 </div>
-                <script src="https://cdn.jsdelivr.net/npm/nepali-datepicker@1.1.2/dist/js/nepali-date-picker.min.js"></script>
+                
                 <script>
                     $(document).ready(function () {
                         // Fetch current Nepali date
                         var currentDate = NepaliFunctions.GetCurrentBsDate();
-                
                         // Format the current date
                         var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
                         // Set the formatted date to the input field
                         $('#admission-datepicker').val(formattedDate);
                     });
-                </script>                     
+                </script>
             </div>
 
             <!-- Add the Search button -->
@@ -77,10 +76,11 @@
     <div class="card mt-2">
         <div class="card-body">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <!-- Save Attendance and Mark Holiday button -->
                 <div class="row mb-2">
                     <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
                         <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
-                        <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;" onclick="markAllAsHoliday()">Mark As Holiday</button>
+                        <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
                     </div>
                 </div>
                         
@@ -186,6 +186,7 @@
                 }
             });
         }
+       
     });
 </script>
 
@@ -217,21 +218,25 @@
                 });
             });
 
-                // Initially hide the Save Attendance and Mark Holiday buttons
+               // Initially hide the Save Attendance and Mark Holiday buttons
                $('#saveAttendanceButton, #markHolidayButton').hide();
+
                $('#searchButton').click(function() {
-    // Get the selected class ID and section ID
-    var classId = $('select[name="class_id"]').val();
-    var sectionId = $('select[name="section_id"]').val();
-    var date = $('#admission-datepicker').val();
-    var attendance_types = @json($attendance_types);
-    // Fetch students based on the selected class and section
-    $.ajax({
-        url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
-        type: 'GET',
-        success: function(data) {
+
+              // Get the selected class ID and section ID
+              var classId = $('select[name="class_id"]').val();
+              var sectionId = $('select[name="section_id"]').val();
+              var date = $('#admission-datepicker').val();
+              var attendance_types = @json($attendance_types);
+
+            // Fetch students based on the selected class and section
+            $.ajax({
+            url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
+            type: 'GET',
+            success: function(data) {
             // Clear existing content in the student container
             $('#studentTableBody').empty();
+
             // Check if there are any students
             if (data.original && data.original.length > 0) {
                 // Append new rows based on the fetched students
@@ -243,6 +248,7 @@
                         '<td>' + student.roll_no + '</td>' +
                         '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' +
                         '<td>';
+
                     // Check if attendance_types is defined
                     if (typeof attendance_types !== 'undefined') {
                         // Append radio buttons for each attendance type
@@ -271,29 +277,32 @@
                         // Handle the case where attendance_types is not defined
                         row += 'Attendance types not available';
                     }
+
                     row += '</td>' +
                         '<td><input type="text" name="remarks[' + student
                         .id + ']" value="' +
                         (student.remarks ? student.remarks : '') +
                         '"></td>' +
                         '</tr>';
+
                     $('#studentTableBody').append(row);
                 });
 
-                                // Populate existing attendance data in the form
-                                populateExistingAttendance(data.original);
-                            } else {
-                                // If there are no students, display a message or handle accordingly
-                                $('#studentTableBody').append(
-                                    '<tr><td colspan="5">No students found for the selected section</td></tr>'
-                                );
-                                // Hide the Save Attendance button
-                                $('#saveAttendanceButton').hide();
-                            }
-                        }
-                    });
-                });
+                // Populate existing attendance data in the form
+                populateExistingAttendance(data.original);
+            } else {
+                // If there are no students, display a message or handle accordingly
+                $('#studentTableBody').append(
+                    '<tr><td colspan="5">No students found for the selected section</td></tr>'
+                );
+                // Hide the Save Attendance and Mark Holiday buttons
+                $('#saveAttendanceButton, #markHolidayButton').hide();
+            }
+        }
+    });
+});
         
+                // Function to populate existing attendance data in the form
                 // Function to populate existing attendance data in the form
 function populateExistingAttendance(students) {
     $.each(students, function(index, studentData) {
@@ -407,6 +416,38 @@ function markAllAsHoliday() {
                 //         }
                 //     });
                 // });
+
+                 // Mark holiday button click event
+
+                $('#markHolidayButton').click(function() {
+
+                // Send an AJAX request to mark holiday
+   
+                $.ajax({
+                url: '',
+                type: 'POST',
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+                success: function(response) {
+
+                // Handle the success response
+                alert('Holiday marked successfully!');
+
+                // Check all holiday radio buttons
+               $('input[type="radio"][value="4"]').prop('checked', true);
+               
+        },
+               error: function(xhr, status, error) {
+           
+                // Handle the error response
+                console.error('Error marking holiday:', error);
+                alert('Error marking holiday. Please try again.');
+        }
+    });
+});
+
+
 
                 // Attach click event handler to the Save Attendance button
                 $('#saveAttendanceButton').click(function() {
