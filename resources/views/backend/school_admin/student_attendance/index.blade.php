@@ -39,24 +39,12 @@
                         <strong class="text-danger">{{ $message }}</strong>
                     @enderror
                 </div>
-                {{-- <div class="col-lg-3 col-sm-3 mt-2">
-                    <label for="date"> Date:</label>
-                    <div class="selectinput">
-                        <input type="text" name="date" id="date">
-                    </div>
-                    @error('date')
-                        <strong class="text-danger">{{ $message }}</strong>
-                    @enderror
-                </div> --}}
-
 
                 <div class="col-lg-3 col-sm-3 mt-2">
                     <label for="datetimepicker">Date:</label>
                     <div class="form-group">
-                        <div class="input-group date" id="admission-datetimepicker"
-                            data-target-input="nearest">
-                            <input id="admission-datepicker" name="date" type="text"
-                                class="form-control datetimepicker-input" />
+                        <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                            <input id="admission-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
                         </div>
                         @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
@@ -76,76 +64,82 @@
         </form>
     </div>
 </div>
-        <div id="studentContainer">
-            <div class="card mt-2">
-                <div class="card-body">
-                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                        <!-- Save Attendance button -->
-                        <div class="row mb-2">
-                            <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
-                            </div>
+
+<div id="studentContainer">
+    <div class="card mt-2">
+        <div class="card-body">
+            <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <!-- Save Attendance button -->
+                <div class="row mb-2">
+                    <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                    </div>
+                </div>
+                <!-- Search input -->
+                <div class="row mb-2">
+                    <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
+                        <div style="position: relative;">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search">
+                            <span id="clearSearchInput" class="position-absolute top-50 end-0 translate-middle-y text-muted" style="cursor: pointer;">&times;</span>
                         </div>
-                        <!-- Search input -->
-                        <div class="row mb-2">
-                            <div class="col-sm-6 col-md-6 col-6 d-flex justify-content-start">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Search by First Name">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-md-12 col-12">
-                                <div class="report-table-container">
-                                    <div class="table-responsive">
-                                        <table id="student-table"
-                                            class="table table-bordered table-striped dataTable dtr-inline"
-                                            aria-describedby="example1_info">
-                                            <thead>
-                                                <tr>
-                                                    <th>Admission No</th>
-                                                    <th>Roll No</th>
-                                                    <th>Name</th>
-                                                    <th>Attendance</th>
-                                                    <th>Note</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="studentTableBody">
-                                                <!-- Student data will be dynamically added here -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-12">
+                        <div class="report-table-container">
+                            <div class="table-responsive">
+                                <table id="student-table" class="table table-bordered table-striped dataTable dtr-inline"
+                                    aria-describedby="example1_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Admission No</th>
+                                            <th>Roll No</th>
+                                            <th>Name</th>
+                                            <th>Attendance</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody">
+                                        <!-- Student data will be dynamically added here -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         // Function to fetch students dynamically
         function fetchStudents() {
-            // Perform AJAX request to fetch student data
             $.ajax({
-                url: '/admin/student/get', // Adjust the URL to match your backend endpoint
+                url: '/admin/student/get', 
                 type: 'POST',
                 success: function(response) {
-                    // Once data is successfully fetched, call updateTable function with the fetched data
-                    updateTable(response.students); // Assuming response contains an array of students
+                    updateTable(response.students); 
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching student data:', error);
                 }
             });
         }
+
         // Function to update table based on student data
         function updateTable(students) {
             const tableBody = $('#studentTableBody');
             tableBody.empty();
+
             if (students.length === 0) {
                 tableBody.append('<tr><td colspan="5" class="text-center">No results found</td></tr>');
                 return;
             }
+
             students.forEach(student => {
                 const row = `<tr>
                     <td>${student.admission_no}</td>
@@ -157,22 +151,23 @@
                 tableBody.append(row);
             });
         }
-        // Initial table population (fetch students)
+
         fetchStudents();
-        // Event listener for input in search field
+
         $('#searchInput').on('input', function () {
             const query = $(this).val().toLowerCase();
             updateTableBasedOnSearch(query);
         });
-        // Event listener for clearing search input
+
         $('#clearSearchInput').on('click', function () {
             $('#searchInput').val('');
-            // Re-fetch students to update the table with original data
             fetchStudents();
         });
+
         // Function to update table based on search input
         function updateTableBasedOnSearch(query) {
             const tableRows = $('#studentTableBody').find('tr');
+
             tableRows.each(function() {
                 const studentName = $(this).find('td:nth-child(3)').text().toLowerCase();
                 if (studentName.includes(query)) {
@@ -184,39 +179,38 @@
         }
     });
 </script>
+
+
     @section('scripts')
     @include('backend.includes.nepalidate')
-        <script>
-            $(document).ready(function() {
-                // Attach change event handler to the class dropdown
-                $('select[name="class_id"]').change(function() {
-                    // Get the selected class ID
-                    var classId = $(this).val();
-                    // Fetch sections based on the selected class ID
-                    $.ajax({
-                        url: 'get-section-by-class/' +
-                            classId, // Replace with the actual route
-                        type: 'GET',
-                        success: function(data) {
-                            // Clear existing options
-                            $('select[name="section_id"]').empty();
-
-                            // Add the default option
-                            $('select[name="section_id"]').append(
-                                '<option disabled selected>Select Section</option>');
-
-                            // Add new options based on the fetched sections
-                            $.each(data, function(key, value) {
-                                $('select[name="section_id"]').append('<option value="' +
-                                    key + '">' + value + '</option>');
-                            });
-                        }
-                    });
+    <script>
+        $(document).ready(function() {
+            // Attach change event handler to the class dropdown
+            $('select[name="class_id"]').change(function() {
+                // Get the selected class ID
+                var classId = $(this).val();
+                // Fetch sections based on the selected class ID
+                $.ajax({
+                    url: 'get-section-by-class/' + classId, // Replace with the actual route
+                    type: 'GET',
+                    success: function(data) {
+                        // Clear existing options
+                        $('select[name="section_id"]').empty();
+    
+                        // Add the default option
+                        $('select[name="section_id"]').append('<option value="" selected>Select Section</option>');
+    
+                        // Add new options based on the fetched sections
+                        $.each(data, function(key, value) {
+                            $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
                 });
+            });
 
                 // Initially hide the Save Attendance button
                 $('#saveAttendanceButton').hide();
-
+                
                 $('#searchButton').click(function() {
                     // Get the selected class ID and section ID
                     var classId = $('select[name="class_id"]').val();
@@ -229,7 +223,6 @@
                         url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
                         type: 'GET',
                         success: function(data) {
-                            // console.log("Data received:", data);
                             // Clear existing content in the student container
                             $('#studentTableBody').empty();
 
@@ -241,8 +234,10 @@
                                     var student = studentData.student; // Extract student data
                                     var user = studentData.user; // Extract user data
                                     var row = '<tr data-student-id="' + student.id + '">' +
+                                    var row = '<tr data-student-id="' + student.id + '">' +
                                         '<td>' + student.admission_no + '</td>' +
                                         '<td>' + student.roll_no + '</td>' +
+                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
                                         '<td>';
 
@@ -331,6 +326,7 @@
                         }
                     });
                 });
+        
 
                 // Function to populate existing attendance data in the form
                 // Function to populate existing attendance data in the form
@@ -509,11 +505,6 @@
 
                     });
                 });
-
-
-               
-
-
             });
         </script>
     @endsection

@@ -6,7 +6,7 @@
             <div class="border-bottom border-primary">
                 <h2>{{ $page_title }}</h2>
             </div>
-            @include('backend.shared.incomehead.partials.action')
+            @include('backend.shared.inventoryhead.partials.action')
         </div>
         <div class="card">
             <div class="card-body">
@@ -15,13 +15,13 @@
                         <div class="col-sm-12 col-md-12 col-12">
                             <div class="report-table-container">
                                 <div class="table-responsive">
-                                    <table id="incomehead-table"
+                                    <table id="inventoryhead-table"
                                         class="table table-bordered table-striped dataTable dtr-inline"
                                         aria-describedby="example1_info">
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
-                                                <th>Income Category</th>
+                                                <th>Inventory Category</th>
                                                 <th>Description</th>
                                                 <th>Status</th>
                                                 <th>Created At</th>
@@ -37,24 +37,24 @@
             </div>
         </div>
 
-        <div class="modal fade" id="createIncomehead" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="createInventoryhead" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Income Head</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Add Inventory Head</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="">
-                        <form method="post" id="incomeHeadForm" action="{{ route('admin.income-head.store') }}">
+                        <form method="post" id="inventoryHeadForm" action="{{ route('admin.inventory-head.store') }}">
                             @csrf
                             <input type="hidden" name="_method" id="methodField" value="POST">
                             <input type="hidden" name="dynamic_id" id="dynamic_id">
                             <div class="col-md-12">
                                 <div class="p-2 input-label">
-                                    <label>Income Category<span class="must">*</span></label>
+                                    <label>Inventory Category<span class="must">*</span></label>
                                     <div class="single-input-modal">
                                         <input type="text" value="{{ old('name') }}" name="name"
-                                            class="input-text single-input-text" id="dynamic_income_category" autofocus required>
+                                            class="input-text single-input-text" id="dynamic_inventory_category" autofocus required>
                                     </div>
                                 </div>
                                 <div class="p-2 label-input">
@@ -96,11 +96,11 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $('#incomehead-table').DataTable({
+        $('#inventoryhead-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('admin.income-head.get') }}',
+                url: '{{ route('admin.inventory-head.get') }}',
                 type: 'POST'
             },
             columns: [{
@@ -140,7 +140,7 @@
             }
         });
 
-        $(document).on('click', '.edit-income-head', function() {
+        $(document).on('click', '.edit-inventory-head', function() {
             // console.log('Edit button clicked!');
             var id = $(this).data('id');
             var name = $(this).data('name');
@@ -154,11 +154,11 @@
             $('input[name="is_active"]').prop('checked', false);
             $('input[name="is_active"][value="' + is_active + '"]').prop('checked', true);
 
-            $('#incomeHeadForm').attr('action', '{{ route('admin.income-head.update', '') }}' + '/' +
+            $('#inventoryHeadForm').attr('action', '{{ route('admin.inventory-head.update', '') }}' + '/' +
                 id);
             $('#methodField').val('PUT');
 
-            $('#createIncomehead').modal('show');
+            $('#createInventoryhead').modal('show');
 
             return false;
         });
