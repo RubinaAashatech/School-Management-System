@@ -522,10 +522,7 @@ class RolePermissionSeeder extends Seeder
             'list_inventory_head',
             'edit_inventory_head',
             'delete_inventory_head',
-            'create_inventories',
             'list_inventories',
-            'edit_inventories',
-            'delete_inventories',
             'create_attendance_types',
             'list_attendance_types',
             'edit_attendance_types',
@@ -867,6 +864,11 @@ class RolePermissionSeeder extends Seeder
             'edit_students_additionalinformations',
             'delete_students_additionalinformations',
             'list_students_additionalinformations',
+            'list_inventory_head',
+            'create_inventories',
+            'list_inventories',
+            'edit_inventories',
+            'delete_inventories',
 
         ];
 
