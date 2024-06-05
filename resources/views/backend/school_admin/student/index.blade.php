@@ -118,8 +118,8 @@
                         data: 'l_name',
                         name: 'l_name'
                     }, {
-                        data: 'class_id',
-                        name: 'class_id'
+                        data: 'class',
+                        name: 'class'
                     }, {
                         data: 'roll_no',
                         name: 'roll_no',
