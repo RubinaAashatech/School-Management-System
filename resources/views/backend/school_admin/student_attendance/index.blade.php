@@ -48,19 +48,26 @@
                         </div>
                         @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
-                    @enderror
+                        @enderror
                     </div>
                 </div>
+               
+                <script>
+                    $(document).ready(function () {
+                        // Fetch current Nepali date
+                        var currentDate = NepaliFunctions.GetCurrentBsDate();
+                        // Format the current date
+                        var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                        // Set the formatted date to the input field
+                        $('#admission-datepicker').val(formattedDate);
+                    });
+                </script>
             </div>
 
             <!-- Add the Search button -->
             <div class="form-group col-md-12 d-flex justify-content-end pt-2">
                 <button type="button" class="btn btn-primary" id="searchButton">Search</button>
             </div>
-
-            {{-- <div class="form-group col-md-12 d-flex justify-content-end pt-2">
-                <button type="button" class="btn btn-primary" id="searchButton1">Search</button>
-            </div> --}}
         </form>
     </div>
 </div>
@@ -69,10 +76,12 @@
     <div class="card mt-2">
         <div class="card-body">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                <!-- Save Attendance button -->
+                <!-- Save Attendance and Mark Holiday button -->
                 <div class="row mb-2">
                     <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
                         <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                        <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
+                        <button type="button" class="btn btn-primary" id="exportReportButton" style="margin-left: 5px;">Export Report</button>
                     </div>
                 </div>
                 <!-- Search input -->
@@ -83,7 +92,7 @@
                             <span id="clearSearchInput" class="position-absolute top-50 end-0 translate-middle-y text-muted" style="cursor: pointer;">&times;</span>
                         </div>
                     </div>
-                    
+                   
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-12">
@@ -119,10 +128,10 @@
         // Function to fetch students dynamically
         function fetchStudents() {
             $.ajax({
-                url: '/admin/student/get', 
+                url: '/admin/student/get',
                 type: 'POST',
                 success: function(response) {
-                    updateTable(response.students); 
+                    updateTable(response.students);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching student data:', error);
@@ -177,6 +186,7 @@
                 }
             });
         }
+       
     });
 </script>
 
@@ -196,10 +206,10 @@
                     success: function(data) {
                         // Clear existing options
                         $('select[name="section_id"]').empty();
-    
+   
                         // Add the default option
                         $('select[name="section_id"]').append('<option value="" selected>Select Section</option>');
-    
+   
                         // Add new options based on the fetched sections
                         $.each(data, function(key, value) {
                             $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
@@ -208,126 +218,97 @@
                 });
             });
 
-                // Initially hide the Save Attendance button
-                $('#saveAttendanceButton').hide();
-                
-                $('#searchButton').click(function() {
-                    // Get the selected class ID and section ID
-                    var classId = $('select[name="class_id"]').val();
-                    var sectionId = $('select[name="section_id"]').val();
-                    var date = $('#admission-datepicker').val();
-                    var attendance_types = @json($attendance_types);
+               // Initially hide the Save Attendance and Mark Holiday buttons
+               $('#saveAttendanceButton, #markHolidayButton,#exportReportButton').hide();
 
-                    // Fetch students based on the selected class and section
-                    $.ajax({
-                        url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
-                        type: 'GET',
-                        success: function(data) {
-                            // Clear existing content in the student container
-                            $('#studentTableBody').empty();
+               $('#searchButton').click(function() {
 
-                            // Check if there are any students
-                            if (data.original && data.original.length > 0) {
-                                // Append new rows based on the fetched students
-                                $.each(data.original, function(index, studentData) {
-                                    // console.log(data.original)
-                                    var student = studentData.student; // Extract student data
-                                    var user = studentData.user; // Extract user data
-                                    var row = '<tr data-student-id="' + student.id + '">' +
-                                    var row = '<tr data-student-id="' + student.id + '">' +
-                                        '<td>' + student.admission_no + '</td>' +
-                                        '<td>' + student.roll_no + '</td>' +
-                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
-                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
-                                        '<td>';
+              // Get the selected class ID and section ID
+              var classId = $('select[name="class_id"]').val();
+              var sectionId = $('select[name="section_id"]').val();
+              var date = $('#admission-datepicker').val();
+              var attendance_types = @json($attendance_types);
 
-                                    // // Check if attendance_types is defined
-                                    // if (typeof attendance_types !== 'undefined') {
-                                    //     // Append radio buttons for each attendance type
-                                    //     $.each(attendance_types, function(i,
-                                    //         attendance_type) {
-                                    //         row += '<label for="attendance_type_' +
-                                    //             student.id + '_' + attendance_type
-                                    //             .id +
-                                    //             '" class="attendance-radio">' +
-                                    //             '<input type="radio" name="attendance_type_id[' +
-                                    //             student.id + ']" value="' +
-                                    //             attendance_type.id +
-                                    //             '" id="attendance_type_' + student
-                                    //             .id + '_' + attendance_type.id +
-                                    //             '" ' +
-                                    //             (student.attendance_type_id ==
-                                    //                 attendance_type.id ? 'checked' :
-                                    //                 '') + '> ' +
-                                    //             '<span>' + attendance_type.type +
-                                    //             '</span>' +
-                                    //             '</label>';
-                                    //     });
-                                    //     // Show the Save Attendance button
-                                    //     $('#saveAttendanceButton').show();
-                                    // Check if attendance_types is defined
-                                    if (typeof attendance_types !== 'undefined') {
-                                        // Append radio buttons for each attendance type
-                                        $.each(attendance_types, function(i,
-                                            attendance_type) {
-                                            var isChecked = student
-                                                .attendance_type_id ==
-                                                attendance_type.id || (student
-                                                    .attendance_type_id ===
-                                                    undefined && attendance_type
-                                                    .id == 1);
-                                            row += '<label for="attendance_type_' +
-                                                student.id + '_' + attendance_type
-                                                .id +
-                                                '" class="attendance-radio">' +
-                                                '<input type="radio" name="attendance_type_id[' +
-                                                student.id + ']" value="' +
-                                                attendance_type.id +
-                                                '" id="attendance_type_' + student
-                                                .id + '_' + attendance_type.id +
-                                                '" ' +
-                                                (isChecked ? 'checked' : '') +
-                                                '> ' +
-                                                '<span>' + attendance_type.type +
-                                                '</span>' +
-                                                '</label>';
-                                        });
-                                        // Show the Save Attendance button
-                                        $('#saveAttendanceButton').show();
+            // Fetch students based on the selected class and section
+            $.ajax({
+            url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
+            type: 'GET',
+            success: function(data) {
+            // Clear existing content in the student container
+            $('#studentTableBody').empty();
 
+            // Check if there are any students
+            if (data.original && data.original.length > 0) {
+                // Append new rows based on the fetched students
+                $.each(data.original, function(index, studentData) {
+                    var student = studentData.student; // Extract student data
+                    var user = studentData.user; // Extract user data
+                    var row = '<tr data-student-id="' + student.id + '">' +
+                        '<td>' + student.admission_no + '</td>' +
+                        '<td>' + student.roll_no + '</td>' +
+                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' +
+                        '<td>';
 
+                    // Check if attendance_types is defined
+                    if (typeof attendance_types !== 'undefined') {
+                        // Append radio buttons for each attendance type
+                        $.each(attendance_types, function(i, attendance_type) {
+                            var isChecked = student.attendance_type_id == attendance_type.id || (student.attendance_type_id === undefined && attendance_type.id == 1);
+                            row += '<label for="attendance_type_' +
+                                student.id + '_' + attendance_type.id +
+                                '" class="attendance-radio">' +
+                                '<input type="radio" name="attendance_type_id[' +
+                                student.id + ']" value="' +
+                                attendance_type.id +
+                                '" id="attendance_type_' + student
+                                .id + '_' + attendance_type.id +
+                                '" ' +
+                                (isChecked ? 'checked' : '') +
+                                '> ' +
+                                '<span>' + attendance_type.type +
+                                '</span>' +
+                                '</label>';
+                        });
+                        // Show the Save Attendance button
+                        $('#saveAttendanceButton').show();
+                        // Show the Mark Holiday button
+                        $('#markHolidayButton').show();
+                         // Show the Export button
+                        $('#exportReportButton').show();
+                    } else {
+                        // Handle the case where attendance_types is not defined
+                        row += 'Attendance types not available';
+                    }
 
-                                    } else {
-                                        // Handle the case where attendance_types is not defined
-                                        row += 'Attendance types not available';
-                                    }
+                    row += '</td>' +
+                        '<td><input type="text" name="remarks[' + student
+                        .id + ']" value="' +
+                        (student.remarks ? student.remarks : '') +
+                        '"></td>' +
+                        '</tr>';
 
-
-                                    row += '</td>' +
-                                        '<td><input type="text" name="remarks[' + student
-                                        .id + ']" value="' +
-                                        (student.remarks ? student.remarks : '') +
-                                        '"></td>' +
-                                        '</tr>';
-
-                                    $('#studentTableBody').append(row);
-                                });
-
-                                // Populate existing attendance data in the form
-                                populateExistingAttendance(data.original);
-                            } else {
-                                // If there are no students, display a message or handle accordingly
-                                $('#studentTableBody').append(
-                                    '<tr><td colspan="5">No students found for the selected section</td></tr>'
-                                );
-                                // Hide the Save Attendance button
-                                $('#saveAttendanceButton').hide();
-                            }
-                        }
-                    });
+                    $('#studentTableBody').append(row);
                 });
-        
+                $('#markHolidayButton').on('click', function() {
+            $.each(students, function(i, student) {
+                $('#attendance_type_' + student.id + '4').prop('checked', true);
+            });
+        });
 
+                // Populate existing attendance data in the form
+                populateExistingAttendance(data.original);
+            } else {
+                // If there are no students, display a message or handle accordingly
+                $('#studentTableBody').append(
+                    '<tr><td colspan="5">No students found for the selected section</td></tr>'
+                );
+                // Hide the Save Attendance and Mark Holiday buttons
+                $('#saveAttendanceButton, #markHolidayButton').hide();
+            }
+        }
+    });
+});
+       
                 // Function to populate existing attendance data in the form
                 // Function to populate existing attendance data in the form
                 function populateExistingAttendance(students) {
@@ -437,6 +418,37 @@
                 //     });
                 // });
 
+                // Mark holiday button click event
+
+                                $('#markHolidayButton').click(function() {
+
+                // Send an AJAX request to mark holiday
+
+                $.ajax({
+                url: '',
+                type: 'POST',
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+
+                // Handle the success response
+                alert('Holiday marked successfully!');
+
+                // Check all holiday radio buttons
+                $('input[type="radio"][value="4"]').prop('checked', true);
+
+                },
+                error: function(xhr, status, error) {
+
+                // Handle the error response
+                console.error('Error marking holiday:', error);
+                alert('Error marking holiday. Please try again.');
+                }
+                });
+                });
+
+
                 // Attach click event handler to the Save Attendance button
                 $('#saveAttendanceButton').click(function() {
                     // Get the selected class ID, section ID, and date
@@ -505,6 +517,38 @@
 
                     });
                 });
+
+                $('#exportReportButton').click(function() {
+            // Get the table data
+            var tableData = [];
+            $('#studentTableBody tr').each(function() {
+                var row = {
+                    admission_no: $(this).find('td:eq(0)').text(),
+                    roll_no: $(this).find('td:eq(1)').text(),
+                    name: $(this).find('td:eq(2)').text(),
+                    attendance: $(this).find('input[type="radio"]:checked').siblings('span').text(),
+                    note: $(this).find('td:eq(4) input').val()
+                };
+                tableData.push(row);
+            });
+
+            // Convert the table data to CSV
+            var csv = 'Admission No,Roll No,Name,Attendance,Note\n';
+            tableData.forEach(function(row) {
+                csv += `${row.admission_no},${row.roll_no},${row.name},${row.attendance},${row.note}\n`;
+            });
+
+            // Create a blob and link to download the CSV
+            var blob = new Blob([csv], { type: 'text/csv' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'attendance_report.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+        
             });
         </script>
     @endsection
