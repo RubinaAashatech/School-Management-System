@@ -48,9 +48,21 @@
                         </div>
                         @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
-                    @enderror
+                        @enderror
                     </div>
                 </div>
+                <script src="https://cdn.jsdelivr.net/npm/nepali-datepicker@1.1.2/dist/js/nepali-date-picker.min.js"></script>
+                <script>
+                    $(document).ready(function () {
+                        // Fetch current Nepali date
+                        var currentDate = NepaliFunctions.GetCurrentBsDate();
+                
+                        // Format the current date
+                        var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                        // Set the formatted date to the input field
+                        $('#admission-datepicker').val(formattedDate);
+                    });
+                </script>                     
             </div>
 
             <!-- Add the Search button -->
@@ -65,12 +77,13 @@
     <div class="card mt-2">
         <div class="card-body">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                <!-- Save Attendance button -->
                 <div class="row mb-2">
                     <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
                         <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                        <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;" onclick="markAllAsHoliday()">Mark As Holiday</button>
                     </div>
                 </div>
+                        
                 <!-- Search input -->
                 <div class="row mb-2">
                     <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
@@ -204,110 +217,68 @@
                 });
             });
 
-                // Initially hide the Save Attendance button
-                $('#saveAttendanceButton').hide();
-                
-                $('#searchButton').click(function() {
-                    // Get the selected class ID and section ID
-                    var classId = $('select[name="class_id"]').val();
-                    var sectionId = $('select[name="section_id"]').val();
-                    var date = $('#admission-datepicker').val();
-                    var attendance_types = @json($attendance_types);
-
-                    // Fetch students based on the selected class and section
-                    $.ajax({
-                        url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
-                        type: 'GET',
-                        success: function(data) {
-                            // Clear existing content in the student container
-                            $('#studentTableBody').empty();
-
-                            // Check if there are any students
-                            if (data.original && data.original.length > 0) {
-                                // Append new rows based on the fetched students
-                                $.each(data.original, function(index, studentData) {
-                                    // console.log(data.original)
-                                    var student = studentData.student; // Extract student data
-                                    var user = studentData.user; // Extract user data
-                                    var row = '<tr data-student-id="' + student.id + '">' +
-                                    var row = '<tr data-student-id="' + student.id + '">' +
-                                        '<td>' + student.admission_no + '</td>' +
-                                        '<td>' + student.roll_no + '</td>' +
-                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
-                                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' + // Updated line
-                                        '<td>';
-
-                                    // // Check if attendance_types is defined
-                                    // if (typeof attendance_types !== 'undefined') {
-                                    //     // Append radio buttons for each attendance type
-                                    //     $.each(attendance_types, function(i,
-                                    //         attendance_type) {
-                                    //         row += '<label for="attendance_type_' +
-                                    //             student.id + '_' + attendance_type
-                                    //             .id +
-                                    //             '" class="attendance-radio">' +
-                                    //             '<input type="radio" name="attendance_type_id[' +
-                                    //             student.id + ']" value="' +
-                                    //             attendance_type.id +
-                                    //             '" id="attendance_type_' + student
-                                    //             .id + '_' + attendance_type.id +
-                                    //             '" ' +
-                                    //             (student.attendance_type_id ==
-                                    //                 attendance_type.id ? 'checked' :
-                                    //                 '') + '> ' +
-                                    //             '<span>' + attendance_type.type +
-                                    //             '</span>' +
-                                    //             '</label>';
-                                    //     });
-                                    //     // Show the Save Attendance button
-                                    //     $('#saveAttendanceButton').show();
-                                    // Check if attendance_types is defined
-                                    if (typeof attendance_types !== 'undefined') {
-                                        // Append radio buttons for each attendance type
-                                        $.each(attendance_types, function(i,
-                                            attendance_type) {
-                                            var isChecked = student
-                                                .attendance_type_id ==
-                                                attendance_type.id || (student
-                                                    .attendance_type_id ===
-                                                    undefined && attendance_type
-                                                    .id == 1);
-                                            row += '<label for="attendance_type_' +
-                                                student.id + '_' + attendance_type
-                                                .id +
-                                                '" class="attendance-radio">' +
-                                                '<input type="radio" name="attendance_type_id[' +
-                                                student.id + ']" value="' +
-                                                attendance_type.id +
-                                                '" id="attendance_type_' + student
-                                                .id + '_' + attendance_type.id +
-                                                '" ' +
-                                                (isChecked ? 'checked' : '') +
-                                                '> ' +
-                                                '<span>' + attendance_type.type +
-                                                '</span>' +
-                                                '</label>';
-                                        });
-                                        // Show the Save Attendance button
-                                        $('#saveAttendanceButton').show();
-
-
-
-                                    } else {
-                                        // Handle the case where attendance_types is not defined
-                                        row += 'Attendance types not available';
-                                    }
-
-
-                                    row += '</td>' +
-                                        '<td><input type="text" name="remarks[' + student
-                                        .id + ']" value="' +
-                                        (student.remarks ? student.remarks : '') +
-                                        '"></td>' +
-                                        '</tr>';
-
-                                    $('#studentTableBody').append(row);
-                                });
+                // Initially hide the Save Attendance and Mark Holiday buttons
+               $('#saveAttendanceButton, #markHolidayButton').hide();
+               $('#searchButton').click(function() {
+    // Get the selected class ID and section ID
+    var classId = $('select[name="class_id"]').val();
+    var sectionId = $('select[name="section_id"]').val();
+    var date = $('#admission-datepicker').val();
+    var attendance_types = @json($attendance_types);
+    // Fetch students based on the selected class and section
+    $.ajax({
+        url: 'get-students-by-section/' + classId + '/' + sectionId + '/' + date,
+        type: 'GET',
+        success: function(data) {
+            // Clear existing content in the student container
+            $('#studentTableBody').empty();
+            // Check if there are any students
+            if (data.original && data.original.length > 0) {
+                // Append new rows based on the fetched students
+                $.each(data.original, function(index, studentData) {
+                    var student = studentData.student; // Extract student data
+                    var user = studentData.user; // Extract user data
+                    var row = '<tr data-student-id="' + student.id + '">' +
+                        '<td>' + student.admission_no + '</td>' +
+                        '<td>' + student.roll_no + '</td>' +
+                        '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' +
+                        '<td>';
+                    // Check if attendance_types is defined
+                    if (typeof attendance_types !== 'undefined') {
+                        // Append radio buttons for each attendance type
+                        $.each(attendance_types, function(i, attendance_type) {
+                            var isChecked = student.attendance_type_id == attendance_type.id || (student.attendance_type_id === undefined && attendance_type.id == 1);
+                            row += '<label for="attendance_type_' +
+                                student.id + '_' + attendance_type.id +
+                                '" class="attendance-radio">' +
+                                '<input type="radio" name="attendance_type_id[' +
+                                student.id + ']" value="' +
+                                attendance_type.id +
+                                '" id="attendance_type_' + student
+                                .id + '_' + attendance_type.id +
+                                '" ' +
+                                (isChecked ? 'checked' : '') +
+                                '> ' +
+                                '<span>' + attendance_type.type +
+                                '</span>' +
+                                '</label>';
+                        });
+                        // Show the Save Attendance button
+                        $('#saveAttendanceButton').show();
+                        // Show the Mark Holiday button
+                        $('#markHolidayButton').show();
+                    } else {
+                        // Handle the case where attendance_types is not defined
+                        row += 'Attendance types not available';
+                    }
+                    row += '</td>' +
+                        '<td><input type="text" name="remarks[' + student
+                        .id + ']" value="' +
+                        (student.remarks ? student.remarks : '') +
+                        '"></td>' +
+                        '</tr>';
+                    $('#studentTableBody').append(row);
+                });
 
                                 // Populate existing attendance data in the form
                                 populateExistingAttendance(data.original);
@@ -323,28 +294,32 @@
                     });
                 });
         
-
                 // Function to populate existing attendance data in the form
-                // Function to populate existing attendance data in the form
-                function populateExistingAttendance(students) {
-                    $.each(students, function(index, studentData) {
-                        var student = studentData.student;
-                        var user = studentData.user;
+function populateExistingAttendance(students) {
+    $.each(students, function(index, studentData) {
+        var student = studentData.student;
+        var user = studentData.user;
 
-                        // Assuming there is only one attendance record per student for the given date
-                        if (studentData.student_attendances && studentData.student_attendances.length > 0) {
-                            var attendance = studentData.student_attendances[0];
-                            var attendanceTypeId = attendance.attendance_type_id;
+        // Assuming there is only one attendance record per student for the given date
+        if (studentData.student_attendances && studentData.student_attendances.length > 0) {
+            var attendance = studentData.student_attendances[0];
+            var attendanceTypeId = attendance.attendance_type_id;
 
-                            // Assuming the attendance_type_id and remarks correspond to the existing data
-                            $('input[name="attendance_type_id[' + student.id + ']"][value="' +
-                                attendanceTypeId + '"]').attr('checked', true);
-                            $('input[name="remarks[' + student.id + ']"]').val(attendance.remarks);
-                        }
-                    });
-                }
+            // Assuming the attendance_type_id and remarks correspond to the existing data
+            $('input[name="attendance_type_id[' + student.id + ']"][value="' +
+                attendanceTypeId + '"]').prop('checked', true);
+            $('input[name="remarks[' + student.id + ']"]').val(attendance.remarks);
+        }
+    });
+}
 
-
+// Function to toggle attendance status to "holiday"
+function markAllAsHoliday() {
+    // Iterate through each radio button and set its value to "holiday"
+    $('input[name^="attendance_type_id"]').each(function() {
+        $(this).val('attendance_type_id').prop('checked', true);
+    });
+}
 
 
 
