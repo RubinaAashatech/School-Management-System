@@ -24,7 +24,7 @@ class IncomeHeadController extends Controller
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
-            'name' => 'required|unique:incomehead',
+            'name' => 'required|unique:incomeheads',
             'description' => 'required',
             'is_active' => 'required',
         ]);
@@ -52,7 +52,7 @@ class IncomeHeadController extends Controller
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'name' => 'required|unique:incomehead,name,' . $id,
+            'name' => 'required|unique:incomeheads,name,' . $id,
             'description' => 'required',
             'is_active' => 'required',
         ]);

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
@@ -24,7 +24,7 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'expensehead_id' => 'required|string',
             'name' => 'required|string',
             'invoice_number' => 'required|string',
@@ -41,11 +41,13 @@ class ExpenseController extends Controller
 
         try {
             $expenseData = $request->all();
-            $expenseData['school_id'] = session('school_id');
+            $expenseData['school_id'] = Auth::user()->school_id;
             $savedData = Expense::create($expenseData);
 
-            return redirect()->back()->withToastSuccess('Expense Saved Successfully!');
+            return redirect()->back()->withToastSuccess('Expenses Saved Successfully!');
+
         } catch (\Exception $e) {
+
             return back()->withToastError($e->getMessage());
         }
     }
@@ -57,7 +59,7 @@ class ExpenseController extends Controller
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'expensehead_id' => 'required|string',
             'name' => 'required|string',
             'invoice_number' => 'required|string',
@@ -73,16 +75,6 @@ class ExpenseController extends Controller
         }
 
         $expense = Expense::findOrFail($id);
-
-        try {
-            $data = $request->all();
-            $data['school_id'] = session('school_id');
-            $updateNow = $expense->update($data);
-
-            return redirect()->back()->withToastSuccess('Successfully Updated Expense!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage())->withInput();
-        }
 
         return back()->withToastError('Cannot Update Expense. Please try again')->withInput();
     }

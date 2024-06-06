@@ -24,7 +24,6 @@
                                 <div class="d-flex justify-content-center gap-2">
                                     <span class="step">Basic Information</span>
                                     <span class="step">Bank/Social Information</span>
-                                    <span class="step">Leave Details</span>
                                     {{-- INCASE ADDED STEPS ARE NEEDED --}}
                                     {{-- <span class="step"></span> --}}
                                 </div>
@@ -626,7 +625,7 @@
 
                                 </div>
 
-                                <div class="tab">
+                                {{-- <div class="tab">
 
                                     <div class="hr-line-dashed"></div>
                                     <h5>Leave Detail:</h5>
@@ -712,7 +711,7 @@
 
                                     </div>
 
-                                </div>
+                                </div> --}}
 
 
                                 <div class=" d-flex justify-content-end mt-4">

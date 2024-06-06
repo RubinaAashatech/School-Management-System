@@ -519,6 +519,20 @@ class StaffController extends Controller
         return view('backend.shared.staffs.importindex', compact('page_title'));
     }
 
+    public function addLeaveDetails()
+    {
+    $page_title = 'Add Leave Details'; // or any other logic you need
+    $schoolId = session('school_id');
+    return view('backend.shared.staffs.leavedetails', compact('page_title'));
+    }
+
+    public function addResignationDetails()
+    {
+        $page_title = "Resignation Details";
+        $schoolId = session('school_id');
+        return view('backend.shared.staffs.resignationdetailsindex', compact('page_title'));
+    }
+
     public function import(Request $request)
     {
         // $roles = Department::pluck('name');

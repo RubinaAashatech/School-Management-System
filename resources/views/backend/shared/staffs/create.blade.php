@@ -24,8 +24,7 @@
                                 <div class="d-flex justify-content-center gap-2">
                                     <span class="step">Basic Information</span>
                                     <span class="step">Bank/Social Information</span>
-                                    <span class="step">Leave Details</span>
-
+                                    
                                     {{-- INCASE ADDED STEPS ARE NEEDED --}}
                                     {{-- <span class="step"></span> --}}
                                 </div>
@@ -598,9 +597,7 @@
                                         @enderror
                                     </div>
 
-
-
-                                </div>
+                                {{-- </div>
 
                                 <div class="tab">
 
@@ -657,7 +654,8 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                        <div class="form-group col-lg-4 col-sm-4">
+
+                                        {{-- <div class="form-group col-lg-4 col-sm-4">
                                             <label for="datetimepicker">Date of Leaving:</label>
                                             <div class="form-group">
                                                 <div class="input-group date" id="datetimepicker"
@@ -666,10 +664,10 @@
                                                         class="form-control datetimepicker-input" />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
 
-                                        <div class="form-group col-lg-4 col-sm-4">
+                                        {{-- <div class="form-group col-lg-4 col-sm-4">
                                             <label for="resignation_letter">Resignation Letter</label>
                                             <input type="text" name="resignation_letter"
                                                 value="{{ old('resignation_letter') }}" class="form-control"
@@ -687,11 +685,10 @@
                                             @error('note')
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
-                                        </div>
-
+                                        </div> --}}
 
                                     </div>
-                                </div>
+                                </div> 
 
                                 <div class=" d-flex justify-content-end mt-4">
                                     <div style="">
