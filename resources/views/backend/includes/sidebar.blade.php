@@ -42,6 +42,8 @@
 
                 @include('backend.includes.sidebar.role_permission')
                 @include('backend.includes.sidebar.user_management')
+
+                @include('backend.includes.sidebar.ECA_activities_management')
             </ul>
         </div>
     </div>

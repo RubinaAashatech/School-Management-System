@@ -58,44 +58,29 @@
                             <input type="hidden" name="dynamic_id" id="dynamic_id">
                             <div class="col-md-12">
                                 <div class="p-2 label-input">
-                                    <label>Record of the Major Incidents<span class="must">*</span></label>
-
+                                    <label>Record of the Major Incidents</label>
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('major_incidents') }}" name="major_incidents"
-                                            class="input-text single-input-text" id="dynamic_major_incidents" autofocus
-                                            required>
+                                        <textarea name="major_incidents" class="input-text single-input-text" id="dynamic_major_incidents" autofocus >{{ old('major_incidents') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="p-2 label-input">
-                                    <label>Major Work Observation/Accomplishment/Progress<span
-                                            class="must">*</span></label>
-
+                                    <label>Major Work Observation/Accomplishment/Progress</label>
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('major_work_observation') }}"
-                                            name="major_work_observation" class="input-text single-input-text"
-                                            id="dynamic_major_work_observation" autofocus required>
+                                        <textarea name="major_work_observation" class="input-text single-input-text" id="dynamic_major_work_observation" autofocus >{{ old('major_work_observation') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="p-2 label-input">
-                                    <label>Assembly Management/ ECA/ CCA<span class="must">*</span></label>
-
+                                    <label>Assembly Management/ ECA/ CCA</label>
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('assembly_management') }}"
-                                            name="assembly_management" class="input-text single-input-text"
-                                            id="dynamic_assembly_management" autofocus required>
+                                        <textarea name="assembly_management" class="input-text single-input-text" id="dynamic_assembly_management" autofocus >{{ old('assembly_management') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="p-2 label-input">
                                     <label>Miscellaneous</label>
-
                                     <div class="single-input-modal">
-                                        <input type="text" value="{{ old('miscellaneous') }}" name="miscellaneous"
-                                            class="input-text single-input-text" id="dynamic_miscellaneous" autofocus
-                                            required>
+                                        <textarea name="miscellaneous" class="input-text single-input-text" id="dynamic_miscellaneous" autofocus>{{ old('miscellaneous') }}</textarea>
                                     </div>
                                 </div>
-
-
                                 <div class="p-2 label-input">
                                     <label for="datetimepicker">Logged Date:</label>
                                     <div class="form-group">
@@ -106,15 +91,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- <div class="p-2 label-input">
-                                    <label>Logged Date<span class="must">*</span></label>
 
-                                    <div class="single-input-modal">
-                                        <input type="text" value="{{ old('logged_date') }}" name="logged_date"
-                                            class="input-text single-input-text" id="dynamic_logged_date" autofocus
-                                            required>
-                                    </div>
-                                </div> --}}
+                                <script>
+                                    $(document).ready(function () {
+                                        // Fetch current Nepali date
+                                        var currentDate = NepaliFunctions.GetCurrentBsDate();
+                                        // Format the current date
+                                        var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                                        // Set the formatted date to the input field
+                                        $('#nepali-datepicker').val(formattedDate);
+                                    });
+                                </script>
+                                    
+                                        {{-- <div class="p-2 label-input">
+                                            <label>Logged Date<span class="must">*</span></label>
+
+                                            <div class="single-input-modal">
+                                                <input type="text" value="{{ old('logged_date') }}" name="logged_date"
+                                                    class="input-text single-input-text" id="dynamic_logged_date" autofocus
+                                                    required>
+                                            </div>
+                                        </div> --}}
 
 
                                 <div class="border-top col-md-12 d-flex justify-content-end p-2">

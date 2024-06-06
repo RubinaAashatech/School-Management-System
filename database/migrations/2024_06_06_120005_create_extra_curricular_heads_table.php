@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('head_teacher_logs', function (Blueprint $table) {
+        Schema::create('extra_curricular_heads', function (Blueprint $table) {
             $table->id();
-            $table->string('major_incidents')->nullable();
-            $table->string('major_work_observation')->nullable();
-            $table->string('assembly_management')->nullable();
-            $table->string('miscellaneous')->nullable();
-            $table->string('logged_date')->nullable();
+            $table->string('name');
+            $table->string('description');
+            $table->boolean('is_active')->default(0)->comment('0 => no, 1 => yes');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('head_teacher_logs');
+        Schema::dropIfExists('extra_curricular_heads');
     }
 };
