@@ -11,4 +11,5 @@ Route::get('/get-district-by-state/{state_id}', [StaffController::class, 'getDis
 Route::get('staffs-import/index', [StaffController::class, 'importStaffs'])->name('staffs_import.import');
 Route::post('staffs-import/import', [StaffController::class, 'import'])->name('staffs_import.bulkimport');
 
-Route::post('admin/staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('admin.staffs.leavedetails');
+Route::get('/admin/staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('admin.staffs.leavedetails');
+

@@ -197,16 +197,14 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-lg-3 col-sm-3 mt-2">
-                                                <label for="employee_id">Employee Id: <span class="must">
-                                                        *</span></label>
-                                                <input type="text" name="employee_id"
-                                                    value="{{ old('employee_id') }}" class="form-control"
-                                                    id="employee_id" placeholder="Enter Employee Id">
-                                                @error('employee_id')
-                                                    <strong class="text-danger">{{ $message }}</strong>
-                                                @enderror
-                                            </div>
+                                            <form id="employee-form" method="POST" action="/your-form-action">
+                                                <div class="form-group col-lg-3 col-sm-3 mt-2">
+                                                    <label for="employee_id">Employee Id: <span class="must">*</span></label>
+                                                    <input type="text" name="employee_id" class="form-control" id="employee_id" placeholder="Enter Employee Id">
+                                                    @error('employee_id')
+                                                        <strong class="text-danger">{{ $message }}</strong>
+                                                    @enderror
+                                                </div>
 
 
                                         </div>
@@ -984,5 +982,32 @@
                 loadDistricts(preselectedStateId, preselectedDistrictId);
             }
         });
+
+       // Function to generate a random employee ID
+
+        function generateEmployeeId() {
+        const length = 2; // Adjust the length as needed
+        const chars = '0123456789';
+        let employeeId = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            employeeId += chars[randomIndex];
+        }
+        return employeeId;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('employee-form');
+        const employeeIdInput = document.getElementById('employee_id');
+        const submitButton = document.getElementById('submit-btn');
+
+        submitButton.addEventListener('click', function (event) {
+            if (!employeeIdInput.value.trim()) {
+                employeeIdInput.value = generateEmployeeId();
+            }
+            // Allow the form to be submitted
+        });
+    });
     </script>
+
 @endsection

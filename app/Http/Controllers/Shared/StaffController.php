@@ -114,7 +114,7 @@ class StaffController extends Controller
             'emergency_contact_person' => 'nullable',
             'emergency_contact_phone' => 'nullable',
             'username' => 'nullable',
-            'employee_id' => 'required',
+            'employee_id' => 'nullable',
             // 'password' => 'required',
             'facebook' => 'nullable',
             'twitter' => 'nullable',
@@ -156,11 +156,30 @@ class StaffController extends Controller
                 // 'other_document' => 'nullable|string',
 
             ];
-        }
 
-        return $request->validate($rules);
+        // If employee_id is not provided, generate it
+
+        if (!$request->filled('employee_id')) {
+            $request->merge(['employee_id'  => $this->generateEmployeeId()]);
+        }
     }
 
+    return $request->validate($rules);
+  }
+
+        // Function to generate a random employee ID
+
+        private function generateEmployeeId($length = 3)
+        {
+   
+            $chars = '0123456789';
+            $employeeId = '';
+            for ($i = 0; $i < $length; $i++) {
+            $randomIndex = rand(0, strlen($chars) - 1);
+            $employeeId .= $chars[$randomIndex];
+    }
+       return $employeeId;
+    }
 
     protected function saveUserImage($croppedImage)
     {
@@ -521,7 +540,7 @@ class StaffController extends Controller
 
     public function addLeaveDetails()
     {
-    $page_title = 'Add Leave Details'; // or any other logic you need
+    $page_title = 'Add Leave Details';
     $schoolId = session('school_id');
     return view('backend.shared.staffs.leavedetails', compact('page_title'));
     }

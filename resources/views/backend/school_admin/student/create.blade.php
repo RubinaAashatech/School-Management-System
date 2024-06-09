@@ -35,14 +35,16 @@
                                     <h5 class="">Student's Admission Information</h5>
                                     <div class="hr-line-dashed"></div>
                                     <div class="col-md-12 col-lg-12 d-flex justify-content-between">
-                                        <div class=" col-lg-3 col-sm-3">
-                                            <label for="admission_no"> Admission Number:</label>
+                                        <div class="col-lg-3 col-sm-3">
+                                            <label for="admission_no">Admission Number:</label>
                                             <input type="text" name="admission_no" value="{{ old('admission_no') }}"
                                                 class="form-control" id="admission_no" placeholder="Enter Admission Number">
                                             @error('admission_no')
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
                                         </div>
+                                    
+
                                         {{-- <div class=" col-lg-3 col-sm-3">
                                             <label for="admission_date"> Admission Date:</label>
                                             <input type="text" name="admission_date" value="{{ old('admission_date') }}"
@@ -1199,6 +1201,29 @@
                 loadDistricts(preselectedStateId, preselectedDistrictId);
             }
         });
+
+     // Function to generate an admission number
+     function generateAdmissionNumber() {
+        const length = 3; 
+        const chars = '123456789';
+        let admissionNumber = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            admissionNumber += chars[randomIndex];
+        }
+        return admissionNumber;
+    }
+
+    // Set the generated admission number to the input field on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        const admissionNoInput = document.getElementById('admission_no');
+        if (admissionNoInput && !admissionNoInput.value) {
+            admissionNoInput.value = generateAdmissionNumber();
+        }
+    });
+
+</script>
+
     </script>
 
     <script>
