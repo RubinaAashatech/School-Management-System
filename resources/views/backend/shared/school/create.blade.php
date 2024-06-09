@@ -478,26 +478,48 @@
         });
 
 
-        // Function to generate school code
-                                            
-        function generateSchoolCode() {
-        const codeLength = 3;
-        const chars = '0123456789';
-        let schoolCode = '';
-        for (let i = 0; i < codeLength; i++) {
-          const randomIndex = Math.floor(Math.random() * chars.length);
-          schoolCode += chars[randomIndex];
-        }
-          return schoolCode;
-        }
-                                        
-        // Set the generated school code to the input field on page load
-        document.addEventListener('DOMContentLoaded', function () {
-          const schoolCodeInput = document.getElementById('school_code');
-           if (schoolCodeInput && !schoolCodeInput.value) {
-           schoolCodeInput.value = generateSchoolCode();
-        }
-     });
+    // Function to generate school code
+
+    function generateSchoolCode(districtId, municipalityId) {
+    const codeLength = 3;
+    const chars = '0123456789';
+    let serialNumber = '';
+
+    for (let i = 0; i < codeLength; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        serialNumber += chars[randomIndex];
+    }
+
+    return `${districtId}${municipalityId}${serialNumber}`;
+}
+
+    // Function to update school code based on dropdown selections
+
+    function updateSchoolCode() {
+    const districtSelect = document.getElementById('district_id');
+    const municipalitySelect = document.getElementById('municipalitiy_id');
+    const schoolCodeInput = document.getElementById('school_code');
+
+    const districtId = districtSelect.value;
+    const municipalityId = municipalitySelect.value;
+
+    if (districtId && municipalityId) {
+        schoolCodeInput.value = generateSchoolCode(districtId, municipalityId);
+    } else {
+        schoolCodeInput.value = ''; // Clear the input if both dropdowns are not selected
+    }
+}
+
+    // Add event listeners to dropdowns
+
+    document.getElementById('district_id').addEventListener('change', updateSchoolCode);
+    document.getElementById('municipalitiy_id').addEventListener('change', updateSchoolCode);
+
+    // Initialize school code on page load if both dropdowns have values
+
+    document.addEventListener('DOMContentLoaded', function () {
+    updateSchoolCode();
+});
                                        
     </script>
 @endsection
