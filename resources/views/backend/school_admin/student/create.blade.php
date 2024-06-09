@@ -43,7 +43,7 @@
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
                                         </div>
-                                    
+                                  
 
                                         {{-- <div class=" col-lg-3 col-sm-3">
                                             <label for="admission_date"> Admission Date:</label>
