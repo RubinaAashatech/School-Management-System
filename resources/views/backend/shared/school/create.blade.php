@@ -168,6 +168,7 @@
                                             @enderror
                                         </div>
 
+
                                         <div class="form-group col-lg-3 col-md-4 col-sm-6">
                                             <label for="head_teacher">Head Teacher</label><span class="must"> *</span>
                                             <input type="text" name="head_teacher" value="{{ old('head_teacher') }}"
@@ -475,5 +476,28 @@
                 loadDistricts(preselectedStateId, preselectedDistrictId);
             }
         });
+
+
+        // Function to generate school code
+                                            
+        function generateSchoolCode() {
+        const codeLength = 3;
+        const chars = '0123456789';
+        let schoolCode = '';
+        for (let i = 0; i < codeLength; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          schoolCode += chars[randomIndex];
+        }
+          return schoolCode;
+        }
+                                        
+        // Set the generated school code to the input field on page load
+        document.addEventListener('DOMContentLoaded', function () {
+          const schoolCodeInput = document.getElementById('school_code');
+           if (schoolCodeInput && !schoolCodeInput.value) {
+           schoolCodeInput.value = generateSchoolCode();
+        }
+     });
+                                       
     </script>
 @endsection

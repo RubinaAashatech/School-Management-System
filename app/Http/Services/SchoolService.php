@@ -153,6 +153,18 @@ public function IncomeReportDetails($school_id, $date = null)
 
 }
 
+public function ExpensesReportDetails($school_id, $date = null)
+{
+    $SchoolId = Auth::user()->municipality_id;
+
+    //get all schools details associated to municipality
+    // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
+
+    $schools = $this->getSchoolDetailsByCriteria(null, null, $SchoolId);
+   
+
+}
+
     public static function getSchoolWiseHeadTeacherLogsDetails($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {

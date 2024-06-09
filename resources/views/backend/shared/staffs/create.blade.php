@@ -24,8 +24,7 @@
                                 <div class="d-flex justify-content-center gap-2">
                                     <span class="step">Basic Information</span>
                                     <span class="step">Bank/Social Information</span>
-                                    <span class="step">Leave Details</span>
-
+                                    
                                     {{-- INCASE ADDED STEPS ARE NEEDED --}}
                                     {{-- <span class="step"></span> --}}
                                 </div>
@@ -198,16 +197,14 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group col-lg-3 col-sm-3 mt-2">
-                                                <label for="employee_id">Employee Id: <span class="must">
-                                                        *</span></label>
-                                                <input type="text" name="employee_id"
-                                                    value="{{ old('employee_id') }}" class="form-control"
-                                                    id="employee_id" placeholder="Enter Employee Id">
-                                                @error('employee_id')
-                                                    <strong class="text-danger">{{ $message }}</strong>
-                                                @enderror
-                                            </div>
+                                            <form id="employee-form" method="POST" action="/your-form-action">
+                                                <div class="form-group col-lg-3 col-sm-3 mt-2">
+                                                    <label for="employee_id">Employee Id: <span class="must">*</span></label>
+                                                    <input type="text" name="employee_id" class="form-control" id="employee_id" placeholder="Enter Employee Id">
+                                                    @error('employee_id')
+                                                        <strong class="text-danger">{{ $message }}</strong>
+                                                    @enderror
+                                                </div>
 
 
                                         </div>
@@ -598,9 +595,7 @@
                                         @enderror
                                     </div>
 
-
-
-                                </div>
+                                {{-- </div>
 
                                 <div class="tab">
 
@@ -657,7 +652,8 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                        <div class="form-group col-lg-4 col-sm-4">
+
+                                        {{-- <div class="form-group col-lg-4 col-sm-4">
                                             <label for="datetimepicker">Date of Leaving:</label>
                                             <div class="form-group">
                                                 <div class="input-group date" id="datetimepicker"
@@ -666,10 +662,10 @@
                                                         class="form-control datetimepicker-input" />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
 
-                                        <div class="form-group col-lg-4 col-sm-4">
+                                        {{-- <div class="form-group col-lg-4 col-sm-4">
                                             <label for="resignation_letter">Resignation Letter</label>
                                             <input type="text" name="resignation_letter"
                                                 value="{{ old('resignation_letter') }}" class="form-control"
@@ -687,11 +683,10 @@
                                             @error('note')
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
-                                        </div>
-
+                                        </div> --}}
 
                                     </div>
-                                </div>
+                                </div> 
 
                                 <div class=" d-flex justify-content-end mt-4">
                                     <div style="">
@@ -987,5 +982,32 @@
                 loadDistricts(preselectedStateId, preselectedDistrictId);
             }
         });
+
+       // Function to generate a random employee ID
+
+        function generateEmployeeId() {
+        const length = 2; // Adjust the length as needed
+        const chars = '0123456789';
+        let employeeId = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            employeeId += chars[randomIndex];
+        }
+        return employeeId;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('employee-form');
+        const employeeIdInput = document.getElementById('employee_id');
+        const submitButton = document.getElementById('submit-btn');
+
+        submitButton.addEventListener('click', function (event) {
+            if (!employeeIdInput.value.trim()) {
+                employeeIdInput.value = generateEmployeeId();
+            }
+            // Allow the form to be submitted
+        });
+    });
     </script>
+
 @endsection

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 
 class IncomeController extends Controller
@@ -24,7 +25,7 @@ class IncomeController extends Controller
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'incomehead_id' => 'required|string',
             'name' => 'required|string',
             'invoice_number' => 'required|string',
@@ -41,12 +42,13 @@ class IncomeController extends Controller
 
         try {
             $incomeData = $request->all();
-            $incomeData['school_id'] = session('school_id');
-            // $incomeData['incomehead_id'] = $request->input('incomehead_id');
+            $incomeData['school_id'] = Auth::user()->school_id; 
             $savedData = Income::create($incomeData);
 
             return redirect()->back()->withToastSuccess('Income Saved Successfully!');
+
         } catch (\Exception $e) {
+
             return back()->withToastError($e->getMessage());
         }
     }
@@ -59,7 +61,7 @@ class IncomeController extends Controller
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'school_id' => 'required',
+            'school_id' => 'filled|numeric',
             'incomehead_id' => 'required|string',
             'name' => 'required|string',
             'invoice_number' => 'required|string',
@@ -75,17 +77,6 @@ class IncomeController extends Controller
         }
 
         $income = Income::findOrFail($id);
-
-        try {
-            $data = $request->all();
-            $data['school_id'] = session('school_id');
-            // $data['incomehead_id'] = $request->input('incomehead_id'); //'incomehead_id' should be in Income.php model
-            $updateNow = $income->update($data);
-
-            return redirect()->back()->withToastSuccess('Successfully Updated Income!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage())->withInput();
-        }
 
         return back()->withToastError('Cannot Update Income. Please try again')->withInput();
     }
