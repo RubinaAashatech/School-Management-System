@@ -58,21 +58,26 @@ class StaffController extends Controller
         return view('backend.shared.staffs.index', compact('staffs', 'page_title'));
     }
 
-
     public function create()
-    {
-        $page_title = 'Staff Create Form';
-        $departments = Department::all();
-        // $roles = Role::all();
-        $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist'])->get();
-        $states = $this->formService->getProvinces();
-        $adminStateId = Auth::user()->state_id;
-        $adminDistrictId = Auth::user()->district_id;
-        $adminMunicipalityId = Auth::user()->municipality_id;
+{
+    $page_title = 'Staff Create Form';
+    $departments = Department::all();
+    $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist'])->get();
+    $states = $this->formService->getProvinces();
+    $adminStateId = Auth::user()->state_id;
+    $adminDistrictId = Auth::user()->district_id;
+    $adminMunicipalityId = Auth::user()->municipality_id;
+
+    $schoolId = Auth::user()->school_id; 
+
+    return view('backend.shared.staffs.create', compact(
+        'page_title', 'states', 'roles', 'departments',
+        'adminStateId', 'adminMunicipalityId', 'adminDistrictId',
+        'schoolId'
+    ));
+}
 
 
-        return view('backend.shared.staffs.create', compact('page_title', 'states', 'roles', 'departments', 'adminStateId', 'adminMunicipalityId', 'adminDistrictId'));
-    }
 
     // CREATE STAFF
     protected function saveStaff(array $staffInput)
@@ -157,29 +162,11 @@ class StaffController extends Controller
 
             ];
 
-        // If employee_id is not provided, generate it
-
-        if (!$request->filled('employee_id')) {
-            $request->merge(['employee_id'  => $this->generateEmployeeId()]);
-        }
     }
 
     return $request->validate($rules);
   }
 
-        // Function to generate a random employee ID
-
-        private function generateEmployeeId($length = 3)
-        {
-   
-            $chars = '0123456789';
-            $employeeId = '';
-            for ($i = 0; $i < $length; $i++) {
-            $randomIndex = rand(0, strlen($chars) - 1);
-            $employeeId .= $chars[$randomIndex];
-    }
-       return $employeeId;
-    }
 
     protected function saveUserImage($croppedImage)
     {
