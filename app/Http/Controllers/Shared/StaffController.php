@@ -540,16 +540,16 @@ class StaffController extends Controller
 
     public function addLeaveDetails()
     {
-    $page_title = 'Add Leave Details';
+    $leave = 'Add Leave Details';
     $schoolId = session('school_id');
-    return view('backend.shared.staffs.leavedetails', compact('page_title'));
+    return view('backend.shared.staffs.leavedetails', compact('leave'));
     }
 
     public function addResignationDetails()
     {
-        $page_title = "Resignation Details";
+        $resignation = "Resignation Details";
         $schoolId = session('school_id');
-        return view('backend.shared.staffs.resignationdetailsindex', compact('page_title'));
+        return view('backend.shared.staffs.resignationdetails', compact('resignation'));
     }
 
     public function import(Request $request)

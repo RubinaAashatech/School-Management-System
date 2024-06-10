@@ -196,6 +196,12 @@ class SchoolController extends Controller
         }
     }
 
+    public function getSchoolId()
+    {
+        // Assuming you fetch the school ID based on the logged-in user
+        $schoolId = Auth::user()->school_id;
+        return response()->json(['school_id' => $schoolId]);
+    }
 
     /**
      * Show the form for editing the specified resource.

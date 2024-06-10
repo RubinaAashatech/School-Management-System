@@ -17,7 +17,7 @@
                 Staff<i class="fas fa-user-plus"></i></button></a>
     @endcan
 
-    @can('create_staffs_leavedetails',)
+    {{-- @can('create_staffs_leavedetails',)
     <a href="{{ route('admin.staffs.create') }}"><button class="btn btn-block btn-success btn-sm">Add Leave Details
         <i class="fas fa-user-plus"></i></button></a>
         
@@ -26,5 +26,5 @@
     @can('create_staffs_resignation_details',)
     <a href="{{ route('admin.staffs.create') }}"><button class="btn btn-block btn-success btn-sm">Add
             Resignation Details<i class="fas fa-user-plus"></i></button></a>
-   @endcan
+   @endcan --}}
 </div>

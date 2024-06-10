@@ -1008,6 +1008,7 @@
             // Allow the form to be submitted
         });
     });
+
     </script>
 
 @endsection

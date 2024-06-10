@@ -165,6 +165,8 @@ public function ExpensesReportDetails($school_id, $date = null)
 
 }
 
+
+
     public static function getSchoolWiseHeadTeacherLogsDetails($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {
