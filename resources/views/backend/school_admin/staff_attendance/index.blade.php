@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-    </div>
+  
 
 @section('scripts')
     @include('backend.includes.nepalidate')

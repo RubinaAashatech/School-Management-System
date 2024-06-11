@@ -326,6 +326,11 @@ class RolePermissionSeeder extends Seeder
             'edit_students_additionalinformations',
             'delete_students_additionalinformations',
             'list_students_additionalinformations',
+            'create_extracurricular_head',
+            'list_extracurricular_head',
+            'edit_extracurricular_head',
+            'delete_extracurricular_head',
+
 
         ];
 
@@ -571,6 +576,10 @@ class RolePermissionSeeder extends Seeder
             'list_school_groups',
             'edit_school_groups',
             'delete_school_groups',
+            'create_extracurricular_head',
+            'list_extracurricular_head',
+            'edit_extracurricular_head',
+            'delete_extracurricular_head',
 
         ];
 
@@ -661,6 +670,7 @@ class RolePermissionSeeder extends Seeder
             'edit_student_certificates',
             'delete_student_certificates',
             'create_student_certificates',
+            'list_extracurricular_head',
         ];
 
         //define permission for School  Admin
@@ -886,6 +896,7 @@ class RolePermissionSeeder extends Seeder
             'list_inventories',
             'edit_inventories',
             'delete_inventories',
+            'list_extracurricular_head',
 
         ];
 

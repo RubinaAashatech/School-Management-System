@@ -111,4 +111,10 @@ class HeadTeacherLogReportController extends Controller
             'miscellaneous' => $miscellaneous
         ]);
     }
+
+    public function getTotalStudents()
+    {
+        $totalStudents = Student::count();
+        return response()->json(['totalStudents' => $totalStudents]);
+    }
 }
