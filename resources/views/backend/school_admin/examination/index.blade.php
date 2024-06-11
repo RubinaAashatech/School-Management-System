@@ -82,7 +82,7 @@
 
                                     <div class="select">
                                         <select name="exam_type" id="exam_type">
-                                            <option disabled selected>Select School Type</option>
+                                            <option disabled selected>Select Exam Type</option>
                                             <option value="terminal">Terminal</option>
                                             <option value="final">Final</option>
                                         </select>

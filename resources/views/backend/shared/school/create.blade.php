@@ -161,12 +161,33 @@
                                         <div class="form-group col-lg-3 col-md-4 col-sm-6">
                                             <label for="school_code">School Code</label><span class="must"> *</span>
                                             <input type="text" name="school_code" value="{{ old('school_code') }}"
-                                                class="form-control" id="school_code" placeholder="Enter School Code"
+                                                class="form-control" id="school_code_display" placeholder="Enter School Code"
                                                 required>
                                             @error('school_code')
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
                                         </div>
+                                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // When district or municipality is selected, fetch the school code
+    $('#district_id, #municipality_id').change(function() {
+        var districtId = $('#district_id').val();
+        var municipalityId = $('#municipality_id').val();
+        
+        // AJAX request to fetch the school code
+        $.ajax({
+            url: '/generate-school-code',
+            type: 'GET',
+            data: {district_id: districtId, municipality_id: municipalityId},
+            success: function(response) {
+                $('#school_code_display').text(response.school_code);
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    });
+</script>
 
 
                                         <div class="form-group col-lg-3 col-md-4 col-sm-6">

@@ -31,68 +31,52 @@ class StaffAttendanceController extends Controller
 
         return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types'));
     }
-
     public function saveAttendance(Request $request)
     {
         try {
             $attendanceData = $request->input('attendance_data');
-
             $staticSchoolId = session('school_id');
+    
             foreach ($attendanceData as $data) {
                 $staffId = $data['staff_id'];
-
-                if (!isset($data['attendance_type_id'])) {
-                    return response()->json(['message' => 'Attendance type ID is required.'], 400);
-                }
                 $attendanceType = $data['attendance_type_id'];
-                if (!isset($data['date'])) {
-                    $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
-                }
-
-                $remarks = $data['remarks'];
+                $date = $data['date'] ?? now()->format('Y-m-d');
+                $remarks = $data['remarks'] ?? '';
+    
                 $staff = Staff::find($staffId);
-                if (!is_null($staff)) {
+                if ($staff) {
                     $userId = $staff->user_id;
-
-                    if ($userId) {
-                        $staffRole = $staff->role;
-                        $existingAttendance = StaffAttendance::where('date', $date)
-                            ->where('staff_id', $staffId)
-                            ->first();
-
-                        if ($existingAttendance) {
-
-                            $existingAttendance->attendance_type_id = $attendanceType;
-                            $existingAttendance->remarks = $remarks;
-                            $existingAttendance->save();
-                        } else {
-
-                            $newAttendance = new StaffAttendance();
-                            $newAttendance->attendance_type_id = $attendanceType;
-                            $newAttendance->date = $date;
-                            $newAttendance->remarks = $remarks;
-                            $newAttendance->school_id = $staticSchoolId;
-                            $newAttendance->staff_id = $staffId;
-                            $newAttendance->role = $staffRole;
-                            $newAttendance->save();
-                        }
+                    $staffRole = $staff->role;
+    
+                    $existingAttendance = StaffAttendance::where('date', $date)
+                        ->where('staff_id', $staffId)
+                        ->first();
+    
+                    if ($existingAttendance) {
+                        $existingAttendance->attendance_type_id = $attendanceType;
+                        $existingAttendance->remarks = $remarks;
+                        $existingAttendance->save();
                     } else {
-
-                        return response()->json(['message' => 'No active staff session found for the given user and date.'], 404);
+                        $newAttendance = new StaffAttendance();
+                        $newAttendance->attendance_type_id = $attendanceType;
+                        $newAttendance->date = $date;
+                        $newAttendance->remarks = $remarks;
+                        $newAttendance->school_id = $staticSchoolId;
+                        $newAttendance->staff_id = $staffId;
+                        $newAttendance->role = $staffRole;
+                        $newAttendance->save();
                     }
                 } else {
-
                     return response()->json(['message' => 'No staff found for the given ID'], 404);
                 }
             }
-
+    
             return back()->withToastSuccess('Attendance saved successfully');
         } catch (\Exception $e) {
-
-            return back()->withToastError('Error saving attendance: ' . $e->getMessage());
+            return back()->withToastError('Error saving staff attendance: ' . $e->getMessage());
         }
     }
-
+    
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [

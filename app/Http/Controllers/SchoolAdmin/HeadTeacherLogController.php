@@ -36,10 +36,11 @@ class HeadTeacherLogController extends Controller
     {
         // dd($request->all());
         $validatedData = Validator::make($request->all(), [
-            'major_incidents' => 'required|string',
-            'major_work_observation' => 'required|string',
-            'assembly_management' => 'required|string',
-            'logged_date' => 'required|string',
+            'major_incidents' => 'nullable|string',
+            'major_work_observation' => 'nullable|string',
+            'assembly_management' => 'nullable|string',
+            'miscellaneous' => 'nullable|string', 
+            'logged_date' => 'nullable|string',
         ]);
 
         if ($validatedData->fails()) {
@@ -79,10 +80,11 @@ class HeadTeacherLogController extends Controller
     public function update(Request $request, string $id)
     {
         $validatedData = Validator::make($request->all(), [
-            'major_incidents' => 'required|string',
-            'major_work_observation' => 'required|string',
-            'assembly_management' => 'required|string',
-            'logged_date' => 'required|string',
+            'major_incidents' => 'nullable|string',
+            'major_work_observation' => 'nullable|string',
+            'assembly_management' => 'nullable|string',
+            'miscellaneous' => 'nullable|string', 
+            'logged_date' => 'nullable|string',
         ]);
 
         if ($validatedData->fails()) {
