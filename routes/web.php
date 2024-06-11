@@ -7,12 +7,22 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\InclusiveQuotasController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 
 Auth::routes();
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// routes/web.php
+
+
+
+
+Route::get('change-password', [ChangePasswordController::class, 'showChangePasswordForm'])->name('password.change');
+Route::post('change-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+
 
 
 // Route::prefix('/admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
