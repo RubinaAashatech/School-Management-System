@@ -896,7 +896,9 @@ class RolePermissionSeeder extends Seeder
             'list_inventories',
             'edit_inventories',
             'delete_inventories',
+
             'list_extracurricular_head',
+
 
         ];
 

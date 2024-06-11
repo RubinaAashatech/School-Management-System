@@ -200,7 +200,7 @@
                                             <form id="employee-form" method="POST" action="/your-form-action">
                                                 <div class="form-group col-lg-3 col-sm-3 mt-2">
                                                     <label for="employee_id">Employee Id: <span class="must">*</span></label>
-                                                    <input type="text" name="employee_id" class="form-control" id="employee_id" placeholder="Enter Employee Id">
+                                                    <input type="text" name="employee_id" class="form-control" id="employee_id" placeholder="Enter Employee Id" >
                                                     @error('employee_id')
                                                         <strong class="text-danger">{{ $message }}</strong>
                                                     @enderror
@@ -983,32 +983,55 @@
             }
         });
 
-       // Function to generate a random employee ID
-
-        function generateEmployeeId() {
-        const length = 2; // Adjust the length as needed
-        const chars = '0123456789';
-        let employeeId = '';
+     // Function to generate a random 3-digit number
+  function generateRandomNumber() {
+        const length = 3;
+        const chars = '123456789';
+        let randomNumber = '';
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * chars.length);
-            employeeId += chars[randomIndex];
+            randomNumber += chars[randomIndex];
         }
-        return employeeId;
+        return randomNumber;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('employee-form');
-        const employeeIdInput = document.getElementById('employee_id');
-        const submitButton = document.getElementById('submit-btn');
+    // Function to generate the employee id based on municipality ID and school ID
+    function generateEmployeeId(municipalityId, schoolId) {
+        const randomNumber = generateRandomNumber();
+        return `${municipalityId}${schoolId}${randomNumber}`;
+    }
 
-        submitButton.addEventListener('click', function (event) {
-            if (!employeeIdInput.value.trim()) {
-                employeeIdInput.value = generateEmployeeId();
-            }
-            // Allow the form to be submitted
-        });
+    // Set the generated employee id to the input field
+    function updateEmployeeId() {
+        const employeeIdInput = document.getElementById('employee_id');
+        const municipalityId = document.getElementById('municipalitiy_id').value;
+        const schoolId = "{{ $schoolId }}"; // Retrieve school ID from the Blade template
+        if (employeeIdInput) {
+            employeeIdInput.value = generateEmployeeId(municipalityId, schoolId);
+        }
+    }
+
+    // Event listener for DOM content loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Update employee id on page load if not set
+        const employeeIdInput = document.getElementById('employee_id');
+        if (employeeIdInput && !employeeIdInput.value) {
+            updateEmployeeId();
+        }
+
+        // Update employee id when municipality selection changes
+        const municipalitySelect = document.getElementById('municipalitiy_id');
+        if (municipalitySelect) {
+            municipalitySelect.addEventListener('change', updateEmployeeId);
+        }
     });
 
-    </script>
+
+</script>
+
+
+
 
 @endsection
+
+
