@@ -78,7 +78,10 @@ class StaffController extends Controller
 }
 
 
-
+public function show($id)
+{
+    
+}
     // CREATE STAFF
     protected function saveStaff(array $staffInput)
     {
