@@ -10,7 +10,6 @@
             </div>
         </div>
     </div>
-    
     <div class="card">
         <div class="card-body">
             <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -41,3 +40,12 @@
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
                                         </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endsection

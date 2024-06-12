@@ -9,7 +9,7 @@ Route::get('/get-district-by-state/{state_id}', [StaffController::class, 'getDis
 Route::get('staffs-import/index', [StaffController::class, 'importStaffs'])->name('staffs_import.import');
 Route::post('staffs-import/import', [StaffController::class, 'import'])->name('staffs_import.bulkimport');
 
-Route::get('staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('staffs.leavedetails');
+Route::get('admin/staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('staffs.leavedetails');
 
-Route::get('staffs/resignationdetails', [StaffController::class, 'addResignationDetails'])->name('staffs.resignationdetails');
+Route::get('admin/staffs/resignationdetails', [StaffController::class, 'addResignationDetails'])->name('staffs.resignationdetails');
 
