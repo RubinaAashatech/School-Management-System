@@ -330,6 +330,22 @@ public function show($id)
         }
     }
 
+    public function resignationstore(Request $request)
+    {
+        $validatedData = $request->validate([
+            'staff_id' => 'required|exists:staffs,id',
+            'resignation_letter' => 'required|string',
+            //'note' => 'nullable|string',
+        ]);
+    
+        $staff = Staff::findOrFail($validatedData['staff_id']);
+        $staff->resignation_letter = $validatedData['resignation_letter'];
+        //$staff->note = $validatedData['note']; 
+        $staff->save();
+    
+        return redirect()->route('admin.staffs.index')->with('success', 'Staff resignation added successfully.');
+    }
+
     public function edit(string $id)
     {
         try {
@@ -537,14 +553,15 @@ public function show($id)
         return view('backend.shared.staffs.leavedetails', compact('leave', 'type', 'staffId'));
     }
     
-    
 
-    public function addResignationDetails()
+    public function addResignationDetails(Request $request)
     {
         $page_title = 'Add Resignation Details';
         $resignation = "Resignation Details";
         $schoolId = session('school_id');
-        return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title'));
+        $type= $request->query('type');
+        $staffId= $request->query('staff_id');
+        return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title','type','staffId'));
     }
 
     public function import(Request $request)
