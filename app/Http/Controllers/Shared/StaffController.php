@@ -528,12 +528,16 @@ public function show($id)
         return view('backend.shared.staffs.importindex', compact('page_title'));
     }
 
-    public function addLeaveDetails()
+    public function addLeaveDetails(Request $request)
     {
-    $leave = 'Add Leave Details';
-    $schoolId = session('school_id');
-    return view('backend.shared.staffs.leavedetails', compact('leave'));
+        $leave = 'Add Leave Details';
+        $schoolId = session('school_id');
+        $type = $request->query('type');
+        $staffId = $request->query('staff_id');
+    
+        return view('backend.shared.staffs.leavedetails', compact('leave', 'type', 'staffId'));
     }
+    
 
     public function addResignationDetails()
     {

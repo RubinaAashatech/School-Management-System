@@ -32,7 +32,7 @@
 @endcan
 
 @can('create_staffs_leavedetails')
-<a href="{{ route('admin.staffs.create', ['type' => 'leave', 'staff_id' => $staff->id]) }}" class="btn btn-outline-success btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Leave Details">
+<a href="{{ route('admin.staffs.leavedetails', ['type' => 'leave', 'staff_id' => $staff->id]) }}" class="btn btn-outline-success btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Leave Details">
     <i class="fas fa-user-plus"></i>
 </a>
 @endcan

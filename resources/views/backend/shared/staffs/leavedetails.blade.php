@@ -6,7 +6,7 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                <h2>{{ $leave }}</h2>
             </div>
             @include('backend.shared.staffs.partials.action')
         </div>

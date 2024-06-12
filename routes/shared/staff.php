@@ -11,5 +11,5 @@ Route::post('staffs-import/import', [StaffController::class, 'import'])->name('s
 
 Route::get('staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('staffs.leavedetails');
 
-    Route::get('staffs/resignationdetails', [StaffController::class, 'addResignationDetails'])->name('staffs.resignationdetails');
-});
+Route::get('staffs/resignationdetails', [StaffController::class, 'addResignationDetails'])->name('staffs.resignationdetails');
+
