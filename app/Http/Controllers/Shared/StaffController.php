@@ -78,7 +78,10 @@ class StaffController extends Controller
 }
 
 
-
+public function show($id)
+{
+    
+}
     // CREATE STAFF
     protected function saveStaff(array $staffInput)
     {
@@ -455,7 +458,7 @@ class StaffController extends Controller
                 return $row->l_name;
             })
             ->editColumn('marital_status', function ($row) {
-                return $row->marital_status == 1 ? '<span class="">Married</span>' : '<span class="">Unmarried</span>';
+                return $row->marital_status ; 
             })
             ->editColumn('date_of_joining', function ($row) {
                 return $row->date_of_joining;
@@ -541,20 +544,26 @@ class StaffController extends Controller
 
     public function import(Request $request)
     {
-        // $roles = Department::pluck('name');
-        // dd($roles);
         try {
             // Begin a database transaction
             DB::beginTransaction();
             $array1 = Excel::toCollection(new CombinedImport, $request->file('file'));
+    
             // Access the outer collection
             foreach ($array1 as $outerCollection) {
                 // Iterate through the inner collections
-                // dd($outerCollection);
                 foreach ($outerCollection as $row) {
-
-                    $validator = Validator::make($row->toArray(), [
-
+    
+                    $data = $row->toArray();
+    
+                    // Ensure 'marital_status' key exists and standardize its value
+                    if (!array_key_exists('marital_status', $data)) {
+                        $data['marital_status'] = null;
+                    } else {
+                        $data['marital_status'] = trim(strtolower($data['marital_status']));
+                    }
+    
+                    $validator = Validator::make($data, [
                         'state_id' => 'required',
                         'district_id' => 'required',
                         'municipality_id' => 'required',
@@ -571,77 +580,78 @@ class StaffController extends Controller
                         'contract_type' => 'required',
                         'emergency_contact_person' => 'required',
                         'emergency_contact_phone' => 'required',
-
+                        'marital_status' => 'nullable', // Allow marital_status to be nullable
                     ]);
-
+    
                     if ($validator->fails()) {
                         // Redirect back with validation errors
                         return redirect()->back()->withErrors($validator)->withInput();
                     }
-
-                    //extracting role id from name
-                    $role_id = $this->roleIdentification($row['role']);
+    
+                    // Extract role id from name
+                    $role_id = $this->roleIdentification($data['role']);
                     if ($role_id == null) {
-                        return redirect()->back()->withErrors('Invalid Role name of : ' . $row['f_name'])->withInput();
+                        return redirect()->back()->withErrors('Invalid Role name of : ' . $data['f_name'])->withInput();
                     }
-                    //extracting department id from name
-                    $department_id = $this->departmentIdentification($row['department']);
+    
+                    // Extract department id from name
+                    $department_id = $this->departmentIdentification($data['department']);
                     if ($department_id == null) {
-                        return redirect()->back()->withErrors('Invalid Department name of : ' . $row['f_name'])->withInput();
+                        return redirect()->back()->withErrors('Invalid Department name of : ' . $data['f_name'])->withInput();
                     }
-                    $marriedId = $this->maritialStatus($row['marital_status']);
-                    if ($marriedId == null && $marriedId != 0) {
-                        return redirect()->back()->withErrors('Invalid Marital Status of : ' . $row['f_name'])->withInput();
+    
+                    $marriedId = $this->maritialStatus($data['marital_status']);
+                    if ($marriedId === null && $data['marital_status'] !== null) {
+                        return redirect()->back()->withErrors('Invalid Marital Status of : ' . $data['f_name'])->withInput();
                     }
-
+    
                     $staffUser = User::create([
                         'user_type_id' => 6,
                         'role_id' => $role_id,
                         'school_id' => session('school_id'),
-                        'state_id' => $row['state_id'],
-                        'district_id' => $row['district_id'],
-                        'municipality_id' => $row['municipality_id'],
-                        'ward_id' => $row['ward_id'],
-                        'f_name' => $row['f_name'],
-                        'm_name' => $row['m_name'],
-                        'l_name' => $row['l_name'],
-                        'email' => $row['email'],
-                        'local_address' => $row['local_address'] ?? null,
-                        'permanent_address' => $row['permanent_address'] ?? null,
+                        'state_id' => $data['state_id'],
+                        'district_id' => $data['district_id'],
+                        'municipality_id' => $data['municipality_id'],
+                        'ward_id' => $data['ward_id'],
+                        'f_name' => $data['f_name'],
+                        'm_name' => $data['m_name'] ?? null,
+                        'l_name' => $data['l_name'],
+                        'email' => $data['email'],
+                        'local_address' => $data['local_address'] ?? null,
+                        'permanent_address' => $data['permanent_address'] ?? null,
                         'password' => bcrypt('password'),
-                        'gender' => $row['gender'],
-                        'religion' => $row['religion'] ?? null,
-                        'dob' => $row['dob'] ?? null,
-                        'blood_group' => $row['blood_group'] ?? null,
-                        'father_name' => $row['father_name'] ?? null,
-                        'father_phone' => $row['father_phone'] ?? null,
-                        'mother_name' => $row['mother_name'] ?? null,
-                        'mother_phone' => $row['mother_phone'] ?? null,
-                        'emergency_contact_person' => $row['emergency_contact_person'] ?? null,
-                        'emergency_contact_phone' => $row['emergency_contact_phone'] ?? null,
+                        'gender' => $data['gender'],
+                        'religion' => $data['religion'] ?? null,
+                        'dob' => $data['dob'] ?? null,
+                        'blood_group' => $data['blood_group'] ?? null,
+                        'father_name' => $data['father_name'] ?? null,
+                        'father_phone' => $data['father_phone'] ?? null,
+                        'mother_name' => $data['mother_name'] ?? null,
+                        'mother_phone' => $data['mother_phone'] ?? null,
+                        'emergency_contact_person' => $data['emergency_contact_person'],
+                        'emergency_contact_phone' => $data['emergency_contact_phone'],
                     ]);
+    
                     // CREATE staff
-
                     $studentCreate = Staff::create([
                         'user_id' => $staffUser->id,
                         'school_id' => session('school_id'),
-                        'employee_id' => $row['employee_id'] ?? null,
+                        'employee_id' => $data['employee_id'],
                         'department_id' => $department_id,
-                        'qualification' => $row['qualification'] ?? null,
-                        'work_experience' => $row['work_experience'] ?? null,
+                        'qualification' => $data['qualification'] ?? null,
+                        'work_experience' => $data['work_experience'] ?? null,
                         'marital_status' => $marriedId,
-                        'date_of_joining' => $row['date_of_joining'] ?? null,
-                        'payscale' => $row['payscale'] ?? null,
-                        'basic_salary' => $row['basic_salary'] ?? null,
-                        'contract_type' => $row['contract_type'] ?? null,
-                        'shift' => $row['shift'],
-                        'medical_leave' => $row['medical_leave'] ?? null,
-                        'casual_leave' => $row['casual_leave'] ?? null,
-                        'maternity_leave' => $row['maternity_leave'] ?? null,
+                        'date_of_joining' => $data['date_of_joining'] ?? null,
+                        'payscale' => $data['payscale'] ?? null,
+                        'basic_salary' => $data['basic_salary'] ?? null,
+                        'contract_type' => $data['contract_type'],
+                        'shift' => $data['shift'],
+                        'medical_leave' => $data['medical_leave'] ?? null,
+                        'casual_leave' => $data['casual_leave'] ?? null,
+                        'maternity_leave' => $data['maternity_leave'] ?? null,
                         'role' => $role_id,
                     ]);
                 }
-                // dd("he");
             }
             DB::commit();
             return back()->with('success', 'Data has been uploaded');
@@ -650,6 +660,7 @@ class StaffController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+    
 
     public function roleIdentification($role_name)
     {
@@ -715,30 +726,27 @@ class StaffController extends Controller
     }
     public function maritialStatus($status)
     {
-        echo $status;
-        $maritalStatus = null;
-        switch ($status) {
-            case "Married":
-                $maritalStatus = 1;
-                break;
-            case "Unmarried":
-                $maritalStatus = 0;
-                break;
-            case "Devorced":
-                $maritalStatus = 2;
-                break;
-            case "Widow":
-                $maritalStatus = 3;
-                break;
-            case "Separeted":
-                $maritalStatus = 4;
-                break;
-            default:
-                $maritalStatus = null;
-        }
-        echo ($maritalStatus);
+        // Trim whitespace and convert to lowercase for standardization
+        $status = trim(strtolower($status));
+    
+        // Define possible statuses in an associative array
+        $statuses = [
+            'married' => 1,
+            'unmarried' => 0,
+            'divorced' => 2,
+            'widow' => 3,
+            'separated' => 4,  // Corrected spelling from 'separeted'
+        ];
+    
+        // Check if the status exists in the array and return the corresponding value
+        $maritalStatus = $statuses[$status] ?? null;
+    
+        echo $status; // Debugging: print the standardized status
+        echo ($maritalStatus); // Debugging: print the marital status id
+    
         return $maritalStatus;
     }
+    
 
 
 }

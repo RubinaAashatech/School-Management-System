@@ -27,7 +27,7 @@
                                                 <th>Id</th>
                                                 <th>First Name</th>
                                                 <th>Last Name</th>
-                                                <th>Maritial Status</th>
+                                                {{-- <th>Maritial Status</th> --}}
                                                 <th>Date Of Joining</th>
                                                 {{-- <th>Date of leaving</th> --}}
                                                 {{-- <th>Payscale</th> --}}
@@ -90,10 +90,11 @@
                         data: 'l_name',
                         name: 'l_name'
                     },
+                    // {
+                    //     data: 'marital_status',
+                    //     name: 'marital_status'
+                    // }, 
                     {
-                        data: 'marital_status',
-                        name: 'marital_status'
-                    }, {
                         data: 'date_of_joining',
                         name: 'date_of_joining'
                     },

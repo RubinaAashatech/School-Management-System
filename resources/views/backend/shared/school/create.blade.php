@@ -167,7 +167,6 @@
                                                 <strong class="text-danger">{{ $message }}</strong>
                                             @enderror
                                         </div>
-                                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
                                         <div class="form-group col-lg-3 col-md-4 col-sm-6">
                                             <label for="head_teacher">Head Teacher</label><span class="must"> *</span>
