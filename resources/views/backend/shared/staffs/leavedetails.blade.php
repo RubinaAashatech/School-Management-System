@@ -18,13 +18,17 @@
                             <div class="box box-info" style="padding:5px;">
                                 <div class="box-header with-border">
                                     <div class="pull-right box-tools">
-                                        <a class="btn btn-primary btn-sm"></a>
+                                        <!-- Removed unnecessary button -->
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12">
-                                    <form action="{{ route('admin.staffs.store') }}" id="employeeform"
+                                    <form action="{{ route('admin.staffs.leavedetails.store') }}" id="employeeform"
                                         name="employeeform" method="post" enctype="multipart/form-data">
                                         @csrf
+                                        <div class="form-group">
+                                            <label for="staff_id">Staff ID</label>
+                                            <input type="text" name="staff_id" id="staff_id" class="form-control" value="{{ $staffId }}" readonly>
+                                        </div>
                                         <div class="hr-line-dashed"></div>
                                         <h5>Leave Detail:</h5>
                                         <div class="hr-line-dashed"></div>
@@ -33,7 +37,7 @@
                                                 <label for="medical_leave">Medical Leave</label>
                                                 <input type="text" name="medical_leave"
                                                     value="{{ old('medical_leave') }}" class="form-control"
-                                                    id="medical_leave" placeholder="Enter medical_leave" required>
+                                                    id="medical_leave" placeholder="Enter medical leave" required>
                                                 @error('medical_leave')
                                                     <strong class="text-danger">{{ $message }}</strong>
                                                 @enderror
@@ -41,11 +45,14 @@
                                             <div class="form-group col-lg-4 col-sm-4">
                                                 <label for="casual_leave">Casual Leave</label>
                                                 <input type="text" name="casual_leave" value="{{ old('casual_leave') }}"
-                                                    class="form-control" id="casual_leave" placeholder="Enter casual_leave" required>
+                                                    class="form-control" id="casual_leave" placeholder="Enter casual leave" required>
                                                 @error('casual_leave')
                                                     <strong class="text-danger">{{ $message }}</strong>
                                                 @enderror
                                             </div>
+                                        </div>
+                                        <div class="pull-right box-tools">
+                                            <input type="submit" class="btn btn-primary btn-sm" value="Submit">
                                         </div>
                                     </form>
                                 </div>
@@ -56,4 +63,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Assuming you have a JavaScript function to automatically fill the staff_id field
+        function fillStaffId() {
+            var staffId = "{{ $staffId }}"; // Get the staff ID from PHP variable
+            document.getElementById('staff_id').value = staffId;
+        }
+    
+        // Assuming you have some event (e.g., onchange) to trigger the function
+        document.addEventListener('DOMContentLoaded', function() {
+            fillStaffId(); // Automatically fill the staff_id field when the page loads
+        });
+    </script>
 @endsection

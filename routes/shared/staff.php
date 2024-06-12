@@ -10,6 +10,7 @@ Route::get('staffs-import/index', [StaffController::class, 'importStaffs'])->nam
 Route::post('staffs-import/import', [StaffController::class, 'import'])->name('staffs_import.bulkimport');
 
 Route::get('admin/staffs/leavedetails', [StaffController::class, 'addLeaveDetails'])->name('staffs.leavedetails');
+Route::post('admin/staffs/leavedetails/store', [StaffController::class, 'storeLeaveDetails'])->name('staffs.leavedetails.store');
 
 Route::get('admin/staffs/resignationdetails', [StaffController::class, 'addResignationDetails'])->name('staffs.resignationdetails');
 Route::post('admin/staffs/resignationdetails/store', [StaffController::class, 'resignationstore'])->name('staffs.resignation.store');

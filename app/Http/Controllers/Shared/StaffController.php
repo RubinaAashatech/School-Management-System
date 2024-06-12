@@ -552,6 +552,28 @@ public function show($id)
         
         return view('backend.shared.staffs.leavedetails', compact('leave', 'type', 'staffId'));
     }
+
+    public function storeLeaveDetails(Request $request)
+    {
+        $validatedData = $request->validate([
+            'medical_leave' => 'required|string',
+            'casual_leave' => 'required|string',
+            'staff_id' => 'required|exists:staffs,id',
+        ]);
+
+        // Find the staff member by ID
+        $staff = Staff::findOrFail($validatedData['staff_id']);
+
+        // Update the staff member's leave details
+        $staff->medical_leave = $validatedData['medical_leave'];
+        $staff->casual_leave = $validatedData['casual_leave'];
+        $staff->save();
+
+        return redirect()->route('admin.staffs.index')->with('success', 'Leave details added successfully.');
+    }
+
+
+    
     
 
     public function addResignationDetails(Request $request)
@@ -562,6 +584,20 @@ public function show($id)
         $type= $request->query('type');
         $staffId= $request->query('staff_id');
         return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title','type','staffId'));
+    }
+
+    public function resignationstore(Request $request)
+    {
+        $validatedData = $request->validate([
+            'staff_id' => 'required|exists:staffs,id',
+            'resignation_letter' => 'required|string',
+            //'note' => 'nullable|string',
+        ]);
+        $staff = Staff::findOrFail($validatedData['staff_id']);
+        $staff->resignation_letter = $validatedData['resignation_letter'];
+        //$staff->note = $validatedData['note'];
+        $staff->save();
+        return redirect()->route('admin.staffs.index')->with('success', 'Staff resignation added successfully.');
     }
 
     public function import(Request $request)
