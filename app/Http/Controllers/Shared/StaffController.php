@@ -58,21 +58,26 @@ class StaffController extends Controller
         return view('backend.shared.staffs.index', compact('staffs', 'page_title'));
     }
 
-
     public function create()
-    {
-        $page_title = 'Staff Create Form';
-        $departments = Department::all();
-        // $roles = Role::all();
-        $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist'])->get();
-        $states = $this->formService->getProvinces();
-        $adminStateId = Auth::user()->state_id;
-        $adminDistrictId = Auth::user()->district_id;
-        $adminMunicipalityId = Auth::user()->municipality_id;
+{
+    $page_title = 'Staff Create Form';
+    $departments = Department::all();
+    $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist'])->get();
+    $states = $this->formService->getProvinces();
+    $adminStateId = Auth::user()->state_id;
+    $adminDistrictId = Auth::user()->district_id;
+    $adminMunicipalityId = Auth::user()->municipality_id;
+
+    $schoolId = Auth::user()->school_id; 
+
+    return view('backend.shared.staffs.create', compact(
+        'page_title', 'states', 'roles', 'departments',
+        'adminStateId', 'adminMunicipalityId', 'adminDistrictId',
+        'schoolId'
+    ));
+}
 
 
-        return view('backend.shared.staffs.create', compact('page_title', 'states', 'roles', 'departments', 'adminStateId', 'adminMunicipalityId', 'adminDistrictId'));
-    }
 
     // CREATE STAFF
     protected function saveStaff(array $staffInput)
@@ -114,7 +119,7 @@ class StaffController extends Controller
             'emergency_contact_person' => 'nullable',
             'emergency_contact_phone' => 'nullable',
             'username' => 'nullable',
-            'employee_id' => 'required',
+            'employee_id' => 'nullable',
             // 'password' => 'required',
             'facebook' => 'nullable',
             'twitter' => 'nullable',
@@ -156,10 +161,11 @@ class StaffController extends Controller
                 // 'other_document' => 'nullable|string',
 
             ];
-        }
 
-        return $request->validate($rules);
     }
+
+    return $request->validate($rules);
+  }
 
 
     protected function saveUserImage($croppedImage)
@@ -517,6 +523,20 @@ class StaffController extends Controller
         $page_title = "Import Staff";
         $schoolId = session('school_id');
         return view('backend.shared.staffs.importindex', compact('page_title'));
+    }
+
+    public function addLeaveDetails()
+    {
+    $leave = 'Add Leave Details';
+    $schoolId = session('school_id');
+    return view('backend.shared.staffs.leavedetails', compact('leave'));
+    }
+
+    public function addResignationDetails()
+    {
+        $resignation = "Resignation Details";
+        $schoolId = session('school_id');
+        return view('backend.shared.staffs.resignationdetails', compact('resignation'));
     }
 
     public function import(Request $request)

@@ -20,3 +20,4 @@ Route::get('/get-district-by-state/{state_id}', [StudentController::class, 'getD
 Route::get('student/import/index', [StudentController::class, 'importAllStudentIndex'])->name('students.import');
 
 Route::post('/import', [StudentController::class, 'import'])->name('students.bulkimport');
+

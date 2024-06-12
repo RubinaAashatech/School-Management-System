@@ -9,4 +9,4 @@ Route::get('/get-district-by-state/{state_id}', [SchoolController::class, 'getDi
 Route::get('/get-municipality-by-district/{district_id}', [SchoolController::class, 'getMunicipality'])->name('get-municipalities');
 Route::get('/get-ward-by-municipality/{municipality_id}', [SchoolController::class, 'getWard'])->name('get-wards');
 
-
+Route::get('/get-school-id/{municipalityId}', [SchoolController::class, 'getSchoolId'])->name('get-schoolId');

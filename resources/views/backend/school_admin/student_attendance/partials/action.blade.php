@@ -5,6 +5,7 @@
         <a href="{{ route('admin.student-attendances.index') }}"><button class="btn-info btn-sm">All List <i
                     class="fa fa-list"></i></button></a>
     @endcan
+    
     {{-- @can('create_student_attendances')
         <a href="#">
             <button type="button" class="btn btn-block btn-success btn-sm" data-bs-toggle="modal"

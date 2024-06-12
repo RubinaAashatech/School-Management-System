@@ -35,14 +35,16 @@
                                     <h5 class="">Student's Admission Information</h5>
                                     <div class="hr-line-dashed"></div>
                                     <div class="col-md-12 col-lg-12 d-flex justify-content-between">
-                                        <div class=" col-lg-3 col-sm-3">
-                                            <label for="admission_no"> Admission Number:</label>
-                                            <input type="text" name="admission_no" value="{{ old('admission_no') }}"
-                                                class="form-control" id="admission_no" placeholder="Enter Admission Number">
-                                            @error('admission_no')
-                                                <strong class="text-danger">{{ $message }}</strong>
-                                            @enderror
-                                        </div>
+                                    <div class="col-lg-3 col-sm-3">
+                                    <label for="admission_no">Admission Number:</label>
+                                    <input type="text" name="admission_no" value="{{ old('admission_no') }}" class="form-control" id="admission_no" placeholder="Enter Admission Number">
+                                    @error('admission_no')
+                                    <strong class="text-danger">{{ $message }}</strong>
+                                 @enderror
+                              </div>
+                          
+                                  
+
                                         {{-- <div class=" col-lg-3 col-sm-3">
                                             <label for="admission_date"> Admission Date:</label>
                                             <input type="text" name="admission_date" value="{{ old('admission_date') }}"
@@ -155,16 +157,13 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-md-6 col-lg-6 pt-4 pb-4 d-flex  gap-3">
-                                            <div class="">
+                                        <div class="col-md-6 col-lg-6 pt-4 pb-4 d-flex gap-3">
+                                            <div>
                                                 <label for="municipalitiy_id">Choose Municipality</label>
-
                                                 <div class="select">
-
-                                                    <select id="municipalitiy_id" name="municipality_id" data-iteration="0"
-                                                        class="municipality_id" required>
-                                                        <option value="{{ $adminMunicipalityId }}" selected>
-                                                            {{ Auth::user()->municipality->name }}</option>
+                                                    <select id="municipalitiy_id" name="municipality_id" data-iteration="0" class="municipality_id" required>
+                                                        <option value="{{ $adminMunicipalityId }}" selected>{{ Auth::user()->municipality->name }}</option>
+                                                        <!-- Add other municipality options here -->
                                                     </select>
                                                 </div>
                                                 @error('municipalitiy_id')
@@ -173,6 +172,7 @@
                                                     </span>
                                                 @enderror
                                             </div>
+                                        
                                             <div class="">
                                                 <label for="ward_id">Choose Ward</label>
                                                 <div class="select">
@@ -649,6 +649,8 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                
 
                                 {{-- <div class="tab">
                                     <div class="col-lg-12 col-md-12">
@@ -1199,7 +1201,54 @@
                 loadDistricts(preselectedStateId, preselectedDistrictId);
             }
         });
-    </script>
+
+  // Function to generate a random 3-digit number
+  function generateRandomNumber() {
+        const length = 3;
+        const chars = '123456789';
+        let randomNumber = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            randomNumber += chars[randomIndex];
+        }
+        return randomNumber;
+    }
+
+    // Function to generate the admission number based on municipality ID and school ID
+    function generateAdmissionNumber(municipalityId, schoolId) {
+        const randomNumber = generateRandomNumber();
+        return `${municipalityId}${schoolId}${randomNumber}`;
+    }
+
+    // Set the generated admission number to the input field
+    function updateAdmissionNumber() {
+        const admissionNoInput = document.getElementById('admission_no');
+        const municipalityId = document.getElementById('municipalitiy_id').value;
+        const schoolId = "{{ $adminSchoolId }}"; // Retrieve school ID from the Blade template
+        if (admissionNoInput) {
+            admissionNoInput.value = generateAdmissionNumber(municipalityId, schoolId);
+        }
+    }
+
+    // Event listener for DOM content loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Update admission number on page load if not set
+        const admissionNoInput = document.getElementById('admission_no');
+        if (admissionNoInput && !admissionNoInput.value) {
+            updateAdmissionNumber();
+        }
+
+        // Update admission number when municipality selection changes
+        const municipalitySelect = document.getElementById('municipalitiy_id');
+        if (municipalitySelect) {
+            municipalitySelect.addEventListener('change', updateAdmissionNumber);
+        }
+    });
+
+
+</script>
+
+    
 
     <script>
         function toggleGuardianFields() {

@@ -29,7 +29,7 @@
                                                 <th>Last Name</th>
                                                 <th>Maritial Status</th>
                                                 <th>Date Of Joining</th>
-                                                <th>Date of leaving</th>
+                                                {{-- <th>Date of leaving</th> --}}
                                                 {{-- <th>Payscale</th> --}}
                                                 {{-- <th>Basic Salary</th> --}}
                                                 <th>Contract Type</th>
@@ -40,7 +40,7 @@
                                                 {{-- <th>Resignation Letter</th> --}}
                                                 {{-- <th>Medical Leave</th> --}}
                                                 {{-- <th>Casual Leave</th> --}}
-                                                <th>Maternity Leave</th>
+                                                {{-- <th>Maternity Leave</th> --}}
                                                 <th>Other Document</th>
                                                 <th>Status</th>
 
@@ -96,10 +96,11 @@
                     }, {
                         data: 'date_of_joining',
                         name: 'date_of_joining'
-                    }, {
-                        data: 'date_of_leaving',
-                        name: 'date_of_leaving'
                     },
+                    // {
+                    //     data: 'date_of_leaving',
+                    //     name: 'date_of_leaving'
+                    // },
                     //  {
                     //     data: 'payscale',
                     //     name: 'payscale'
@@ -139,10 +140,10 @@
                     //     data: 'casual_leave',
                     //     name: 'casual_leave'
                     // },
-                    {
-                        data: 'maternity_leave',
-                        name: 'maternity_leave'
-                    },
+                    // {
+                    //     data: 'maternity_leave',
+                    //     name: 'maternity_leave'
+                    // },
                     {
                         data: 'other_document',
                         name: 'other_document'

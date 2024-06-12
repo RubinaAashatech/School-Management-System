@@ -229,9 +229,6 @@
                         },
                         success: function(response) {
 
-                        // Handle the success response
-                        alert('Holiday marked successfully!');
-
                         // Check all holiday radio buttons
                         $('input[type="radio"][value="4"]').prop('checked', true);
 

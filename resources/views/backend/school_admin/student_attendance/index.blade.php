@@ -329,10 +329,6 @@
                     });
                 }
 
-
-
-
-
                 // Attach change event handler to the section dropdown
                 // $('#searchButton').click(function() {
                 //     // Get the selected class ID and section ID
@@ -431,9 +427,6 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-
-                // Handle the success response
-                alert('Holiday marked successfully!');
 
                 // Check all holiday radio buttons
                 $('input[type="radio"][value="4"]').prop('checked', true);

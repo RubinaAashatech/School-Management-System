@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Services\StudentUserService;
+use App\Models\Municipality;
 use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -74,6 +75,7 @@ class StudentController extends Controller
         $adminStateId = Auth::user()->state_id;
         $adminDistrictId = Auth::user()->district_id;
         $adminMunicipalityId = Auth::user()->municipality_id;
+        $adminSchoolId = Auth::user()->school_id;
 
         return view(
             'backend.school_admin.student.create',
@@ -85,6 +87,7 @@ class StudentController extends Controller
                 'adminStateId',
                 'adminDistrictId',
                 'adminMunicipalityId',
+                'adminSchoolId',
                 'bloodGroups'
             )
         );
@@ -555,7 +558,7 @@ class StudentController extends Controller
         }
     }
 
-
+    
 
     // public function getAllStudent(Request $request)
     // {
@@ -817,4 +820,5 @@ class StudentController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
 }
