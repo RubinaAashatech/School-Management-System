@@ -32,13 +32,13 @@
 @endcan
 
 @can('create_staffs_leavedetails')
-<a href="{{ route('admin.staffs.create', ['type' => 'leave', 'staff_id' => $staff->id]) }}" class="btn btn-outline-success btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Leave Details">
+<a href="{{ route('admin.staffs.leavedetails', ['type' => 'leave', 'staff_id' => $staff->id]) }}" class="btn btn-outline-success btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Leave Details">
     <i class="fas fa-user-plus"></i>
 </a>
 @endcan
 
 @can('create_staffs_resignation_details')
-<a href="{{ route('admin.staffs.create', ['type' => 'resignation', 'staff_id' => $staff->id]) }}" class="btn btn-outline-warning btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Resignation Details">
+<a href="{{ route('admin.staffs.resignationdetails', ['type' => 'resignation', 'staff_id' => $staff->id]) }}" class="btn btn-outline-warning btn-sm mx-1" data-toggle="tooltip" data-placement="top" title="Add Resignation Details">
     <i class="fas fa-user-plus"></i>
 </a>
 @endcan

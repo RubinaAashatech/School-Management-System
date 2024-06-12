@@ -6,7 +6,6 @@
                     class="fa fa-list"></i></button></a>
     @endcan
 
-
     @can('create_examinations')
         <a href="#">
             <button type="button" class="btn btn-block btn-success btn-sm" data-bs-toggle="modal"

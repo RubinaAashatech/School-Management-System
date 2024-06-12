@@ -56,3 +56,6 @@ Route::get('exam-results/{exam_id}/routine/{routine_id}/create', [ExaminationRou
 Route::get('generate-results/{exam_id}/create', [GenerateResultController::class, 'create'])->name('generate-results.create');
 Route::get('generate-results/{exam_id}/export', [GenerateResultController::class, 'exportExamResults'])->name('generate-results.export');
 Route::get('generate-results/', [GenerateResultController::class, 'index'])->name('generate-results.index');
+
+
+Route::get('/examinations/create', [ExaminationController::class, 'create'])->middleware('initialize.session');

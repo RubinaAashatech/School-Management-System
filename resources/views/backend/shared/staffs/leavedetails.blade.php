@@ -4,7 +4,7 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                <h2>{{ $leave }}</h2>
             </div>
             @include('backend.shared.staffs.partials.action')
         </div>
@@ -20,7 +20,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12">
-                                    <form action="{{ route('admin.staffs.leavedetails.store') }}" id="employeeform" name="employeeform" method="post" enctype="multipart/form-data">
+                                    <form action="" id="employeeform" name="employeeform" method="post" enctype="multipart/form-data">
                                         <div class="hr-line-dashed"></div>
                                         <h5>Leave Detail:</h5>
                                         <div class="hr-line-dashed"></div>
