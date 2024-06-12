@@ -538,6 +538,7 @@ public function show($id)
         return view('backend.shared.staffs.leavedetails', compact('leave', 'type', 'staffId'));
     }
     
+    
 
     public function addResignationDetails()
     {
