@@ -531,10 +531,9 @@ public function show($id)
     public function addLeaveDetails(Request $request)
     {
         $leave = 'Add Leave Details';
-        $schoolId = session('school_id');
         $type = $request->query('type');
         $staffId = $request->query('staff_id');
-    
+        
         return view('backend.shared.staffs.leavedetails', compact('leave', 'type', 'staffId'));
     }
     
@@ -542,9 +541,10 @@ public function show($id)
 
     public function addResignationDetails()
     {
+        $page_title = 'Add Resignation Details';
         $resignation = "Resignation Details";
         $schoolId = session('school_id');
-        return view('backend.shared.staffs.resignationdetails', compact('resignation'));
+        return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title'));
     }
 
     public function import(Request $request)
