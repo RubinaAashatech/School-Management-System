@@ -27,9 +27,10 @@ class StaffAttendanceController extends Controller
     public function index()
     {
         $page_title = 'Staff Attendance';
+        $schoolId = session('school_id');
         $attendance_types = AttendanceType::all();
 
-        return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types'));
+        return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types','schoolId'));
     }
     public function saveAttendance(Request $request)
     {

@@ -26,7 +26,7 @@ return new class extends Migration {
 
             $table->string('qualification')->nullable();
             $table->string('work_experience')->nullable();
-            $table->boolean('marital_status')->default(1)->comment('0=>unmarried, 1=>married');
+            $table->boolean('marital_status')->nullable();
             $table->string('date_of_joining')->nullable();
             $table->string('date_of_leaving')->nullable();
             $table->string('payscale')->nullable();
