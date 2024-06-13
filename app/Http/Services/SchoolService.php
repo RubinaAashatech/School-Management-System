@@ -153,6 +153,18 @@ public function IncomeReportDetails($school_id, $date = null)
 
 }
 
+// public function ExamDetails($school_id, $date = null)
+// {
+//     $AcdemicSessionId = Auth::user()->municipality_id;
+
+//     //get all session details associated to school
+//     // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
+
+//     $sessions = $this->getSchoolDetailsByCriteria(null, null, $AcdemicSessionId);
+   
+
+// }
+
 public function ExpensesReportDetails($school_id, $date = null)
 {
     $SchoolId = Auth::user()->municipality_id;
