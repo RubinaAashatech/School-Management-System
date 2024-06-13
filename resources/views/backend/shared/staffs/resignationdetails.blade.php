@@ -23,11 +23,8 @@
                             </div>
                             <div class="box-body">
                                 <div class="form-group">
-                                    <label for="staff_id">Staff ID:</label>
-                                    <input type="" name="staff_id" value="{{ old('staff_id') }}" class="form-control" id="staff_id" placeholder="Enter Staff ID" required>
-                                    @error('staff_id')
-                                        <strong class="text-danger">{{ $message }}</strong>
-                                    @enderror
+                                    <label for="staff_id">Staff ID</label>
+                                    <input type="text" name="staff_id" id="staff_id" class="form-control" value="{{ $staffId }}" readonly>
                                 </div>
                                 <div class="form-group col-lg-4 col-sm-4">
                                     <label for="resignation_letter">Resignation Letter</label>
@@ -54,4 +51,18 @@
             </div>
         </div>
     </div>
+
+
+    <script>
+        // Assuming you have a JavaScript function to automatically fill the staff_id field
+        function fillStaffId() {
+            var staffId = "{{ $staffId }}"; // Get the staff ID from PHP variable
+            document.getElementById('staff_id').value = staffId;
+        }
+    
+        // Assuming you have some event (e.g., onchange) to trigger the function
+        document.addEventListener('DOMContentLoaded', function() {
+            fillStaffId(); // Automatically fill the staff_id field when the page loads
+        });
+    </script>
 @endsection
