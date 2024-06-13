@@ -199,40 +199,71 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                {{-- <h2>{{ $page_title }}</h2> --}}
             </div>
-            {{-- @include('backend.school_admin.assign_class_teacher.partials.action') --}}
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <form id="filterForm">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label for="datetimepicker">Date:</label>
-                            <div class="form-group">
-                                <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                                    <input id="nepali-datepicker" name="date" type="text"
-                                        class="form-control datetimepicker-input" />
-                                </div>
-                                @error('date')
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12 mt-2 d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" id="searchButton">Search</button>
-                </div>
-            </div>
-
+            @include('backend.school_admin.assign_class_teacher.partials.action')
+         </div>
 
             </form>
             <hr>
+
+            <div class="card-body">
+                <div class="school-wise-report">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                            
+                                <th>Total Students</th>
+                                <th>Present Student</th>
+                                <th>Absent Student</th>
+                                <th>Total Staff</th>
+                                <th>Present Staff</th>
+                                <th>Absent Staff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          
+                                <tr>
+                                    
+                                    <td> {{ $totalStudents }}</td>
+                                    <td> {{ $presentStudents }}</td>
+                                    <td> {{ $absentStudents }}</td>
+                                    <td> {{ $totalStaffs }}</td>
+                                    <td>{{ $presentStaffs }}</td>
+                                    <td> {{ $absentStaffs }}</td>
+                                   
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="filterForm"> 
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="datetimepicker">Date:</label>
+                                <div class="form-group">
+                                    <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                                        <input id="nepali-datepicker" name="date" type="text"
+                                            class="form-control datetimepicker-input" />
+                                    </div>
+                                    @error('date')
+                                        <strong class="text-danger">{{ $message }}</strong>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mt-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" id="searchButton">Search</button>
+                    </div>
+                </div> 
+        
             <div class="card-body">
                 <div class="school-wise-report">
                     <table class="table table-striped">
@@ -242,29 +273,35 @@
                                 <th>Total Students</th>
                                 <th>Present Student</th>
                                 <th>Absent Student</th>
+                                <th>Late Student</th>
                                 <th>Total Staff</th>
                                 <th>Present Staff</th>
                                 <th>Absent Staff</th>
-                                <th>Major Incident</th>
+                                <th>Late Staff</th>
+                                <th>Holiday Staff</th>
+                                <th>Major Incidents</th>
                                 <th>ECA/CCA</th>
                                 <th>Miscellaneous</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($schools_wise_reports as $report)
+                           @foreach ($schools_wise_reports as $report)
                                 <tr>
                                     <td>{{ $report['school_name'] }}</td>
                                     <td>{{ $report['total_student'] }}</td>
                                     <td>{{ $report['present_student'] }}</td>
                                     <td>{{ $report['absent_student'] }}</td>
+                                    <td>{{ $report['late_student'] }}</td>
                                     <td>{{ $report['total_staffs'] }}</td>
                                     <td>{{ $report['present_staffs'] }}</td>
                                     <td>{{ $report['absent_staffs'] }}</td>
+                                    <td>{{ $report['late_staffs'] }}</td>
+                                    <td>{{ $report['holiday_staffs'] }}</td>
                                     <td>{{ $report['major_incidents'] }}</td>
                                     <td>{{ $report['eca_cca'] }}</td>
                                     <td>{{ $report['miscellaneous'] }}</td>
-                                </tr>
-                            @endforeach
+                                </tr> 
+                            @endforeach 
                         </tbody>
                     </table>
 
@@ -298,7 +335,8 @@
             </div>
         </div>
     </div>
-@section('scripts')
+
+    @section('scripts')
     @include('backend.includes.nepalidate')
     @include('backend.includes.chartjs')
     <script>
@@ -318,9 +356,7 @@
                 data: {
                     date: date
                 },
-
                 success: function(data) {
-
                     // Clear existing table rows
                     $('.school-wise-report tbody').empty();
                     // Iterate over the fetched data and append rows to the table
@@ -349,10 +385,8 @@
         var school_student_count = @json($school_students_count);
         var school_staffs_count = @json($school_staffs_count);
         var school_wise_student_attendences = @json($school_wise_student_attendences);
-
         //school-wise student
         const ctx = document.getElementById('schoolWiseStudentChart');
-
         new Chart(ctx, {
             type: 'bar',
             data: school_student_count,
@@ -364,10 +398,8 @@
                 }
             }
         });
-
         //school-wise staffs
         const schoolstaffcount = document.getElementById('schoolWiseStaffsChart');
-
         new Chart(schoolstaffcount, {
             type: 'bar',
             data: school_staffs_count,
@@ -380,20 +412,16 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-
             // Extract school names and attendance data
             var schoolNames = school_wise_student_attendences.map(function(item) {
                 return item.school_name;
             });
-
             var presentStudents = school_wise_student_attendences.map(function(item) {
                 return item.present_student;
             });
-
             var absentStudents = school_wise_student_attendences.map(function(item) {
                 return item.absent_student;
             });
-
             // Create a bar chart
             var ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
             var myChart = new Chart(ctx, {
@@ -425,4 +453,5 @@
         });
     </script>
 @endsection
-@endsection
+
+@endsection 

@@ -20,6 +20,7 @@ class SchoolService
     // protected $user;
 
     //retrieves school details based on various criteria, which can include district ID, municipality ID, or wada ID.
+   
     public static function getSchoolDetailsByCriteria($stateId = null, $districtId = null, $municipalityId = null, $wadaId = null, $school_type = null, $schoolId = null)
     {
         $query = School::query();
@@ -30,7 +31,6 @@ class SchoolService
         if ($districtId) {
             $query->where('district_id', $districtId);
         }
-
         if ($municipalityId) {
             $query->where('municipality_id', $municipalityId);
         }
@@ -45,9 +45,8 @@ class SchoolService
         }
 
         return $query->get();
-
-
     }
+
     public static function getSchoolStudent($districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         $query = School::withCount('studentSessions as total_student');
@@ -126,6 +125,7 @@ class SchoolService
                 'miscellaneous' => $head_teacher_logs->miscellaneous ?? '',
             ];
         }
+        
         return $reportDetails;
     }
 
@@ -193,6 +193,7 @@ public function ExpensesReportDetails($school_id, $date = null)
         return $query->latest('created_at')->first();
 
     }
+    
     public static function getSchoolWiseStudentAttendence($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {
