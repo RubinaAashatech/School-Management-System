@@ -330,22 +330,6 @@ public function show($id)
         }
     }
 
-    public function resignationstore(Request $request)
-    {
-        $validatedData = $request->validate([
-            'staff_id' => 'required|exists:staffs,id',
-            'resignation_letter' => 'required|string',
-            //'note' => 'nullable|string',
-        ]);
-    
-        $staff = Staff::findOrFail($validatedData['staff_id']);
-        $staff->resignation_letter = $validatedData['resignation_letter'];
-        //$staff->note = $validatedData['note']; 
-        $staff->save();
-    
-        return redirect()->route('admin.staffs.index')->with('success', 'Staff resignation added successfully.');
-    }
-
     public function edit(string $id)
     {
         try {
@@ -442,7 +426,7 @@ public function show($id)
             // Update existing student data
             $staff->update($validatedStaffData);
 
-            return redirect()->route('admin.staffs.index')->withToastSuccess('Student successfully Updated');
+            return redirect()->route('admin.staffs.index')->withToastSuccess('Staff successfully Updated');
         } catch (\Exception $e) {
             return back()->withToastError($e->getMessage())->withInput();
         }
@@ -572,25 +556,19 @@ public function show($id)
         return redirect()->route('admin.staffs.index')->with('success', 'Leave details added successfully.');
     }
 
-
-    
-    
-
     public function addResignationDetails(Request $request)
     {
-        $page_title = 'Add Resignation Details';
         $resignation = "Resignation Details";
-        $schoolId = session('school_id');
         $type= $request->query('type');
         $staffId= $request->query('staff_id');
-        return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title','type','staffId'));
+        return view('backend.shared.staffs.resignationdetails', compact('resignation','type','staffId'));
     }
 
-    public function resignationstore(Request $request)
+    public function storeResignationDetails(Request $request)
     {
         $validatedData = $request->validate([
-            'staff_id' => 'required|exists:staffs,id',
             'resignation_letter' => 'required|string',
+            'staff_id' => 'required|exists:staffs,id',
             //'note' => 'nullable|string',
         ]);
         $staff = Staff::findOrFail($validatedData['staff_id']);
@@ -808,3 +786,4 @@ public function show($id)
 
 
 }
+

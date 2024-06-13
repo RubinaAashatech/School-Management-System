@@ -74,28 +74,18 @@
                                 <table class="table table-striped table-bordered table-hover" id="sampledata">
                                     <thead>
                                         <tr>
-                                            admission_no <th><span class=text-red>*</span><span>Admission
-                                                    No</span>
-                                            </th>
-                                            admission_date <th><span class=text-red>*</span><span>Admission
-                                                    Date</span>
-                                            </th>
-                                            roll_no <th><span>Roll No.</span></th>
-                                            class <th><span>Class</span></th>
-                                            section <th><span>Section</span></th>
-                                            state <th><span>State</span></th>
-                                            district <th><span>District</span></th>
-                                            municipality <th><span>Municiplaity</span></th>
-                                            ward <th><span>Ward</span></th>
+                                            state_id <th><span class=text-red>*</span><span>State</span></th>
+                                            district_id <th><span class=text-red>*</span><span>District</span></th>
+                                            municipality_id <th><span class=text-red>*</span><span>Municiplaity</span></th>
+                                            ward_id <th><span class=text-red>*</span><span>Ward</span></th>
+                                            firstname <th><span class=text-red>*</span><span>First Name</span></th>
+                                            middlename <th><span>Middle Name</span></th>
+                                            lastname <th><span class=text-red>*</span><span>Last Name</span></th>
+                                            email <th><span>Email</span></th>
                                             local address <th><span>Local Address</span></th>
                                             permanent address <th><span>Permanent Address</span></th>
-                                            firstname <th><span>First Name</span></th>
-                                            middlename <th><span>Middle Name</span></th>
-                                            lastname <th><span>Last Name</span></th>
-                                            email <th><span>Email</span></th>
-                                            religion <th><span>Religion</span></th>
-                                            mobileno <th><span>Mobile No.</span></th>
                                             gender <th><span class=text-red>*</span><span>Gender</span></th>
+                                            religion <th><span>Religion</span></th>
                                             dob <th><span class=text-red>*</span><span>Date of Birth</span>
                                             </th>
                                             blood_group <th><span>Blood Group</span></th>
@@ -107,9 +97,37 @@
                                             mother_occupation <th><span>Mother Occupation</span></th>
                                             emergency_contact_person <th><span>Emergency Contact Person</span></th>
                                             emergency_contact_phone <th><span>Emergency Contact Phone</span></th>
+                                            admission_no <th><span class=text-red>*</span><span>Admission
+                                                No</span>
+                                        </th>
+                                        roll_no <th><span class=text-red>*</span><span>Roll No.</span></th>
+                                        admission_date <th><span class=text-red>*</span><span>Admission
+                                                Date</span>
+                                        </th>
+                                        school_house<th><span class=text-red>*</span><span>School House
+                                            </span>
+                                    </th>
                                             guardian_is <th><span class=text-red>*</span><span>If Guardian
                                                     Is</span>
                                             </th>
+                                            guardian_name <th><span class=text-red>*</span><span>Guardian
+                                                Name</span>
+                                        </th>
+                                            guardian_phone <th><span class=text-red>*</span><span>Guardian
+                                            Phone</span>
+                                        </th>
+                                             guardian_relation <th><span class=text-red>*</span><span>Guardian
+                                            Relation</span>
+                                        </th>
+                                            guardian_email <th><span class=text-red>*</span><span>Guardian
+                                            Email</span>
+                                         </th>
+
+                                           
+                                           
+                                            {{-- class <th><span>Class</span></th>
+                                            section <th><span>Section</span></th>
+                                            mobileno <th><span>Mobile No.</span></th>                         
                                             bank name <th><span>Bank Name</span></th>
                                             bank account <th><span>Bank Account</span></th>
                                             bank branch <th><span>Bank Branch</span></th>
@@ -118,7 +136,7 @@
                                             facebook<th><span>Facebook</span></th>
                                             twitter<th><span>Twitter</span></th>
                                             linkedin<th><span>LinkedIN</span></th>
-                                            instagram<th><span>Instagram</span></th>
+                                            instagram<th><span>Instagram</span></th> --}}
 
                                         </tr>
                                     </thead>
@@ -155,13 +173,13 @@
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
+                                            {{-- <td>Sample Data</td>
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
                                             <td>Sample Data</td>
-                                            <td>Sample Data</td>
-                                            <td>Sample Data</td>
+                                            <td>Sample Data</td> --}}
 
                                         </tr>
                                     </tbody>

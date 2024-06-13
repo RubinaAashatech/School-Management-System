@@ -57,7 +57,7 @@
                                         <div class="col-lg-3 col-sm-3">
                                             <label for="admission-datepicker">Admission Date:</label>
                                             <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
-                                                <input id="admission-datepicker" name="admission_date" type="text" class="form-control datetimepicker-input" />
+                                                <input id="admission-datepicker" name="admission_date" value="{{ old('admission_date') }}" type="text" class="form-control datetimepicker-input" />
                                             </div>
                                         </div>
 
@@ -77,8 +77,11 @@
                                                 <select name="class_id">
                                                     <option value="" disabled selected>Select Class</option>
                                                     @foreach ($classes as $class)
-                                                        <option value="{{ $class->id }}">{{ $class->class }}</option>
-                                                    @endforeach
+                                                    <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                                                        {{ $class->class }}
+                                                    </option>
+                                                @endforeach
+                                                
                                                 </select>
                                             </div>
                                             @error('class_id')
@@ -103,9 +106,12 @@
                                                 <select name="school_house_id">
                                                     <option disabled selected>Select School House</option>
                                                     @foreach ($school_houses as $house)
-                                                        <option value="{{ $house->id }}">{{ $house->name }}</option>
+                                                        <option value="{{ $house->id }}" {{ old('school_house_id') == $house->id ? 'selected' : '' }}>
+                                                            {{ $house->name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
+                                                
                                             </div>
                                             @error('class_id')
                                                 <strong class="text-danger">{{ $message }}</strong>
@@ -276,17 +282,17 @@
 
 
                                                 <label for="gender_male" class="l-radio">
-                                                    <input type="radio" name="gender" value="Male"
-                                                        id="gender_male">
+                                                    <input type="radio" name="gender" value="Male" id="gender_male"
+                                                           {{ old('gender', $student->gender ?? '') == 'Male' ? 'checked' : '' }}>
                                                     <span>Male</span>
                                                 </label>
-
+                                                
                                                 <label for="gender_female" class="l-radio">
-                                                    <input type="radio" name="gender" value="Female"
-                                                        id="gender_female">
+                                                    <input type="radio" name="gender" value="Female" id="gender_female"
+                                                           {{ old('gender', $student->gender ?? '') == 'Female' ? 'checked' : '' }}>
                                                     <span>Female</span>
                                                 </label>
-
+                                                
                                                 {{-- <label for="gender_other" class="l-radio">
                                                     <input type="radio" name="gender" value="Other"
                                                         id="gender_other">
@@ -303,8 +309,10 @@
                                            <div class="form-group col-lg-3 col-sm-3 mt-2">
                                             <label for="dob-datepicker">Date of Birth:</label>
                                             <div class="input-group date" id="dob-datetimepicker" data-target-input="nearest">
-                                                <input id="dob-datepicker" name="dob" type="text" class="form-control datetimepicker-input" />
+                                                <input id="dob-datepicker" name="dob" type="text" class="form-control datetimepicker-input"
+                                                       value="{{ old('dob', isset($student) ? $student->dob : '') }}" />
                                             </div>
+                                            
                                         </div>
                                             {{-- <div class="form-group col-lg-3 col-sm-3 mt-2">
                                                 <label for="dob">Date of Birth:</label>
@@ -319,14 +327,15 @@
                                                 <label for="blood_group">Blood Group:</label>
                                                 <div class="select">
 
-                                                <select name="blood_group_id">
-                                                    <option value="">Select Blood Group</option>
-                                                    @foreach($bloodGroups as $id => $type)
-                                                        <option value="{{ $id }}">{{ $type }}</option>
+                                                    <select name="blood_group_id">
+                                                        <option value="">Select Blood Group</option>
+                                                        @foreach($bloodGroups as $id => $type)
+                                                        <option value="{{ $id }}" {{ old('blood_group_id') == $id ? 'selected' : '' }}>
+                                                            {{ $type }}
+                                                        </option>
                                                     @endforeach
-                                                </select>
+                                                    </select>                                          
                                                 </div>
-
                                             </div>
                                         </div>
 

@@ -165,37 +165,33 @@
                                             </div>
                                             <div class="form-group col-lg-3 col-sm-3 mt-2">
                                                 <label for="phone">Gender: <span class="must"> *</span></label><br>
-
-
+                                            
                                                 <label for="gender_male" class="l-radio">
-                                                    <input type="radio" name="gender" value="Male"
-                                                        id="gender_male">
+                                                    <input type="radio" name="gender" value="Male" id="gender_male" {{ old('gender') == 'Male' ? 'checked' : '' }}>
                                                     <span>Male</span>
                                                 </label>
-
+                                            
                                                 <label for="gender_female" class="l-radio">
-                                                    <input type="radio" name="gender" value="Female"
-                                                        id="gender_female">
+                                                    <input type="radio" name="gender" value="Female" id="gender_female" {{ old('gender') == 'Female' ? 'checked' : '' }}>
                                                     <span>Female</span>
                                                 </label>
-
-
+                                            
                                                 @error('gender')
                                                     <strong class="text-danger">{{ $message }}</strong>
                                                 @enderror
                                             </div>
+                                            
 
 
                                             <div class="col-lg-3 col-md-3">
                                                 <label for="datetimepicker">Date of Birth:</label>
                                                 <div class="form-group">
-                                                    <div class="input-group date" id="datetimepicker"
-                                                        data-target-input="nearest">
-                                                        <input id="nepali-datepicker" name="dob" type="text"
-                                                            class="form-control datetimepicker-input" />
+                                                    <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                                                        <input id="nepali-datepicker" name="dob" type="text" class="form-control datetimepicker-input" value="{{ old('dob') }}" />
                                                     </div>
                                                 </div>
                                             </div>
+                                            
 
                                             <form id="employee-form" method="POST" action="/your-form-action">
                                                 <div class="form-group col-lg-3 col-sm-3 mt-2">
@@ -276,26 +272,20 @@
                                             @endforeach
                                         </select>
                                     </div> --}}
-                                        <div class="form-group col-lg-3 col-sm-3">
-                                            <label for="role">Select Role: <span class="must"> *</span></label>
-                                            <div class="select">
-                                                <select name="role" id="role" class="role_id selectpicker"
-                                                    data-live-search="true" title="Choose Role" required>
-                                                    @foreach ($roles as $role)
-                                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            @error('role')
-                                                <strong class="text-danger">{{ $message }}</strong>
-                                            @enderror
+                                    <div class="form-group col-lg-3 col-sm-3">
+                                        <label for="role">Select Role: <span class="must"> *</span></label>
+                                        <div class="select">
+                                            <select name="role" id="role" class="role_id selectpicker" data-live-search="true" title="Choose Role" required>
+                                                @foreach ($roles as $role)
+                                                    <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
-
-
-
-
-
-
+                                        @error('role')
+                                            <strong class="text-danger">{{ $message }}</strong>
+                                        @enderror
+                                    </div>
+                                    
 
                                     </div>
 
