@@ -18,7 +18,6 @@
             <div class="border-bottom border-primary">
                 <h2>{{ $page_title }}</h2>
             </div>
-            {{-- @include('backend.school_admin.assign_class_teacher.partials.action') --}}
         </div>
         <div class="card mb-4">
             <div class="card-body">
@@ -67,13 +66,13 @@
                         <span class="fw-bold">School Wise Staffs</span>
                     </div>
                     <div class="col-md-6 col-lg-6 mt-4 ">
-                        <span class="fw-bold">School Wise Student's Attendence</span>
+                        <span class="fw-bold">School Wise Student's Attendance</span>
                         <div class="bg-gray pt-5">
                             <canvas id="schoolAttendanceChart" width="600" height="200"></canvas>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-6 mt-4 ">
-                        <span class="fw-bold">School Wise Staff's Attendence</span>
+                        <span class="fw-bold">School Wise Staff's Attendance</span>
                         <div class="bg-gray pt-5">
                             <canvas id="schoolsSaffAttendanceChart" width="600" height="200"></canvas>
                         </div>
@@ -95,8 +94,8 @@
         // Data from the server
         var school_student_count = @json($school_students_count);
         var school_staffs_count = @json($school_staffs_count);
-        var school_wise_student_attendences = @json($school_wise_student_attendences);
-        var school_wise_staffs_attendences = @json($school_wise_staffs_attendences);
+        var school_wise_student_attendances = @json($school_wise_student_attendences);
+        var school_wise_staff_attendances = @json($school_wise_staffs_attendences);
         var class_wise_students = @json($class_wise_students);
 
         // Function to calculate and update summary counts
@@ -108,13 +107,13 @@
             let presentStaffs = 0;
             let absentStaffs = 0;
 
-            school_wise_student_attendences.forEach(item => {
+            school_wise_student_attendances.forEach(item => {
                 totalStudents += item.total_student;
                 presentStudents += item.present_student;
                 absentStudents += item.absent_student;
             });
 
-            school_wise_staffs_attendences.forEach(item => {
+            school_wise_staff_attendances.forEach(item => {
                 totalStaffs += item.total_staffs;
                 presentStaffs += item.present_staffs;
                 absentStaffs += item.absent_staffs;
@@ -137,6 +136,7 @@
             type: 'bar',
             data: school_student_count,
             options: {
+               
                 scales: {
                     y: {
                         beginAtZero: true
@@ -160,10 +160,10 @@
 
         // School-wise student attendance chart
         document.addEventListener('DOMContentLoaded', function() {
-            var schoolNames = school_wise_student_attendences.map(item => item.school_name);
-            var totalStudent = school_wise_student_attendences.map(item => item.total_student);
-            var presentStudents = school_wise_student_attendences.map(item => item.present_student);
-            var absentStudents = school_wise_student_attendences.map(item => item.absent_student);
+            var schoolNames = school_wise_student_attendances.map(item => item.school_name);
+            var totalStudent = school_wise_student_attendances.map(item => item.total_student);
+            var presentStudents = school_wise_student_attendances.map(item => item.present_student);
+            var absentStudents = school_wise_student_attendances.map(item => item.absent_student);
 
             var ctxAttendance = document.getElementById('schoolAttendanceChart').getContext('2d');
             new Chart(ctxAttendance, {
@@ -199,11 +199,11 @@
 
         // School-wise staff attendance chart
         document.addEventListener('DOMContentLoaded', function() {
-            var schoolNames = school_wise_staffs_attendences.map(item => item.school_name);
-            var totalStaffs = school_wise_staffs_attendences.map(item => item.total_staffs);
-            var presentStaffs = school_wise_staffs_attendences.map(item => item.present_staffs);
-            var absentStaffs = school_wise_staffs_attendences.map(item => item.absent_staffs);
-            var holidayStaffs = school_wise_staffs_attendences.map(item => item.holiday_staffs);
+            var schoolNames = school_wise_staff_attendances.map(item => item.school_name);
+            var totalStaffs = school_wise_staff_attendances.map(item => item.total_staffs);
+            var presentStaffs = school_wise_staff_attendances.map(item => item.present_staffs);
+            var absentStaffs = school_wise_staff_attendances.map(item => item.absent_staffs);
+            var holidayStaffs = school_wise_staff_attendances.map(item => item.holiday_staffs);
 
             var ctxStaffAttendance = document.getElementById('schoolsSaffAttendanceChart').getContext('2d');
             new Chart(ctxStaffAttendance, {

@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\SchoolService;
 use App\Http\Services\DashboardService;
 
+
 class DashboardController extends Controller
 {
     protected $dashboardService;
@@ -31,17 +32,19 @@ class DashboardController extends Controller
         $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
         $school_students = $this->schoolService->getSchoolStudent();
         $school_students_count = $this->schoolWiseCountOfStudent($school_students);
-        //school staffs
+        
+        // School staffs
         $school_staffs = $this->schoolService->getSchoolStaff(session('school_id'));
         $school_staffs_count = $this->schoolWiseCountOfStaff($school_staffs);
 
-        //School Wise Student's Attendence
+        // School Wise Student's Attendance
         $school_wise_student_attendences = $this->schoolService->getSchoolWiseStudentAttendence(session('school_id'));
-        //School Wise Staff's Attendence
+        
+        // School Wise Staff's Attendance
         $school_wise_staffs_attendences = $this->schoolService->getSchoolWiseStaffAttendence(session('school_id'));
-        //Class Wise students
+        // Class Wise students
         $class_wise_students = $this->dashboardService->getClassWiseStudents(session('school_id'));
-        // dd($school_wise_staffs_attendences);
+
         return view('backend.school_admin.dashboard.dashboard', compact('page_title', 'school_students_count', 'school_staffs_count', 'school_wise_student_attendences', 'school_wise_staffs_attendences', 'class_wise_students'));
     }
 
@@ -70,6 +73,7 @@ class DashboardController extends Controller
         ];
         return $finalData;
     }
+
     public function schoolWiseCountOfStaff($originalData)
     {
         // Initialize labels and data arrays
@@ -79,7 +83,7 @@ class DashboardController extends Controller
         // Iterate over the original data array
         foreach ($originalData as $item) {
             $labels[] = $item['name'];
-            $data[] = $item['total_student'];
+            $data[] = $item['total_staff'];
         }
 
         // Construct the required data structure
@@ -87,7 +91,7 @@ class DashboardController extends Controller
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'School wise Student Count',
+                    'label' => 'School wise Staff Count',
                     'data' => $data,
                     'borderWidth' => 1
                 ]
@@ -95,6 +99,4 @@ class DashboardController extends Controller
         ];
         return $finalData;
     }
-
-
 }

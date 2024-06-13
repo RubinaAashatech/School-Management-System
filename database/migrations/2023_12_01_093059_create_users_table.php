@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('f_name')->nullable();
             $table->string('m_name')->nullable();
             $table->string('l_name')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->string('username')->nullable();
             $table->boolean('active')->default(0);
             $table->string('phone')->nullable()->unique();
@@ -86,6 +86,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users', function (Blueprint $table){
+        $table->dropUnique(['email']);
+        $table->dropColumn('email');
+        });
     }
 };

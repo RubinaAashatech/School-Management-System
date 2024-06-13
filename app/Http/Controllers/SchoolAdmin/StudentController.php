@@ -217,7 +217,7 @@ class StudentController extends Controller
             'permanent_address' => 'nullable',
             'f_name' => 'required',
             'l_name' => 'required',
-            'email' => 'required|unique:users,email',
+            'email' => 'nullable|email|unique:users,email',
             'religion' => 'nullable',
             'mobile_number' => 'required',
             'gender' => 'required',
@@ -277,117 +277,124 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         try {
-
             DB::beginTransaction();
+    
             // CREATING USER WITH ITS RESPECTIVE VALIDATION FUNCTION
             $userInput = $this->validateUserData($request, true);
-            // dd($userInput);
-
-            // Fetch admission number from request or set to empty string if not provided
-            $admissionNumber = $request->input('admission_no') ?? '';
-
+    
             // Generate username based on first letter of f_name, first letter of l_name, and admission number
+            $admissionNumber = $request->input('admission_no') ?? '';
             $username = strtolower(substr($userInput['f_name'], 0, 1) . substr($userInput['l_name'], 0, 1) . '-' . $admissionNumber);
-
-            // Assign the generated username to the user input
             $userInput['username'] = $username;
-
+    
+            // Generate email dynamically if not provided
+            if (!$request->filled('email')) {
+                $email = strtolower($userInput['f_name'] . '.' . $userInput['l_name'] . '.' . $admissionNumber . '@gmail.com');
+                $count = User::where('email', $email)->count();
+                if ($count > 0) {
+                    // If the email already exists, append a number to make it unique
+                    $email = strtolower($userInput['f_name'] . '.' . $userInput['l_name'] . '.' . $admissionNumber . $count . '@gmail.com');
+                }
+                $userInput['email'] = $email;
+            } else {
+                $userInput['email'] = $request->input('email');
+            }
+    
             if ($request->has('inputCroppedPic') && !is_null($request->inputCroppedPic)) {
                 $userInput['image'] = $this->saveUserImage($request->input('inputCroppedPic'));
             }
+    
             // STUDENT USER CREATED AND ASSIGNED
             $studentUser = $this->createUser($userInput);
             $studentUser->assignRole(11);
+    
             // Create student_sessions record
             $this->createStudentSession($studentUser->id, $request->input('class_id'), $request->input('section_id'));
-
+    
             // CREATING STUDENT WITH ITS RESPECTIVE VALIDATION
-            // $studentInput = $this->validateUserData($request, true);
             $studentInput = $userInput;
             $studentInput['user_id'] = $studentUser->id;
             $studentInput['school_id'] = session('school_id');
-            // $studentInput['reservation_quota_id'] = 1;
             $studentInput['reservation_quota_id'] = $request->input('reservation_quota_id') ?? "";
             $studentInput['class_id'] = $request->input('class_id') ?? "";
             $studentInput['section_id'] = $request->input('section_id') ?? "";
             $studentInput['admission_no'] = $request->input('admission_no') ?? "";
             $studentInput['admission_date'] = $request->input('admission_date') ?? "";
             $studentInput['roll_no'] = $request->input('roll_no') ?? "";
-            // $studentInput['school_house_id'] = 1;
             $studentInput['school_house_id'] = $request->input('school_house_id');
             $studentInput['student_photo'] = $studentUser->image;
             $studentInput['guardian_name'] = $request->input('guardian_name') ?? "";
             $studentInput['guardian_relation'] = $request->input('guardian_relation') ?? "";
             $studentInput['guardian_phone'] = $request->input('guardian_phone') ?? "";
             $studentInput['guardian_email'] = $request->input('guardian_email') ?? "";
-
-            // $this->saveTransferCertificate($request, $studentInput);
+    
+            // Add transfer_certificate if a file is present
             $transferCertificatePath = $this->saveTransferCertificate($request);
-
-            // Add the transfer_certificate field to $studentInput only if a file is present
             if (!is_null($transferCertificatePath)) {
                 $studentInput['transfer_certificate'] = $transferCertificatePath;
             }
-
+    
             $this->saveStudent($studentInput);
-
+    
             // Create entry in the SchoolUser pivot table
             $this->createSchoolUserEntry($studentInput['school_id'], $studentUser->id);
-
+    
             DB::commit();
-
+    
             return redirect()->route('admin.students.index')->withToastSuccess('Student successfully created');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withToastError($e->getMessage())->withInput();
         }
     }
+    
 
     public function show(Request $request)
     {
     }
 
     public function edit(string $id)
-    {
-        try {
-            $student = Student::findOrFail($id);
-            $page_title = "Edit Student";
+{
+    try {
+        $student = Student::findOrFail($id);
+        $page_title = "Edit Student";
 
-            $states = $this->formService->getProvinces();
-            $schoolId = session('school_id');
-            $classes = Classg::where('school_id', $schoolId)
-                ->orderBy('created_at', 'desc')
-                ->get();
-            $school_houses = SchoolHouse::all();
-            $bloodGroups = BloodGroupType::pluck('type', 'id');
+        // Fetching necessary data for the form
+        $states = $this->formService->getProvinces();
+        $schoolId = session('school_id');
+
+        // Fetching classes for the school
+        $classes = Classg::where('school_id', $schoolId) 
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Fetching school houses
+        $school_houses = SchoolHouse::all();
+
+        // Fetching blood groups
+        $bloodGroups = BloodGroupType::pluck('type', 'id');
+
+        // Fetching sections for the first class
+        $firstClassId = $classes->first()->id ?? null;
+        $sections = $firstClassId ? $this->getSections($firstClassId)->original : [];
+
+        // Fetching districts for selected state
+        $districts = $student->user->district_bystate($student->user->state_id);
+
+        // Fetching municipalities for selected district
+        $municipalities = $student->user->municipalities_bydistrict($student->user->district_id);
+
+        // Fetching wards by municipality
+        $wards = User::getWards($student->user->municipality_id);
+        
 
 
-
-            // Fetch sections for the first class
-            $firstClassId = $classes->first()->id;
-            $sections = $this->getSections($firstClassId)->original;
-
-            // FETCHING DISTRICT FOR SELECTED STATE
-            $districts = $student->user->district_bystate($student->user->state_id);
-
-            // FETCHING MUNICIPALITY FOR SELECTED DISTRICT
-            $municipalities = $student->user->municipalities_bydistrict($student->user->district_id);
-
-            // FETCHING WARDS BY MUNICIAITY
-            $wards = User::getWards($student->user->municipality_id);
-            // dd($wards);
-
-            $students = Student::with('user')->get();
-            // Assuming you also need to retrieve additional data for the edit form
-            // Modify as per your actual requirements
-
-            return view('backend.school_admin.student.update', compact('student', 'page_title', 'states', 'classes', 'school_houses', 'sections', 'students', 'districts', 'municipalities', 'wards', 'bloodGroups'));
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage());
-        }
+        return view('backend.school_admin.student.update', compact('student', 'page_title', 'states', 'classes', 'school_houses', 'sections', 'districts', 'municipalities', 'wards', 'bloodGroups'));
+    } catch (\Exception $e) {
+        return back()->withToastError($e->getMessage());
     }
+}
 
     public function update(Request $request, $id)
     {
