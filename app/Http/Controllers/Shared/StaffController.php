@@ -563,11 +563,9 @@ public function show($id)
     public function addResignationDetails(Request $request)
     {
         $page_title = 'Add Resignation Details';
-        $resignation = "Resignation Details";
-        $schoolId = session('school_id');
         $type= $request->query('type');
         $staffId= $request->query('staff_id');
-        return view('backend.shared.staffs.resignationdetails', compact('resignation', 'page_title','type','staffId'));
+        return view('backend.shared.staffs.resignationdetails', compact('page_title','type','staffId'));
     }
 
     public function resignationstore(Request $request)
