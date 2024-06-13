@@ -45,12 +45,23 @@
                                 </div>
                             </div>
                         </form>
-                        </div>
-                       
                     </div>
                 </div>
             </div>
         </div>
     </div>
- </div>
+
+
+    <script>
+        // Assuming you have a JavaScript function to automatically fill the staff_id field
+        function fillStaffId() {
+            var staffId = "{{ $staffId }}"; // Get the staff ID from PHP variable
+            document.getElementById('staff_id').value = staffId;
+        }
+    
+        // Assuming you have some event (e.g., onchange) to trigger the function
+        document.addEventListener('DOMContentLoaded', function() {
+            fillStaffId(); // Automatically fill the staff_id field when the page loads
+        });
+    </script>
 @endsection

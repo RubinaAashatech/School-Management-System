@@ -558,10 +558,10 @@ public function show($id)
 
     public function addResignationDetails(Request $request)
     {
-        $resignation = "Resignation Details";
+        $page_title = 'Add Resignation Details';
         $type= $request->query('type');
         $staffId= $request->query('staff_id');
-        return view('backend.shared.staffs.resignationdetails', compact('resignation','type','staffId'));
+        return view('backend.shared.staffs.resignationdetails', compact('page_title','type','staffId'));
     }
 
     public function storeResignationDetails(Request $request)
