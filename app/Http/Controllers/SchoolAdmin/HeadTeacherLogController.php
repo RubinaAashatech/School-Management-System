@@ -34,7 +34,6 @@ class HeadTeacherLogController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $validatedData = Validator::make($request->all(), [
             'major_incidents' => 'nullable|string',
             'major_work_observation' => 'nullable|string',
@@ -42,14 +41,14 @@ class HeadTeacherLogController extends Controller
             'miscellaneous' => 'nullable|string', 
             'logged_date' => 'nullable|string',
         ]);
-
+    
         if ($validatedData->fails()) {
             return back()->withToastError($validatedData->messages()->all()[0])->withInput();
         }
-
+    
         try {
             $headTeacherLog = $request->all();
-            $headTeacherLog['school_id'] = session('school_id');
+            $headTeacherLog['school_id'] = session('school_id'); // Assign the current school ID
             $headTeacherLog['head_teacher_id'] = Auth::id();
             $savedData = HeadTeacherLog::create($headTeacherLog);
             return redirect()->back()->withToastSuccess('Head Teacher Log Saved Successfully!');
@@ -78,32 +77,32 @@ class HeadTeacherLogController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $validatedData = Validator::make($request->all(), [
-            'major_incidents' => 'nullable|string',
-            'major_work_observation' => 'nullable|string',
-            'assembly_management' => 'nullable|string',
-            'miscellaneous' => 'nullable|string', 
-            'logged_date' => 'nullable|string',
-        ]);
+{
+    $validatedData = Validator::make($request->all(), [
+        'major_incidents' => 'nullable|string',
+        'major_work_observation' => 'nullable|string',
+        'assembly_management' => 'nullable|string',
+        'miscellaneous' => 'nullable|string', 
+        'logged_date' => 'nullable|string',
+    ]);
 
-        if ($validatedData->fails()) {
-            return back()->withToastError($validatedData->messages()->all()[0])->withInput();
-        }
-
-        $headTeacherLog = HeadTeacherLog::findOrFail($id);
-
-        try {
-            $data = $request->all();
-            $data['school_id'] = session('school_id');
-            $data['head_teacher_id'] = Auth::id();
-            $updateNow = $headTeacherLog->update($data);
-
-            return redirect()->back()->withToastSuccess('Successfully Updated Head Teacher Log!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage())->withInput();
-        }
+    if ($validatedData->fails()) {
+        return back()->withToastError($validatedData->messages()->all()[0])->withInput();
     }
+
+    $headTeacherLog = HeadTeacherLog::findOrFail($id);
+
+    try {
+        $data = $request->all();
+        $data['school_id'] = session('school_id');
+        $data['head_teacher_id'] = Auth::id();
+        $updateNow = $headTeacherLog->update($data);
+
+        return redirect()->back()->withToastSuccess('Successfully Updated Head Teacher Log!');
+    } catch (\Exception $e) {
+        return back()->withToastError($e->getMessage())->withInput();
+    }
+}
 
     /**
      * Remove the specified resource from storage.
@@ -152,13 +151,16 @@ class HeadTeacherLogController extends Controller
 
     public function getForDataTable($request)
     {
-        $dataTableQuery = HeadTeacherLog::where(function ($query) use ($request) {
-            if (isset ($request->id)) {
-                $query->where('id', $request->id);
-            }
-        })
+        $schoolId = session('school_id'); // Get the current school ID from the session
+    
+        $dataTableQuery = HeadTeacherLog::where('school_id', $schoolId) // Filter by school ID
+            ->where(function ($query) use ($request) {
+                if (isset($request['id'])) {
+                    $query->where('id', $request['id']);
+                }
+            })
             ->get();
-
+    
         return $dataTableQuery;
     }
 }

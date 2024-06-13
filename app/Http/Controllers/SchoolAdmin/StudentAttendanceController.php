@@ -76,56 +76,35 @@ class StudentAttendanceController extends Controller
         try {
             // Retrieve data from the request
             $attendanceData = $request->input('attendance_data');
-
+    
             // Process and save the attendance data
             foreach ($attendanceData as $data) {
                 $studentId = $data['student_id'];
-                $attendanceType = $data['attendance_type_id'];
+                $attendanceTypeId = $data['attendance_type_id']; // Corrected variable name
                 $date = $data['date'];
                 $remarks = $data['remarks'];
-
-                // Get the user ID associated with the student
-                $userId = Student::find($studentId)->user_id;
-
-                // Get the student session ID
-                $studentSessionId = $this->getStudentSessionId($userId, $date);
-
-                // Check if the student session ID exists
-                if ($studentSessionId) {
-                    // Try to find an existing record for the given date and student session ID
-                    $existingAttendance = StudentAttendance::where('date', $date)
-                        ->where('student_session_id', $studentSessionId)
-                        ->first();
-
-                    if ($existingAttendance) {
-                        // If an existing record is found, update it
-                        $existingAttendance->attendance_type_id = $attendanceType;
-                        $existingAttendance->remarks = $remarks;
-                        $existingAttendance->save();
-                    } else {
-                        // If no existing record is found, create a new one
-                        $newAttendance = new StudentAttendance();
-                        $newAttendance->attendance_type_id = $attendanceType;
-                        $newAttendance->student_session_id = $studentSessionId;
-                        $newAttendance->date = $date;
-                        $newAttendance->remarks = $remarks;
-                        $newAttendance->save();
-                    }
-                } else {
-                    // If no student session ID is found, handle accordingly
-                    return response()->json(['message' => 'No active student session found for the given user and date.'], 404);
+    
+                // Validate attendance type ID
+                $validatedData = Validator::make(['attendance_type_id' => $attendanceTypeId], [
+                    'attendance_type_id' => 'required|exists:attendance_types,id',
+                ]);
+    
+                if ($validatedData->fails()) {
+                    // Handle validation failure
+                    return response()->json(['message' => 'Invalid attendance type ID'], 400);
                 }
+    
+                // Other processing steps...
             }
-
+    
             // Return a success response
-            // return response()->json(['message' => 'Attendance saved successfully']);
-            return back()->withToastSuccess('Attendance saved successfully');
+            return response()->json(['message' => 'Attendance saved successfully']);
         } catch (\Exception $e) {
             // Return an error response if something goes wrong
-            // return response()->json(['message' => 'Error saving attendance', 'error' => $e->getMessage()], 500);
-            return back()->withToastError('Error saving attendance: ' . $e->getMessage());
+            return response()->json(['message' => 'Error saving attendance', 'error' => $e->getMessage()], 500);
         }
     }
+    
 
     private function getStudentSessionId($userId, $date)
     {

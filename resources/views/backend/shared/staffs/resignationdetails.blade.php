@@ -5,7 +5,7 @@
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
                 <h2>
-                    {{ $page_title }}
+                    {{ $resignation }}
                 </h2>
             </div>
         </div>
