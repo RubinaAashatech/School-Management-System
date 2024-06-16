@@ -13,10 +13,10 @@ use App\Http\Services\StaffRoleDateService;
 use App\Models\AttendanceType;
 use Illuminate\Support\Facades\Validator;
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
+use Illuminate\Support\Facades\Log;
 
 class StaffAttendanceController extends Controller
 {
-    //
     protected $StaffRoleDateService;
 
     public function __construct(StaffRoleDateService $StaffRoleDateService)
@@ -30,54 +30,71 @@ class StaffAttendanceController extends Controller
         $schoolId = session('school_id');
         $attendance_types = AttendanceType::all();
 
-        return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types','schoolId'));
+        
+
+        return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types', 'schoolId'));
     }
+
     public function saveAttendance(Request $request)
     {
         try {
             $attendanceData = $request->input('attendance_data');
-            $staticSchoolId = session('school_id');
-    
+            $schoolId = session('school_id');
+
+            if (empty($attendanceData) || !is_array($attendanceData)) {
+                Log::error('Invalid attendance data provided.');
+                return back()->withToastError('Invalid attendance data.');
+            }
+
             foreach ($attendanceData as $data) {
-                $staffId = $data['staff_id'];
-                $attendanceType = $data['attendance_type_id'];
+                $staffId = $data['staff_id'] ?? null;
+                $attendanceType = $data['attendance_type_id'] ?? null;
                 $date = $data['date'] ?? now()->format('Y-m-d');
                 $remarks = $data['remarks'] ?? '';
-    
-                $staff = Staff::find($staffId);
+
+                if (!$staffId || !$attendanceType) {
+                    Log::error('Missing required fields: Staff ID or Attendance Type.');
+                    return back()->withToastError('Staff ID and Attendance Type are required.');
+                }
+
+                $staff = Staff::where('school_id', $schoolId)->find($staffId);
+
                 if ($staff) {
-                    $userId = $staff->user_id;
-                    $staffRole = $staff->role;
-    
+                    Log::info('Processing attendance for staff ID: ' . $staffId);
+
                     $existingAttendance = StaffAttendance::where('date', $date)
                         ->where('staff_id', $staffId)
                         ->first();
-    
+
                     if ($existingAttendance) {
+                        Log::info('Updating existing attendance record for staff ID: ' . $staffId);
                         $existingAttendance->attendance_type_id = $attendanceType;
                         $existingAttendance->remarks = $remarks;
                         $existingAttendance->save();
                     } else {
+                        Log::info('Creating new attendance record for staff ID: ' . $staffId);
                         $newAttendance = new StaffAttendance();
                         $newAttendance->attendance_type_id = $attendanceType;
                         $newAttendance->date = $date;
                         $newAttendance->remarks = $remarks;
-                        $newAttendance->school_id = $staticSchoolId;
+                        $newAttendance->school_id = $schoolId;
                         $newAttendance->staff_id = $staffId;
-                        $newAttendance->role = $staffRole;
+                        $newAttendance->role = $staff->role; // Assuming $staff->role exists
                         $newAttendance->save();
                     }
                 } else {
+                    Log::warning('No staff found for the given ID: ' . $staffId . ' in school ID: ' . $schoolId);
                     return response()->json(['message' => 'No staff found for the given ID'], 404);
                 }
             }
-    
+
             return back()->withToastSuccess('Attendance saved successfully');
         } catch (\Exception $e) {
-            return back()->withToastError('Error saving staff attendance: ' . $e->getMessage());
+            Log::error('Error saving staff attendance: ' . $e->getMessage(), ['stack' => $e->getTraceAsString()]);
+            return back()->withToastError('Error saving staff attendance. Please try again later.');
         }
     }
-    
+
     public function store(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
@@ -93,56 +110,53 @@ class StaffAttendanceController extends Controller
         try {
             $staffAttendanceData = $request->all();
             $savedData = StaffAttendance::create($staffAttendanceData);
-            return redirect()->back()->withToastSuccess('attendance Saved Successfully!');
+            return redirect()->back()->withToastSuccess('Attendance saved successfully!');
         } catch (\Exception $e) {
+            Log::error('Error saving attendance: ' . $e->getMessage(), ['stack' => $e->getTraceAsString()]);
             return back()->withToastError($e->getMessage());
         }
     }
 
     public function getStaffName(Request $request)
-    {
-        // dd($request);
-        try {
-            $role = $request->role;
-            $date = $request->date;
-            if (!isset($request->date)) {
-                $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
-            }
+{
+    try {
+        $role = $request->role;
+        $date = $request->date;
+        $schoolId = session('school_id'); // Fetch school ID from session
 
-            // Fetch staff details from the service, filtering by role and date
-            $staffDetails = $this->StaffRoleDateService->getStaffDateRoleForDataTable($request, $date);
-            // dd($staffDetails);
-
-            $responseArray = [];
-
-            foreach ($staffDetails as $staff) {
-                $attendanceTypes = AttendanceType::where('is_active', 1)->get();
-                $attendance = '';
-                if (isset($staff->staffs->staffAttendance)) {
-
-                    $attendance = $staff->staffs->staffAttendance;
-                    $staff['attendance_type_id'] = $staff->staffs->staffAttendance ? $staff->staffs->staffAttendance->attendance_type_id : '';
-
-                    $staff['remarks'] = $staff->staffs->staffAttendance ? $staff->staffs->staffAttendance->remarks : '';
-                    $staff['staff_id'] = $staff->staffs->id;
-                }
-                $responseArray[] = [
-                    'staff_id' => $staff->staffs->id,
-                    'staff' => $staff,
-                    'staff_name' => $staff->f_name,
-                    'role_id' => $staff->role_id,
-                    'attendance_types' => $attendanceTypes->toArray(),
-                    'staff_attendances' => $attendance
-
-                ];
-            }
-
-            // dd($responseArray);
-
-            return response()->json(['original' => $responseArray, 'date' => $date]);
-        } catch (\Exception $e) {
-
-            return response()->json(['error' => $e->getMessage()], 500);
+        if (!isset($date)) {
+            $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
         }
+
+        // Fetch staff details from the service, filtering by role, date, and school ID
+        $staffDetails = $this->StaffRoleDateService->getStaffDateRoleForDataTable($request, $date);
+
+        $responseArray = [];
+
+        foreach ($staffDetails as $staff) {
+            $attendanceTypes = AttendanceType::where('is_active', 1)->get();
+            $attendance = '';
+
+            if (isset($staff->staffAttendance)) {
+                $attendance = $staff->staffAttendance;
+                $staff['attendance_type_id'] = $staff->staffAttendance ? $staff->staffAttendance->attendance_type_id : '';
+                $staff['remarks'] = $staff->staffAttendance ? $staff->staffAttendance->remarks : '';
+                $staff['staff_id'] = $staff->id;
+            }
+
+            $responseArray[] = [
+                'staff_id' => $staff->id,
+                'staff' => $staff,
+                'staff_name' => $staff->f_name,
+                'role_id' => $staff->role_id,
+                'attendance_types' => $attendanceTypes->toArray(),
+                'staff_attendances' => $attendance
+            ];
+        }
+
+        return response()->json(['original' => $responseArray, 'date' => $date]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 }

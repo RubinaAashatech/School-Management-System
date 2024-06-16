@@ -1,4 +1,4 @@
-{{-- @extends('backend.layouts.master')
+@extends('backend.layouts.master')
 
 @section('content')
     @if (Session::has('success'))
@@ -356,7 +356,7 @@
 
         
         <div class="row">
-            <div class="col-xl-4 mb-50">
+            <div class="col-xl-3 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
@@ -366,27 +366,25 @@
                             <div class="weight-800 font-18">{{ $totalStudents }}</div>
                             <div class="weight-500">Total Students</div>
                         </div>
-                       
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4 mb-50">
-                <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-people-group"></i></div>
                         </div>
                         <div class="widget-data">
-                            <div class="weight-800 font-18">{{ $absentStudents }}</div>
-                            <div class="weight-500">Absent Students</div>
-                        </div>
-                        <div class="progress-data">
-                            <div id="chart2"></div>
+                            <div class="weight-800 font-18">{{ $totalStaffs }}</div>
+                            <div class="weight-500">Total Staffs</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4 mb-50">
+
+            <div class="col-xl-3 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
@@ -402,33 +400,16 @@
                     </div>
                 </div>
             </div>
-          
-        </div>
 
-        <div class="row">
-            <div class="col-xl-4 mb-50">
+            <div class="col-xl-3 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-people-group"></i></div>
-                        </div>
-                        <div class="widget-data">
-                            <div class="weight-800 font-18">{{ $totalStaffs }}</div>
-                            <div class="weight-500">Total Staffs</div>
-                        </div>
-                       
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4 mb-50">
-                <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
                             <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
                         </div>
                         <div class="widget-data">
-                            <div class="weight-800 font-18">{{ $absentStaffs }}</div>
-                            <div class="weight-500">Absent Staffs</div>
+                            <div class="weight-800 font-18">{{ $absentStudents }}</div>
+                            <div class="weight-500">Absent Students</div>
                         </div>
                         <div class="progress-data">
                             <div id="chart2"></div>
@@ -436,7 +417,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-4 mb-50">
+
+            <div class="col-xl-3 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
@@ -452,12 +434,109 @@
                     </div>
                 </div>
             </div>
-          
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $absentStaffs }}</div>
+                            <div class="weight-500">Absent Staffs</div>
+                        </div>
+                        <div class="progress-data">
+                            <div id="chart2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalGirls }}</div>
+                            <div class="weight-500">Total Girls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalBoys }}</div>
+                            <div class="weight-500">Total Boys</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $presentGirls }}</div>
+                            <div class="weight-500">Present Girls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $presentBoys }}</div>
+                            <div class="weight-500">Present Boys</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $absentGirls }}</div>
+                            <div class="weight-500">Absent Girls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $absentBoys }}</div>
+                            <div class="weight-500">Absent Boys</div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
         </div>
-
-
-
-
+        
 
 
         {{-- <div class="card mb-4">
@@ -725,53 +804,4 @@
         });
     </script>
 @endsection
-@endsection --}}
-
-
-@extends('backend.layouts.master') {{-- Assuming you have a master layout --}}
-
-@section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">Dashboard</div>
-
-                    <div class="card-body">
-                         <h5>Total Students: {{ $totalStudents }}</h5>
-                         <h5>Present Students: {{ $presentStudents }}</h5>
-                         <h5>Absent Students: {{ $absentStudents }}</h5>
-                         <h5>Total Staff: {{ $totalStaffs }}</h5>
-                         <h5>Present Staffs: {{ $presentStaffs }}</h5>
-                         <h5>Absent Staff: {{ $absentStaffs }}</h5> 
-                      
-
-                        {{-- <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($students as $student)
-                                <tr>
-                                    <td>{{ $student->name }}</td>
-                                    <td>
-                                        @if ($student->is_present)
-                                            Present
-                                        @else
-                                            Absent
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table> --}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
-

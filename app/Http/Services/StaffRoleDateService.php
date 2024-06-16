@@ -2,55 +2,37 @@
 
 namespace App\Http\Services;
 
-use Log;
-use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class StaffRoleDateService
 {
-    // public function getStaffDateRoleForDataTable($request, $date)
-    // {
-
-    //     if ($request->role) {
-    //         $request->role = [$request->role];
-    //     } else {
-    //         $request->role = ['6', '7', '8', '9', '10'];
-    //     }
-    //     return User::where('school_id', session('school_id'))
-    //         ->with([
-    //             'roles',
-    //             'staffs',
-    //             'staffs.staffAttendance' => function ($attendanceQuery) use ($date) {
-    //                 if ($date) {
-    //                     $attendanceQuery->where('date', $date);
-    //                 }
-    //             }
-    //         ])
-    //         ->when($request->role, function ($query) use ($request) {
-    //             // dd($request);
-    //             $query->whereIn('role_id', $request->role);
-    //         })
-    //         ->get();
-    // }
-
-    public function getStaffDateRoleForDataTable($request)
+    /**
+     * Get staff data filtered by role and optionally by user ID.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getStaffDateRoleForDataTable(Request $request)
     {
-        $staffData = User::with(['staffs', 'roles'])
-            ->where('user_type_id', 6)
-            ->when($request->role, function ($query) use ($request) {
-                $query->where('role_id', $request->role);
-            })
-            ->when($request->date, function ($query) use ($request) {
-                $query->whereHas('staffs', function ($subQuery) use ($request) {
-                    $subQuery->whereHas('staffAttendance', function ($subQuery) use ($request) {
-                        $subQuery->whereDate('date', $request->date);
-                    });
-                });
-            })
-            ->get();
+        $query = User::join('staffs', 'users.id', '=', 'staffs.user_id')
+            ->where('users.user_type_id', '=', 6); // Assuming user_type_id 6 corresponds to staff
 
-    
+        // Optional filters
+        if ($request->has('id')) {
+            $query->where('users.id', $request->id);
+        }
 
-        return $staffData;
+        // Filter by school_id from session
+        $schoolId = $request->session()->get('school_id');
+        if ($schoolId) {
+            $query->where('staffs.school_id', $schoolId);
+        }
+
+        // Select specific columns
+        $query->select('users.*', 'staffs.*', 'staffs.id as staff_id');
+
+        // Execute the query and return the result
+        return $query->get();
     }
 }

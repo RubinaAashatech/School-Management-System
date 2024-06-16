@@ -1,4 +1,4 @@
-{{-- @extends('backend.layouts.master')
+@extends('backend.layouts.master')
 
 @section('content')
     <style>
@@ -742,4 +742,3 @@
 @endsection
 
 @endsection
-
