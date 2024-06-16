@@ -22,165 +22,335 @@
             background-color: #f5f5f5;
         }
 
-        /* For the cards in the dashboard */
-        .ag-courses_box {
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-align: start;
-            -ms-flex-align: start;
-            align-items: flex-start;
-            -ms-flex-wrap: wrap;
-            flex-wrap: wrap;
-
-            padding: 10px 0;
-        }
-
-        .ag-courses_item {
-            -ms-flex-preferred-size: calc(33.33333% - 30px);
-            flex-basis: calc(33.33333% - 150px);
-
-            margin: 0 5px 10px;
-
-            overflow: hidden;
-
-            border-radius: 28px;
-        }
-
-        .ag-courses-item_link {
-            display: block;
-            padding: 30px 20px;
-            background-image: linear-gradient(-45deg, rgba(0, 160, 255, 0.86), #0048a2), url(../img/generic/bg-navbar.png);
-
-            overflow: hidden;
-
-            position: relative;
-        }
-
-        .ag-courses-item_link:hover,
-        .ag-courses-item_link:hover .ag-courses-item_date {
+      
+        a {
+            outline: none;
             text-decoration: none;
-            color: #FFF;
+            color: #555;
         }
 
-        .ag-courses-item_link:hover .ag-courses-item_bg {
-            -webkit-transform: scale(10);
-            -ms-transform: scale(10);
-            transform: scale(10);
+        a:hover,
+        a:focus {
+            outline: none;
+            text-decoration: none;
         }
 
-        .ag-courses-item_title {
-            min-height: 87px;
-            margin: 0 0 25px;
+        img {
+            border: 0;
+        }
 
-            overflow: hidden;
+        input,
+        textarea,
+        select {
+            outline: none;
+            resize: none;
+            font-family: 'Muli', sans-serif;
+        }
 
-            font-weight: bold;
+        a,
+        input,
+        button {
+            outline: none !important;
+        }
+
+        button::-moz-focus-inner {
+            border: 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+            padding: 0;
+            font-weight: 700;
+            color: #202342;
+            font-family: 'Muli', sans-serif;
+        }
+
+        img {
+            border: 0;
+            vertical-align: top;
+            max-width: 100%;
+            height: auto;
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        p {
+            margin: 0 0 15px 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            max-width: 1900px;
+        }
+
+        /* Common Class */
+        .pd-5 {
+            padding: 5px;
+        }
+
+        .pd-10 {
+            padding: 10px;
+        }
+
+        .pd-20 {
+            padding: 20px;
+        }
+
+        .pd-30 {
+            padding: 30px;
+        }
+
+        .pb-10 {
+            padding-bottom: 10px;
+        }
+
+        .pb-20 {
+            padding-bottom: 20px;
+        }
+
+        .pb-30 {
+            padding-bottom: 30px;
+        }
+
+        .pt-10 {
+            padding-top: 10px;
+        }
+
+        .pt-20 {
+            padding-top: 20px;
+        }
+
+        .pt-30 {
+            padding-top: 30px;
+        }
+
+        .pr-10 {
+            padding-right: 10px;
+        }
+
+        .pr-20 {
+            padding-right: 20px;
+        }
+
+        .pr-30 {
+            padding-right: 30px;
+        }
+
+        .pl-10 {
+            padding-left: 10px;
+        }
+
+        .pl-20 {
+            padding-left: 20px;
+        }
+
+        .pl-30 {
+            padding-left: 30px;
+        }
+
+        .px-30 {
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        .px-20 {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .py-30 {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .py-20 {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .mb-50 {
+            margin-bottom: 50px;
+        }
+
+        .font-30 {
             font-size: 30px;
-            color: #FFF;
-
-            z-index: 2;
-            position: relative;
+            line-height: 1.46em;
         }
 
-        .ag-courses-item_date-box {
+        .font-24 {
+            font-size: 24px;
+            line-height: 1.5em;
+        }
+
+        .font-20 {
+            font-size: 20px;
+            line-height: 1.5em;
+        }
+
+        .font-18 {
             font-size: 18px;
-            color: #FFF;
-
-            z-index: 2;
-            position: relative;
+            line-height: 1.6em;
         }
 
-        .ag-courses-item_date {
-            font-weight: bold;
-            color: #f9b234;
-
-            -webkit-transition: color .5s ease;
-            -o-transition: color .5s ease;
-            transition: color .5s ease
+        .font-16 {
+            font-size: 16px;
+            line-height: 1.75em;
         }
 
-        .ag-courses-item_bg {
-            height: 128px;
-            width: 128px;
-            background-color: #f9b234;
-
-            z-index: 1;
-            position: absolute;
-            top: -75px;
-            right: -75px;
-
-            border-radius: 50%;
-
-            -webkit-transition: all .5s ease;
-            -o-transition: all .5s ease;
-            transition: all .5s ease;
+        .font-14 {
+            font-size: 14px;
+            line-height: 1.85em;
         }
 
-        .ag-courses_item:nth-child(2n) .ag-courses-item_bg {
-            background-color: #3ecd5e;
+        .font-12 {
+            font-size: 12px;
+            line-height: 2em;
         }
 
-        .ag-courses_item:nth-child(3n) .ag-courses-item_bg {
-            background-color: #e44002;
+        .weight-300 {
+            font-weight: 300;
         }
 
-        .ag-courses_item:nth-child(4n) .ag-courses-item_bg {
-            background-color: #952aff;
+        .weight-400 {
+            font-weight: 400;
         }
 
-        .ag-courses_item:nth-child(5n) .ag-courses-item_bg {
-            background-color: #cd3e94;
+        .weight-500 {
+            font-weight: 500;
         }
 
-        .ag-courses_item:nth-child(6n) .ag-courses-item_bg {
-            background-color: #4c49ea;
+        .weight-600 {
+            font-weight: 600;
         }
 
-
-
-        @media only screen and (max-width: 979px) {
-            .ag-courses_item {
-                -ms-flex-preferred-size: calc(50% - 30px);
-                flex-basis: calc(50% - 30px);
-            }
-
-            .ag-courses-item_title {
-                font-size: 24px;
-            }
+        .weight-700 {
+            font-weight: 700;
         }
 
-        @media only screen and (max-width: 767px) {
-            .ag-format-container {
-                width: 96%;
-            }
-
+        .weight-800 {
+            font-weight: 800;
         }
 
-        @media only screen and (max-width: 639px) {
-            .ag-courses_item {
-                -ms-flex-preferred-size: 100%;
-                flex-basis: 100%;
-            }
-
-            .ag-courses-item_title {
-                min-height: 72px;
-                line-height: 1;
-
-                font-size: 24px;
-            }
-
-            .ag-courses-item_link {
-                padding: 22px 40px;
-            }
-
-            .ag-courses-item_date-box {
-                font-size: 16px;
-            }
+        .text-blue {
+            color: #07023d;
         }
 
-        .no_transaction {
-            width: 100% !important;
+        .text-dark {
+            color: #000000;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        .height-100-p {
+            height: 100%;
+        }
+
+        .bg-white {
+            background: #ffffff;
+        }
+
+        .border-radius-10 {
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+        .border-radius-100 {
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%;
+        }
+
+        .box-shadow {
+            -webkit-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+            -moz-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+            box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+        }
+
+        .gradient-style1 {
+            background-image: linear-gradient(135deg, #43CBFF 10%, #9708CC 100%);
+        }
+
+        .gradient-style2 {
+            background-image: linear-gradient(135deg, #72EDF2 10%, #5151E5 100%);
+        }
+
+        .gradient-style3 {
+            background-image: radial-gradient(circle 732px at 96.2% 89.9%, rgba(70, 66, 159, 1) 0%, rgba(187, 43, 107, 1) 92%);
+        }
+
+        .gradient-style4 {
+            background-image: linear-gradient(135deg, #FF9D6C 10%, #BB4E75 100%);
+        }
+
+        /* widget style 1 */
+
+        .widget-style1 {
+            padding: 20px 10px;
+        }
+
+        .widget-style1 .circle-icon {
+            width: 60px;
+        }
+
+        .widget-style1 .circle-icon .icon {
+            width: 60px;
+            height: 60px;
+            background: #ecf0f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .widget-style1 .widget-data {
+            width: calc(100% - 150px);
+            padding: 0 15px;
+        }
+
+        .widget-style1 .progress-data {
+            width: 90px;
+        }
+
+        .widget-style1 .progress-data .apexcharts-canvas {
+            margin: 0 auto;
+        }
+
+        .widget-style2 .widget-data {
+            padding: 20px;
+        }
+
+        .widget-style3 {
+            padding: 30px 20px;
+        }
+
+        .widget-style3 .widget-data {
+            width: calc(100% - 60px);
+        }
+
+        .widget-style3 .widget-icon {
+            width: 60px;
+            font-size: 45px;
+            line-height: 1;
+        }
+
+        .apexcharts-legend-marker {
+            margin-right: 6px !important;
         }
     </style>
 
@@ -199,12 +369,163 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                {{-- <h2>{{ $page_title }}</h2> --}}
             </div>
             {{-- @include('backend.school_admin.assign_class_teacher.partials.action') --}}
-        {{-- </div>
+        </div>
 
-        <div class="card mb-4">
+
+        {{-- For the material Design in the dashboard --}}
+
+        <div class="row">
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalStudents }}</div>
+                            <div class="weight-500">Total Students</div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $absentStudents }}</div>
+                            <div class="weight-500">Absent Students</div>
+                        </div>
+                        <div class="progress-data">
+                            <div id="chart2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-p"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $presentStudents }}</div>
+                            <div class="weight-500">Present Students</div>
+                        </div>
+                        <div class="progress-data">
+                            <div id="chart3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-people-group"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalStaffs }}</div>
+                            <div class="weight-500">Total Staffs</div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $absentStaffs }}</div>
+                            <div class="weight-500">Absent Staffs</div>
+                        </div>
+                        <div class="progress-data">
+                            <div id="chart2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-p"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $presentStaffs }}</div>
+                            <div class="weight-500">Present Staffs</div>
+                        </div>
+                        <div class="progress-data">
+                            <div id="chart3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+
+
+
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Schools</th>
+                    <th>Total Students</th>
+                    <th>Present Student</th>
+                    <th>Absent Student</th>
+                  
+                    <th>Total Staff</th>
+                    <th>Present Staff</th>
+                    <th>Absent Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($schoolData as $school)
+                <tr>
+                    
+                    <td>{{ $school['school_name'] }}</td>
+            <td>{{ $school['total_students'] }}</td>
+            <td>{{ $school['present_students'] }}</td>
+            <td>{{ $school['absent_students'] }}</td>
+            <td>{{ $school['total_staffs'] }}</td>
+            <td>{{ $school['present_staffs'] }}</td>
+            <td>{{ $school['absent_staffs'] }}</td>
+                   
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+
+
+        {{-- @foreach ($schoolData as $school)
+        <div>
+            <h3>{{ $school['school_name'] }}</h3>
+            <p>Total Students: {{ $school['total_students'] }}</p>
+            <p>Present Students: {{ $school['present_students'] }}</p>
+            <p>Absent Students: {{ $school['absent_students'] }}</p>
+            <p>Total Staffs: {{ $school['total_staffs'] }}</p>
+            <p>Present Staffs: {{ $school['present_staffs'] }}</p>
+            <p>Absent Staffs: {{ $school['absent_staffs'] }}</p>
+        </div>
+    @endforeach --}}
+
+
+        {{-- <div class="card mb-4">
             <div class="card-body">
                 <form id="filterForm">
                     @csrf
@@ -230,9 +551,6 @@
                 </div>
             </div>
 
-
-            </form>
-            <hr>
             <div class="card-body">
                 <div class="school-wise-report">
                     <table class="table table-striped">
@@ -242,10 +560,13 @@
                                 <th>Total Students</th>
                                 <th>Present Student</th>
                                 <th>Absent Student</th>
+                                <th>Late Student</th>
                                 <th>Total Staff</th>
                                 <th>Present Staff</th>
                                 <th>Absent Staff</th>
-                                <th>Major Incident</th>
+                                <th>Late Staff</th>
+                                <th>Holiday Staff</th>
+                                <th>Major Incidents</th>
                                 <th>ECA/CCA</th>
                                 <th>Miscellaneous</th>
                             </tr>
@@ -257,9 +578,12 @@
                                     <td>{{ $report['total_student'] }}</td>
                                     <td>{{ $report['present_student'] }}</td>
                                     <td>{{ $report['absent_student'] }}</td>
+                                    <td>{{ $report['late_student'] }}</td>
                                     <td>{{ $report['total_staffs'] }}</td>
                                     <td>{{ $report['present_staffs'] }}</td>
                                     <td>{{ $report['absent_staffs'] }}</td>
+                                    <td>{{ $report['late_staffs'] }}</td>
+                                    <td>{{ $report['holiday_staffs'] }}</td>
                                     <td>{{ $report['major_incidents'] }}</td>
                                     <td>{{ $report['eca_cca'] }}</td>
                                     <td>{{ $report['miscellaneous'] }}</td>
@@ -296,12 +620,13 @@
 
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
+
 @section('scripts')
     @include('backend.includes.nepalidate')
     @include('backend.includes.chartjs')
-    <script>
+    {{-- <script>
         // Attach click event handler to the search button
         $('#searchButton').click(function() {
             $.ajaxSetup({
@@ -318,9 +643,7 @@
                 data: {
                     date: date
                 },
-
                 success: function(data) {
-
                     // Clear existing table rows
                     $('.school-wise-report tbody').empty();
                     // Iterate over the fetched data and append rows to the table
@@ -349,10 +672,8 @@
         var school_student_count = @json($school_students_count);
         var school_staffs_count = @json($school_staffs_count);
         var school_wise_student_attendences = @json($school_wise_student_attendences);
-
         //school-wise student
         const ctx = document.getElementById('schoolWiseStudentChart');
-
         new Chart(ctx, {
             type: 'bar',
             data: school_student_count,
@@ -364,10 +685,8 @@
                 }
             }
         });
-
         //school-wise staffs
         const schoolstaffcount = document.getElementById('schoolWiseStaffsChart');
-
         new Chart(schoolstaffcount, {
             type: 'bar',
             data: school_staffs_count,
@@ -380,20 +699,16 @@
             }
         });
         document.addEventListener('DOMContentLoaded', function() {
-
             // Extract school names and attendance data
             var schoolNames = school_wise_student_attendences.map(function(item) {
                 return item.school_name;
             });
-
             var presentStudents = school_wise_student_attendences.map(function(item) {
                 return item.present_student;
             });
-
             var absentStudents = school_wise_student_attendences.map(function(item) {
                 return item.absent_student;
             });
-
             // Create a bar chart
             var ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
             var myChart = new Chart(ctx, {
@@ -423,53 +738,8 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endsection
-@endsection  --}}
-@extends('backend.layouts.master') {{-- Assuming you have a master layout --}}
 
-@section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">Dashboard</div>
-
-                    <div class="card-body">
-                         <h5>Total Students: {{ $totalStudents }}</h5>
-                         <h5>Present Students: {{ $presentStudents }}</h5>
-                         <h5>Absent Students: {{ $absentStudents }}</h5>
-                         <h5>Total Staff: {{ $totalStaffs }}</h5>
-                         <h5>Present Staffs: {{ $presentStaffs }}</h5>
-                         <h5>Absent Staff: {{ $absentStaffs }}</h5>
-                         {{-- <h5>Present Staff: {{ $absentStudents }}</h5> --}}
-
-                        {{-- <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($students as $student)
-                                <tr>
-                                    <td>{{ $student->name }}</td>
-                                    <td>
-                                        @if ($student->is_present)
-                                            Present
-                                        @else
-                                            Absent
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table> --}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 

@@ -19,4 +19,9 @@ class StaffAttendance extends Model
     // {
     //     return $this->hasMany(Staff::class, 'staff_id');
     // }
+
+
+    public function staff() {
+        return $this->belongsTo(Staff::class, 'staff_id');
+    }
 }

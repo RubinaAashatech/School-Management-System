@@ -11,110 +11,108 @@
 
         <div class="card">
             <div class="class-body">
-                <form id="attendanceFilterForm">
-                    <div class="col-md-12 col-lg-12 d-flex justify-content-around">
-                        <div class=" col-lg-3 col-sm-3 mt-2">
-                            <label for="class_id"> Class:</label>
-                            <div class="select">
-                                <select name="class_id">
-                                    <option value="">Select Class</option>
-                                    @foreach ($classes as $class)
-                                        <option value="{{ $class->id }}">{{ $class->class }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('class_id')
-                                <strong class="text-danger">{{ $message }}</strong>
-                            @enderror
-                        </div>
-                        <div class=" col-lg-3 col-sm-3 mt-2">
-                            <label for="section_id"> Section:</label>
-                            <div class="select">
-                                <select name="section_id">
-                                    <option disabled>Select Section</option>
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                            @error('section_id')
-                                <strong class="text-danger">{{ $message }}</strong>
-                            @enderror
-                        </div>
-
-                        <div class="col-lg-3 col-sm-3 mt-2">
-                            <label for="datetimepicker">Date:</label>
-                            <div class="form-group">
-                                <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
-                                    <input id="admission-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
-                                </div>
-                                @error('date')
-                                <strong class="text-danger">{{ $message }}</strong>
-                                @enderror
-                            </div>
-                        </div>
+        <form id="attendanceFilterForm">
+            <div class="col-md-12 col-lg-12 d-flex justify-content-around">
+                <div class=" col-lg-3 col-sm-3 mt-2">
+                    <label for="class_id"> Class:</label>
+                    <div class="select">
+                        <select name="class_id">
+                            <option value="">Select Class</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->id }}">{{ $class->class }}</option>
+                            @endforeach
+                        </select>
                     </div>
-
-                    <script>
-                        $(document).ready(function () {
-                            // Fetch current Nepali date
-                            var currentDate = NepaliFunctions.GetCurrentBsDate();
-                            // Format the current date
-                            var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
-                            // Set the formatted date to the input field
-                            $('#admission-datepicker').val(formattedDate);
-                        });
-                    </script>
-
-                    <!-- Add the Search button -->
-                    <div class="form-group col-md-12 d-flex justify-content-end pt-2">
-                        <button type="button" class="btn btn-primary" id="searchButton">Search</button>
+                    @error('class_id')
+                        <strong class="text-danger">{{ $message }}</strong>
+                    @enderror
+                </div>
+                <div class=" col-lg-3 col-sm-3 mt-2">
+                    <label for="section_id"> Section:</label>
+                    <div class="select">
+                        <select name="section_id">
+                            <option disabled>Select Section</option>
+                            <option value=""></option>
+                        </select>
                     </div>
-                </form>
+                    @error('section_id')
+                        <strong class="text-danger">{{ $message }}</strong>
+                    @enderror
+                </div>
+
+                <div class="col-lg-3 col-sm-3 mt-2">
+                    <label for="datetimepicker">Date:</label>
+                    <div class="form-group">
+                        <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                            <input id="admission-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
+                        </div>
+                        @error('date')
+                        <strong class="text-danger">{{ $message }}</strong>
+                        @enderror
+                    </div>
+                </div>
+               
+                <script>
+                    $(document).ready(function () {
+                        // Fetch current Nepali date
+                        var currentDate = NepaliFunctions.GetCurrentBsDate();
+                        // Format the current date
+                        var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                        // Set the formatted date to the input field
+                        $('#admission-datepicker').val(formattedDate);
+                    });
+                </script>
             </div>
-        </div>
 
-        <div id="studentContainer">
-            <div class="card mt-2">
-                <div class="card-body">
-                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                        <!-- Save Attendance and Mark Holiday button -->
-                        <div class="row mb-2">
-                            <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
-                                <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
-                                <button type="button" class="btn btn-primary" id="exportReportButton" style="margin-left: 5px;">Export Report</button>
-                            </div>
+            <!-- Add the Search button -->
+            <div class="form-group col-md-12 d-flex justify-content-end pt-2">
+                <button type="button" class="btn btn-primary" id="searchButton">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="studentContainer">
+    <div class="card mt-2">
+        <div class="card-body">
+            <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <!-- Save Attendance and Mark Holiday button -->
+                <div class="row mb-2">
+                    <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" id="saveAttendanceButton">Save Attendance</button>
+                        <button type="button" class="btn btn-primary" id="markHolidayButton" style="margin-left: 5px;">Mark Holiday</button>
+                        <button type="button" class="btn btn-primary" id="exportReportButton" style="margin-left: 5px;">Export Report</button>
+                    </div>
+                </div>
+                <!-- Search input -->
+                <div class="row mb-2">
+                    <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
+                        <div style="position: relative;">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search">
+                            <span id="clearSearchInput" class="position-absolute top-50 end-0 translate-middle-y text-muted" style="cursor: pointer;">&times;</span>
                         </div>
-                        <!-- Search input -->
-                        <div class="row mb-2">
-                            <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
-                                <div style="position: relative;">
-                                    <input type="text" id="searchInput" class="form-control" placeholder="Search">
-                                    <span id="clearSearchInput" class="position-absolute top-50 end-0 translate-middle-y text-muted" style="cursor: pointer;">&times;</span>
-                                </div>
-                            </div>
-                           
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-md-12 col-12">
-                                <div class="report-table-container">
-                                    <div class="table-responsive">
-                                        <table id="student-table" class="table table-bordered table-striped dataTable dtr-inline"
-                                            aria-describedby="example1_info">
-                                            <thead>
-                                                <tr>
-                                                    <th>Admission No</th>
-                                                    <th>Roll No</th>
-                                                    <th>Name</th>
-                                                    <th>Attendance</th>
-                                                    <th>Note</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="studentTableBody">
-                                                <!-- Student data will be dynamically added here -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                    </div>
+                   
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-12">
+                        <div class="report-table-container">
+                            <div class="table-responsive">
+                                <table id="student-table" class="table table-bordered table-striped dataTable dtr-inline"
+                                    aria-describedby="example1_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Admission No</th>
+                                            <th>Roll No</th>
+                                            <th>Name</th>
+                                            <th>Attendance</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody">
+                                        <!-- Student data will be dynamically added here -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -122,7 +120,7 @@
             </div>
         </div>
     </div>
-
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -196,9 +194,7 @@
     @section('scripts')
     @include('backend.includes.nepalidate')
     <script>
-        
         $(document).ready(function() {
-
             // Attach change event handler to the class dropdown
             $('select[name="class_id"]').change(function() {
                 // Get the selected class ID
@@ -253,7 +249,6 @@
                         '<td>' + (user ? (user.f_name ? user.f_name + ' ' : '') + (user.m_name ? user.m_name + ' ' : '') + (user.l_name ? user.l_name : '') : '') + '</td>' +
                         '<td>';
 
-                            
                     // Check if attendance_types is defined
                     if (typeof attendance_types !== 'undefined') {
                         // Append radio buttons for each attendance type

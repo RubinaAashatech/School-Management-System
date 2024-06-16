@@ -5,17 +5,16 @@ namespace App\Http\Controllers\SchoolAdmin;
 // use DB, Auth;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Staff;
 use App\Models\Stock;
 use App\Models\School;
 use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Models\Student;
-use App\Models\Staff;
-use App\Models\StudentAttendance;
-use App\Models\StaffAttendance;
-use Illuminate\Support\Facades\DB;
 
+use App\Models\Student;
+use Illuminate\Http\Request;
 use App\Models\StudentSession;
+use App\Models\StaffAttendance;
+use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
 use App\Http\Services\SchoolService;
 use App\Http\Services\DashboardService;
@@ -35,9 +34,51 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        // $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
-        // $school_students = $this->schoolService->getSchoolStudent();
-        // $school_students_count = $this->schoolWiseCountOfStudent($school_students);
+
+        $schoolId = Auth::user()->school_id;
+
+        // Count the students in the same school
+        $totalStudents = Student::where('school_id', $schoolId)->count();
+        
+            
+                // Count the present students for today
+            $presentStudents = StudentAttendance::where('attendance_type_id', 1)
+            ->whereHas('student', function($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', today()) // Filter by today's date
+            ->count();
+
+        // Count the absent students for today
+        $absentStudents = StudentAttendance::where('attendance_type_id', 2)
+            ->whereHas('student', function($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', today()) // Filter by today's date
+            ->count();
+                            
+        $totalStaffs = Staff::where('school_id', $schoolId)->count();
+
+        $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
+        ->whereHas('staff', function($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->whereDate('created_at', today()) // Filter by today's date
+        ->count();
+
+        // Count the absent staff members for today
+        $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
+        ->whereHas('staff', function($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->whereDate('created_at', today()) // Filter by today's date
+        ->count();
+
+
+
+        $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
+        $school_students = $this->schoolService->getSchoolStudent();
+        $school_students_count = $this->schoolWiseCountOfStudent($school_students);
         
         // // School staffs
         // $school_staffs = $this->schoolService->getSchoolStaff(session('school_id'));
@@ -51,44 +92,7 @@ class DashboardController extends Controller
         // // Class Wise students
         // $class_wise_students = $this->dashboardService->getClassWiseStudents(session('school_id'));
 
-        // return view('backend.school_admin.dashboard.dashboard', compact('page_title', 'school_students_count', 'school_staffs_count', 'school_wise_student_attendences', 'school_wise_staffs_attendences', 'class_wise_students'));
-
-
-        $schoolId = $request->session()->get('school_id');
-        $Student_id=$request->session()->get('student_session_id');
-
-        $totalStudents = DB::table('students')->where('school_id', $schoolId)->count();
-
-        $presentStudents = DB::table('student_attendances')
-            ->where('student_session_id', $Student_id)
-            ->where('attendance_type_id', 1)
-            ->count();
-
-        $absentStudents = DB::table('student_attendances')
-            ->where('student_session_id', $Student_id)
-            ->where('attendance_type_id', 2)
-            ->count();
-
-        $totalStaffs = DB::table('staffs')->where('school_id', $schoolId)->count();
-
-        $presentStaffs = DB::table('staff_attendances')
-            ->where('school_id', $schoolId)
-            ->where('attendance_type_id', 1)
-            ->count();
-
-        $absentStaffs = DB::table('staff_attendances')
-            ->where('school_id', $schoolId)
-            ->where('attendance_type_id', 2)
-            ->count();
-
-        return view('backend.school_admin.dashboard.dashboard', [
-            'presentStudents' => $presentStudents,
-            'totalStudents' => $totalStudents,
-            'absentStudents' => $absentStudents,
-            'totalStaffs' => $totalStaffs,
-            'presentStaffs' => $presentStaffs,
-            'absentStaffs' => $absentStaffs,
-        ]);
+        return view('backend.school_admin.dashboard.dashboard', compact('page_title', 'school_students_count', 'school_staffs_count', 'school_wise_student_attendences', 'school_wise_staffs_attendences', 'class_wise_students', 'totalStudents', 'presentStudents', 'absentStudents', 'totalStaffs', 'presentStaffs', 'absentStaffs'));
     }
 
     public function schoolWiseCountOfStudent($originalData)
