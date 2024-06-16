@@ -199,8 +199,10 @@ public function ExpensesReportDetails($school_id, $date = null)
             // $date = Carbon::now()->toDateString();
             $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
         }
-        $schools = School::withCount('studentSessions as total_student')
+    
+        $schools = School::query()
             ->withCount([
+                'studentSessions as total_student',
                 'studentSessions as present_student' => function ($query) use ($date) {
                     $query->whereHas('studentAttendances', function ($subQuery) use ($date) {
                         $subQuery->where('attendance_type_id', 1) // present
@@ -209,7 +211,7 @@ public function ExpensesReportDetails($school_id, $date = null)
                 },
                 'studentSessions as absent_student' => function ($query) use ($date) {
                     $query->whereHas('studentAttendances', function ($subQuery) use ($date) {
-                        $subQuery->where('attendance_type_id', 2) //absent
+                        $subQuery->where('attendance_type_id', 2) // absent
                             ->whereDate('date', $date);
                     });
                 },
@@ -220,13 +222,13 @@ public function ExpensesReportDetails($school_id, $date = null)
                     });
                 }
             ]);
-
+    
         if ($schoolId) {
             $schools->where('id', $schoolId);
         }
+    
         $results = $schools->get(['id', 'name', 'total_student', 'present_student', 'absent_student', 'late_student']);
-
-
+    
         // Format the data as required
         $formattedData = [];
         foreach ($results as $school) {
@@ -238,17 +240,20 @@ public function ExpensesReportDetails($school_id, $date = null)
                 'late_student' => $school->late_student,
             ];
         }
+    
         return $formattedData;
-
     }
+    
     public static function getSchoolWiseStaffAttendence($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {
             // $date = Carbon::now()->toDateString();
             $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
         }
-        $schools = School::withCount('staffs as total_staffs')
+    
+        $schools = School::query()
             ->withCount([
+                'staffs as total_staffs',
                 'staffs as present_staffs' => function ($query) use ($date) {
                     $query->whereHas('staffsAttendances', function ($subQuery) use ($date) {
                         $subQuery->where('attendance_type_id', 1) // present
@@ -257,7 +262,7 @@ public function ExpensesReportDetails($school_id, $date = null)
                 },
                 'staffs as absent_staffs' => function ($query) use ($date) {
                     $query->whereHas('staffsAttendances', function ($subQuery) use ($date) {
-                        $subQuery->where('attendance_type_id', 2) //absent
+                        $subQuery->where('attendance_type_id', 2) // absent
                             ->whereDate('date', $date);
                     });
                 },
@@ -274,14 +279,13 @@ public function ExpensesReportDetails($school_id, $date = null)
                     });
                 }
             ]);
-
+    
         if ($schoolId) {
             $schools->where('id', $schoolId);
         }
+    
         $results = $schools->get(['id', 'total_staffs', 'present_staffs', 'absent_staffs', 'late_staffs', 'holiday_staffs']);
-
-        // dd($schools);
-
+    
         // Format the data as required
         $formattedData = [];
         foreach ($results as $school) {
@@ -294,9 +298,10 @@ public function ExpensesReportDetails($school_id, $date = null)
                 'holiday_staffs' => $school->holiday_staffs,
             ];
         }
+    
         return $formattedData;
-
     }
+    
     public static function getClassWiseStudents($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         // Get all students grouped by school and class

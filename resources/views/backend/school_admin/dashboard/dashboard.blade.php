@@ -1,4 +1,4 @@
-@extends('backend.layouts.master')
+{{-- @extends('backend.layouts.master')
 
 @section('content')
     @if (Session::has('success'))
@@ -284,4 +284,53 @@
         });
     </script>
 @endsection
+@endsection --}}
+
+
+@extends('backend.layouts.master') {{-- Assuming you have a master layout --}}
+
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Dashboard</div>
+
+                    <div class="card-body">
+                         <h5>Total Students: {{ $totalStudents }}</h5>
+                         <h5>Present Students: {{ $presentStudents }}</h5>
+                         <h5>Absent Students: {{ $absentStudents }}</h5>
+                         <h5>Total Staff: {{ $totalStaffs }}</h5>
+                         <h5>Present Staffs: {{ $presentStaffs }}</h5>
+                         <h5>Absent Staff: {{ $absentStaffs }}</h5> 
+                      
+
+                        {{-- <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($students as $student)
+                                <tr>
+                                    <td>{{ $student->name }}</td>
+                                    <td>
+                                        @if ($student->is_present)
+                                            Present
+                                        @else
+                                            Absent
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
