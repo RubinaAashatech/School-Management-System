@@ -45,6 +45,7 @@ class StudentSession extends Model
         return $this->belongsTo(Student::class, 'user_id', 'user_id');
     }
 
+    
     public function studentAttendances()
     {
         return $this->hasMany(StudentAttendance::class, 'student_session_id');

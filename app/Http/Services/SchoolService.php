@@ -113,7 +113,6 @@ class SchoolService
                 'present_student' => $students[0]['present_student'],
                 'absent_student' => $students[0]['absent_student'],
                 'late_student' => $students[0]['late_student'],
-
                 'total_staffs' => $staffs[0]['total_staffs'],
                 'present_staffs' => $staffs[0]['present_staffs'],
                 'absent_staffs' => $staffs[0]['absent_staffs'],
