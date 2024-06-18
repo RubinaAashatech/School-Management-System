@@ -14,11 +14,10 @@ class SchoolWiseReportController extends Controller
     {
         $this->schoolService = $schoolService;
     }
+
     public function getSchoolWiseReportCollection(Request $request)
     {
         $date = $request->input('date');
-
         $schools_wise_reports = $this->schoolService->schoolWiseReportDetails($date);
-        return $schools_wise_reports;
-    }
-}
+        return response()->json($schools_wise_reports); 
+    } }

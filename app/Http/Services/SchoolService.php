@@ -20,6 +20,7 @@ class SchoolService
     // protected $user;
 
     //retrieves school details based on various criteria, which can include district ID, municipality ID, or wada ID.
+   
     public static function getSchoolDetailsByCriteria($stateId = null, $districtId = null, $municipalityId = null, $wadaId = null, $school_type = null, $schoolId = null)
     {
         $query = School::query();
@@ -30,7 +31,6 @@ class SchoolService
         if ($districtId) {
             $query->where('district_id', $districtId);
         }
-
         if ($municipalityId) {
             $query->where('municipality_id', $municipalityId);
         }
@@ -45,9 +45,8 @@ class SchoolService
         }
 
         return $query->get();
-
-
     }
+
     public static function getSchoolStudent($districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         $query = School::withCount('studentSessions as total_student');
@@ -114,7 +113,6 @@ class SchoolService
                 'present_student' => $students[0]['present_student'],
                 'absent_student' => $students[0]['absent_student'],
                 'late_student' => $students[0]['late_student'],
-
                 'total_staffs' => $staffs[0]['total_staffs'],
                 'present_staffs' => $staffs[0]['present_staffs'],
                 'absent_staffs' => $staffs[0]['absent_staffs'],
@@ -126,6 +124,7 @@ class SchoolService
                 'miscellaneous' => $head_teacher_logs->miscellaneous ?? '',
             ];
         }
+        
         return $reportDetails;
     }
 
@@ -152,6 +151,18 @@ public function IncomeReportDetails($school_id, $date = null)
    
 
 }
+
+// public function ExamDetails($school_id, $date = null)
+// {
+//     $AcdemicSessionId = Auth::user()->municipality_id;
+
+//     //get all session details associated to school
+//     // $schools = $this->schoolService->getSchoolDetailsByCriteria(null, null, Auth::user()->municipality_id);
+
+//     $sessions = $this->getSchoolDetailsByCriteria(null, null, $AcdemicSessionId);
+   
+
+// }
 
 public function ExpensesReportDetails($school_id, $date = null)
 {
@@ -181,14 +192,17 @@ public function ExpensesReportDetails($school_id, $date = null)
         return $query->latest('created_at')->first();
 
     }
+    
     public static function getSchoolWiseStudentAttendence($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {
             // $date = Carbon::now()->toDateString();
             $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
         }
-        $schools = School::withCount('studentSessions as total_student')
+    
+        $schools = School::query()
             ->withCount([
+                'studentSessions as total_student',
                 'studentSessions as present_student' => function ($query) use ($date) {
                     $query->whereHas('studentAttendances', function ($subQuery) use ($date) {
                         $subQuery->where('attendance_type_id', 1) // present
@@ -197,7 +211,7 @@ public function ExpensesReportDetails($school_id, $date = null)
                 },
                 'studentSessions as absent_student' => function ($query) use ($date) {
                     $query->whereHas('studentAttendances', function ($subQuery) use ($date) {
-                        $subQuery->where('attendance_type_id', 2) //absent
+                        $subQuery->where('attendance_type_id', 2) // absent
                             ->whereDate('date', $date);
                     });
                 },
@@ -208,13 +222,13 @@ public function ExpensesReportDetails($school_id, $date = null)
                     });
                 }
             ]);
-
+    
         if ($schoolId) {
             $schools->where('id', $schoolId);
         }
+    
         $results = $schools->get(['id', 'name', 'total_student', 'present_student', 'absent_student', 'late_student']);
-
-
+    
         // Format the data as required
         $formattedData = [];
         foreach ($results as $school) {
@@ -226,17 +240,20 @@ public function ExpensesReportDetails($school_id, $date = null)
                 'late_student' => $school->late_student,
             ];
         }
+    
         return $formattedData;
-
     }
+    
     public static function getSchoolWiseStaffAttendence($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         if (!$date) {
             // $date = Carbon::now()->toDateString();
             $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
         }
-        $schools = School::withCount('staffs as total_staffs')
+    
+        $schools = School::query()
             ->withCount([
+                'staffs as total_staffs',
                 'staffs as present_staffs' => function ($query) use ($date) {
                     $query->whereHas('staffsAttendances', function ($subQuery) use ($date) {
                         $subQuery->where('attendance_type_id', 1) // present
@@ -245,7 +262,7 @@ public function ExpensesReportDetails($school_id, $date = null)
                 },
                 'staffs as absent_staffs' => function ($query) use ($date) {
                     $query->whereHas('staffsAttendances', function ($subQuery) use ($date) {
-                        $subQuery->where('attendance_type_id', 2) //absent
+                        $subQuery->where('attendance_type_id', 2) // absent
                             ->whereDate('date', $date);
                     });
                 },
@@ -262,14 +279,13 @@ public function ExpensesReportDetails($school_id, $date = null)
                     });
                 }
             ]);
-
+    
         if ($schoolId) {
             $schools->where('id', $schoolId);
         }
+    
         $results = $schools->get(['id', 'total_staffs', 'present_staffs', 'absent_staffs', 'late_staffs', 'holiday_staffs']);
-
-        // dd($schools);
-
+    
         // Format the data as required
         $formattedData = [];
         foreach ($results as $school) {
@@ -282,9 +298,10 @@ public function ExpensesReportDetails($school_id, $date = null)
                 'holiday_staffs' => $school->holiday_staffs,
             ];
         }
+    
         return $formattedData;
-
     }
+    
     public static function getClassWiseStudents($schoolId = null, $date = null, $districtId = null, $municipalityId = null, $classId = null, $sectionId = null, $userCount = null, $rows = false)
     {
         // Get all students grouped by school and class

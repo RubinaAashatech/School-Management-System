@@ -26,4 +26,10 @@ class StudentAttendance extends Model
     {
         return $this->belongsTo(AttendanceType::class, 'attendance_type_id');
     }
+
+
+     // Define the relationship with the Student model
+     public function student() {
+        return $this->belongsTo(Student::class, 'student_session_id', 'id');
+    }
 }

@@ -22,6 +22,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        
     ];
 
     /**
@@ -75,5 +76,10 @@ class Kernel extends HttpKernel
         'adminPermissionAccess' => \App\Http\Middleware\AdminPermissionAccess::class,
         'userAttributes' => \App\Http\Middleware\AuthenticateAndSetUserAttributes::class,
         'setLocale' => SetLocale::class,
+    ];
+
+    protected $routeMiddleware = [
+        // Other middleware...
+        'initialize.session' => \App\Http\Middleware\InitializeSessionValues::class,
     ];
 }

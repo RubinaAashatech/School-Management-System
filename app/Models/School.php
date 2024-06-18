@@ -64,5 +64,20 @@ class School extends Model
         return $this->hasMany(StudentSession::class, 'school_id');
     }
 
+    public function studentAttendances()
+    {
+        return $this->hasMany(StudentAttendance::class);
+    }
 
+    public function staffAttendances()
+    {
+        return $this->hasMany(StaffAttendance::class);
+    }
+
+    public function headTeacherLogs()
+    {
+        return $this->hasMany(HeadTeacherLog::class);
+    }
 }
+
+
