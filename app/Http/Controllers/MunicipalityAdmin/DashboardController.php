@@ -169,6 +169,8 @@ class DashboardController extends Controller
                 'absent_staffs' => $absentStaffsInSchool,
             ];
         }
+
+        $totalSchools = School::count();
     
         $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
         
@@ -180,7 +182,8 @@ class DashboardController extends Controller
             'presentStaffs' => $presentStaffs,
             'absentStaffs' => $absentStaffs,
             'schoolData' => $schoolData,
-            'major_incidents' => $majorIncidentsCount // Corrected variable name
+            'major_incidents' => $majorIncidentsCount ,
+            'totalSchools' => $totalSchools
         ]);
     }
     

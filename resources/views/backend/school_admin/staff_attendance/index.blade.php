@@ -132,7 +132,7 @@
                                 var row = '<tr data-staff-id="' + staffData.staff_id +
                                     '">' +
                                     '<td>' + staffData.staff_id + '</td>' +
-                                    '<td>' + staff.f_name + '</td>' +
+                                    '<td>' + staff.f_name + ' ' + staff.l_name + '</td>'+
                                     '<td>';
                                 if (typeof attendance_types !== 'undefined') {
                                     $.each(attendance_types, function(i,
