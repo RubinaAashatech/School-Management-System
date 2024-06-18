@@ -92,7 +92,7 @@
                                             <label for="section_id"> Section:</label>
                                             <div class="select">
                                                 <select name="section_id">
-                                                    <option disabled selected>Select Section</option>
+                                                    <option disabled selected>Select Section</option>   
                                                     <option value=""></option>
                                                 </select>
                                             </div>
@@ -111,7 +111,7 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                
+
                                             </div>
                                             @error('class_id')
                                                 <strong class="text-danger">{{ $message }}</strong>
@@ -182,11 +182,14 @@
                                             <div class="">
                                                 <label for="ward_id">Choose Ward</label>
                                                 <div class="select">
-
-                                                    <select id="ward_id" name="ward_id" data-iteration="0"
-                                                        class="ward_id" required>
-                                                        <option value="{{ old('ward_id') }}">Choose Ward</option>
-                                                    </select>
+                                                    <select id="ward_id" name="ward_id" data-iteration="0" class="ward_id" required>
+                                                        <option value="">Choose Ward</option>
+                                                        @foreach ($wards as $ward)
+                                                            <option value="{{ $ward->id }}" {{ old('ward_id') == $ward->id ? 'selected' : '' }}>
+                                                                {{ $ward->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>                                               
                                                 </div>
                                                 @error('ward_id')
                                                     <span class="invalid-feedback" role="alert">
@@ -365,9 +368,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
                                 <div class="tab">
                                     <div class="col-lg-12 col-md-12">
                                         <div class="hr-line-dashed"></div>

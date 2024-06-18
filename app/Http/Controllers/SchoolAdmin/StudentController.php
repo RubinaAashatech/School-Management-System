@@ -69,14 +69,13 @@ class StudentController extends Controller
             ->get();
         $school_houses = SchoolHouse::all();
         $bloodGroups = BloodGroupType::pluck('type', 'id');
-        // $bloodGroups = BloodGroupType::all();
-        // dd($bloodGroups);
-
+    
         $adminStateId = Auth::user()->state_id;
         $adminDistrictId = Auth::user()->district_id;
         $adminMunicipalityId = Auth::user()->municipality_id;
+        $wards = User::getWards(Auth::user()->municipality_id);
         $adminSchoolId = Auth::user()->school_id;
-
+    
         return view(
             'backend.school_admin.student.create',
             compact(
@@ -88,10 +87,12 @@ class StudentController extends Controller
                 'adminDistrictId',
                 'adminMunicipalityId',
                 'adminSchoolId',
-                'bloodGroups'
+                'bloodGroups',
+                'wards'
             )
         );
     }
+    
 
     public function additionalInformationStudents($student_id, Request $request)
     {
@@ -128,11 +129,6 @@ class StudentController extends Controller
             return back()->withToastError($e->getMessage())->withInput();
         }
     }
-
-
-
-
-
 
 
     // RETRIVING SECTIONS OF THE RESPECTIVE CLASS
