@@ -474,6 +474,22 @@
                     </div>
                 </div>
             </div>
+
+
+             <!-- Widget for Major Incidents -->
+             <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-exclamation-circle"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $major_incidents }}</div>
+                            <div class="weight-500">Major Incidents</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
           
         </div>
 
