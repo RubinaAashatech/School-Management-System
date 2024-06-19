@@ -1,5 +1,4 @@
 @extends('backend.layouts.master')
-
 @section('content')
 <div class="container">
     <h1>Attendance Report</h1>
@@ -15,7 +14,6 @@
                 @enderror
             </div>
         </div>
-       
         <script>
             $(document).ready(function () {
                 // Fetch current Nepali date
@@ -28,10 +26,8 @@
         </script>
         <button type="submit" class="btn btn-primary">Get Report</button>
     </form>
-
     @if(isset($studentAttendances))
         {{-- <h3>Attendance Report @if(isset($date)) for {{ $date }} @endif</h3> --}}
-        
         <h3>Student Attendance</h3>
         <table class="table">
             <thead>
@@ -53,9 +49,7 @@
         <p>No attendance records found.</p>
     @endif
 </div>
-
 <script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
-
 <script type="text/javascript">
     $(document).ready(function () {
         // Initialize nepali-datepicker
@@ -66,7 +60,6 @@
                 // Optionally handle change event
             }
         });
-        
     });
 </script>
 @endsection

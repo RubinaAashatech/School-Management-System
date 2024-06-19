@@ -1,5 +1,4 @@
 @extends('backend.layouts.master')
-
 @section('content')
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
@@ -19,11 +18,9 @@
                                 <div class="input-group date" id="datetimepicker" data-target-input="nearest">
                                     <input id="nepali-datepicker" name="logged_date" type="text"
                                         value="{{ old('logged_date') }}" class="form-control" />
-
                                 </div>
                             </div>
                         </div>
-
                         <script>
                             $(document).ready(function () {
                                 // Fetch current Nepali date
@@ -34,8 +31,6 @@
                                 $('#nepali-datepicker').val(formattedDate);
                             });
                         </script>
-                            
-    
                         <div class="search-button-container d-flex col-md-3 justify-content-end mt-2">
                             <button id="searchButton" class="btn btn-sm btn-primary">Search</button>
                         </div>
@@ -111,10 +106,9 @@
         </div>
     </div>
 @endsection
-
 @section('scripts')
-<script
-src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -127,39 +121,30 @@ src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.da
             }
         });
 
-        // Fetch and display data based on today's Nepali date
+        // Fetch and display data based on the selected Nepali date
         $('#searchButton').click(function () {
             var selectedDate = $('#nepali-datepicker').val();
 
             // Implement your AJAX call here to fetch data based on the selectedDate
             $.ajax({
-                url: ' admin.headteacherlog-reports.index ',// Replace with actual endpoint
+                url: '{{ route("admin.attendance_reports.report") }}', // Use Laravel named route
                 method: 'GET',
                 data: {
-                    logged_date: selectedDate
+                    date: selectedDate
                 },
                 success: function (response) {
-                    // Update HTML elements with fetched data
+                    console.log('Data fetched successfully:', response); // Debugging line
+
+                    // Update existing table data with fetched data
+                    $('#presentBoys').text(response.presentBoys);
+                    $('#presentGirls').text(response.presentGirls);
+                    $('#absentBoys').text(response.absentBoys);
+                    $('#absentGirls').text(response.absentGirls);
                     $('#totalStudents').text(response.totalStudents);
-                        $('#presentMaleCount').text('Male: ' + response.presentBoys);
-                        $('#presentFemaleCount').text('Female: ' + response.presentGirls);
-                        $('#totalPresentStudents').text('Total: ' + response.presentStudents);
-
-                        $('#absentMaleCount').text('Male: ' + response.absentBoys);
-                        $('#absentFemaleCount').text('Female: ' + response.absentGirls);
-                        $('#totalAbsentStudents').text('Total: ' + response.absentStudents);
-
-                        $('#presentStaffCount').text(response.presentStaffs);
-                        $('#absentStaffCount').text(response.absentStaffs);
-
-                        $('#majorIncident').text(response.majorIncident);
-                        $('#majorWorkObservation').text(response.majorWorkObservation);
-                        $('#assemblyManagement').text(response.assemblyManagement);
-                        $('#miscellaneous').text(response.miscellaneous);
-                    // Update other elements similarly
+                    // Add other data updates as needed
                 },
                 error: function (error) {
-                    console.error('Error fetching data:', error);
+                    console.error('Error fetching data:', error); // Debugging line
                 }
             });
         });
