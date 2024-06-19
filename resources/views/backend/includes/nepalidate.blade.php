@@ -1,4 +1,5 @@
-<script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.1.min.js"
+<script
+src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"
     type="text/javascript"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {

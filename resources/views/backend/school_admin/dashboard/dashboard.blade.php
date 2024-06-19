@@ -384,6 +384,20 @@
                 </div>
             </div>
 
+            
+            <div class="col-xl-3 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalGirls }}</div>
+                            <div class="weight-500">Total Girls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="col-xl-3 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
@@ -403,22 +417,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-child-dress"></i></div>
-                        </div>
-                        <div class="widget-data">
-                            <div class="weight-800 font-18">{{ $totalGirls }}</div>
-                            <div class="weight-500">Total Girls</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-xl-3 mb-50">
-                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
-                    <div class="d-flex flex-wrap align-items-center">
-                        <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-p"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $presentStudents }}</div>
@@ -435,7 +434,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-circle-xmark"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $absentStudents }}</div>
@@ -452,7 +451,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-p"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $presentStaffs }}</div>
@@ -469,7 +468,7 @@
                 <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-a"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $absentStaffs }}</div>
@@ -481,6 +480,7 @@
                     </div>
                 </div>
             </div>
+
 
            
 
@@ -516,7 +516,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $absentGirls }}</div>

@@ -113,7 +113,8 @@
 @endsection
 
 @section('scripts')
-<script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.1.min.js"></script>
+<script
+src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -131,9 +132,8 @@
             var selectedDate = $('#nepali-datepicker').val();
 
             // Implement your AJAX call here to fetch data based on the selectedDate
-            // Example:
             $.ajax({
-                url: '/your/data/endpoint', // Replace with actual endpoint
+                url: ' admin.headteacherlog-reports.index ',// Replace with actual endpoint
                 method: 'GET',
                 data: {
                     logged_date: selectedDate
@@ -141,6 +141,21 @@
                 success: function (response) {
                     // Update HTML elements with fetched data
                     $('#totalStudents').text(response.totalStudents);
+                        $('#presentMaleCount').text('Male: ' + response.presentBoys);
+                        $('#presentFemaleCount').text('Female: ' + response.presentGirls);
+                        $('#totalPresentStudents').text('Total: ' + response.presentStudents);
+
+                        $('#absentMaleCount').text('Male: ' + response.absentBoys);
+                        $('#absentFemaleCount').text('Female: ' + response.absentGirls);
+                        $('#totalAbsentStudents').text('Total: ' + response.absentStudents);
+
+                        $('#presentStaffCount').text(response.presentStaffs);
+                        $('#absentStaffCount').text(response.absentStaffs);
+
+                        $('#majorIncident').text(response.majorIncident);
+                        $('#majorWorkObservation').text(response.majorWorkObservation);
+                        $('#assemblyManagement').text(response.assemblyManagement);
+                        $('#miscellaneous').text(response.miscellaneous);
                     // Update other elements similarly
                 },
                 error: function (error) {

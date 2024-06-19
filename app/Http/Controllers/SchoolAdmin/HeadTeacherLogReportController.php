@@ -13,109 +13,121 @@ use App\Models\Staff;
 use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
 
+use Carbon\Carbon;
+
 class HeadTeacherLogReportController extends Controller
 {
     public function index(Request $request)
     {
         $schoolId = Auth::user()->school_id;
-        $date = $request->input('logged_date', today()->toDateString()); // Use today's date if none provided
+        $date = $request->input('logged_date', Carbon::today()->toDateString()); // Use today's date if not provided
 
-        // Count the students in the same school
+        // Fetch data based on the provided date
+        $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
+            ->whereHas('staff', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+
+        $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
+            ->whereHas('staff', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+
+        $teacherLog = HeadTeacherLog::whereDate('created_at', $date)
+            ->select('major_incidents', 'major_work_observation', 'assembly_management', 'miscellaneous')
+            ->first();
+
+        $majorIncident = $teacherLog->major_incidents ?? '';
+        $majorWorkObservation = $teacherLog->major_work_observation ?? '';
+        $assemblyManagement = $teacherLog->assembly_management ?? '';
+        $miscellaneous = $teacherLog->miscellaneous ?? '';
+
         $totalStudents = Student::where('school_id', $schoolId)->count();
 
-        // Count the girls in the same school
+        $presentStudents = StudentAttendance::where('attendance_type_id', 1)
+            ->whereHas('student', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+
+        $absentStudents = StudentAttendance::where('attendance_type_id', 2)
+            ->whereHas('student', function ($query) use ($schoolId) {
+                $query->where('school_id', $schoolId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+
         $totalGirls = Student::where('school_id', $schoolId)
             ->whereHas('user', function ($query) {
                 $query->where('gender', 'female');
             })
             ->count();
 
-        // Count the boys in the same school
         $totalBoys = Student::where('school_id', $schoolId)
             ->whereHas('user', function ($query) {
                 $query->where('gender', 'male');
             })
             ->count();
 
-        // Count the present students for today
-        $presentStudents = StudentAttendance::where('attendance_type_id', 1)
-            ->whereHas('student', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
-            ->whereDate('created_at', $date) // Filter by selected date
-            ->count();
-
-        // Count the present girls for today
         $presentGirls = StudentAttendance::where('attendance_type_id', 1)
             ->whereHas('student.user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)->where('gender', 'female');
             })
-            ->whereDate('created_at', $date) // Filter by selected date
+            ->whereDate('created_at', $date)
             ->count();
 
-        // Count the present boys for today
         $presentBoys = StudentAttendance::where('attendance_type_id', 1)
             ->whereHas('student.user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)->where('gender', 'male');
             })
-            ->whereDate('created_at', $date) // Filter by selected date
+            ->whereDate('created_at', $date)
             ->count();
 
-        // Count the absent students for today
-        $absentStudents = StudentAttendance::where('attendance_type_id', 2)
-            ->whereHas('student', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
-            ->whereDate('created_at', $date) // Filter by selected date
-            ->count();
-
-        // Count the absent girls for today
         $absentGirls = StudentAttendance::where('attendance_type_id', 2)
             ->whereHas('student.user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)->where('gender', 'female');
             })
-            ->whereDate('created_at', $date) // Filter by selected date
+            ->whereDate('created_at', $date)
             ->count();
 
-        // Count the absent boys for today
         $absentBoys = StudentAttendance::where('attendance_type_id', 2)
             ->whereHas('student.user', function ($query) use ($schoolId) {
                 $query->where('school_id', $schoolId)->where('gender', 'male');
             })
-            ->whereDate('created_at', $date) // Filter by selected date
+            ->whereDate('created_at', $date)
             ->count();
 
-        $totalStaffs = Staff::where('school_id', $schoolId)->count();
+        $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
 
-        $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
-            ->whereHas('staff', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
-            ->whereDate('created_at', $date) // Filter by selected date
-            ->count();
-
-        // Count the absent staff members for today
-        $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
-            ->whereHas('staff', function ($query) use ($schoolId) {
-                $query->where('school_id', $schoolId);
-            })
-            ->whereDate('created_at', $date) // Filter by selected date
-            ->count();
-
-            $teacherLogs = HeadTeacherLog::whereDate('logged_date', $date)
-            ->pluck('major_incidents', 'major_work_observation', 'assembly_management', 'miscellaneous')
-            ->first(); // Assuming you want only the first record matching the condition
-        
-        // Access values from the collection
-        $majorIncident = $teacherLogs['major_incidents'] ?? '';
-        $majorWorkObservation = $teacherLogs['major_work_observation'] ?? '';
-        $assemblyManagement = $teacherLogs['assembly_management'] ?? '';
-        $miscellaneous = $teacherLogs['miscellaneous'] ?? '';
+        if ($request->ajax()) {
+            return response()->json([
+                'totalStudents' => $totalStudents,
+                'presentStudents' => $presentStudents,
+                'absentStudents' => $absentStudents,
+                'totalGirls' => $totalGirls,
+                'totalBoys' => $totalBoys,
+                'presentGirls' => $presentGirls,
+                'presentBoys' => $presentBoys, 
+                'absentGirls' => $absentGirls,
+                'absentBoys' => $absentBoys,
+                'presentStaffs' => $presentStaffs,
+                'absentStaffs' => $absentStaffs,
+                'majorIncident' => $majorIncident,
+                'majorWorkObservation' => $majorWorkObservation,
+                'assemblyManagement' => $assemblyManagement,
+                'miscellaneous' => $miscellaneous,
+            ]);
+        }
 
         return view('backend.school_admin.logs.head_teacher_log_reports.index', compact(
-            'totalStudents', 'presentStudents', 'absentStudents', 'presentStaffs', 'absentStaffs',
-            'presentGirls', 'presentBoys', 'absentGirls', 'absentBoys', 'majorIncident', 'majorWorkObservation',
-            'assemblyManagement', 'miscellaneous', 'date'
+            'page_title', 'totalStudents', 'presentStudents', 'absentStudents',
+            'totalGirls', 'totalBoys', 'presentGirls', 'presentBoys', 'absentGirls', 'absentBoys',
+            'presentStaffs', 'absentStaffs', 'majorIncident', 'majorWorkObservation', 'assemblyManagement', 'miscellaneous'
         ));
     }
 

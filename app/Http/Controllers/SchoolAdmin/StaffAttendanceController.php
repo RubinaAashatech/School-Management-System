@@ -30,8 +30,6 @@ class StaffAttendanceController extends Controller
         $schoolId = session('school_id');
         $attendance_types = AttendanceType::all();
 
-        
-
         return view('backend.school_admin.staff_attendance.index', compact('page_title', 'attendance_types', 'schoolId'));
     }
 
@@ -118,45 +116,50 @@ class StaffAttendanceController extends Controller
     }
 
     public function getStaffName(Request $request)
-{
-    try {
-        $role = $request->role;
-        $date = $request->date;
-        $schoolId = session('school_id'); // Fetch school ID from session
+    {
+        try {
+            $role = $request->role;
+            $date = $request->date;
+            $schoolId = session('school_id'); // Fetch school ID from session
 
-        if (!isset($date)) {
-            $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
-        }
-
-        // Fetch staff details from the service, filtering by role, date, and school ID
-        $staffDetails = $this->StaffRoleDateService->getStaffDateRoleForDataTable($request, $date);
-
-        $responseArray = [];
-
-        foreach ($staffDetails as $staff) {
-            $attendanceTypes = AttendanceType::where('is_active', 1)->get();
-            $attendance = '';
-
-            if (isset($staff->staffAttendance)) {
-                $attendance = $staff->staffAttendance;
-                $staff['attendance_type_id'] = $staff->staffAttendance ? $staff->staffAttendance->attendance_type_id : '';
-                $staff['remarks'] = $staff->staffAttendance ? $staff->staffAttendance->remarks : '';
-                $staff['staff_id'] = $staff->id;
+            if (!isset($date)) {
+                $date = LaravelNepaliDate::from(Carbon::now())->toNepaliDate();
             }
 
-            $responseArray[] = [
-                'staff_id' => $staff->id,
-                'staff' => $staff,
-                'staff_name' => $staff->f_name,
-                'role_id' => $staff->role_id,
-                'attendance_types' => $attendanceTypes->toArray(),
-                'staff_attendances' => $attendance
-            ];
-        }
+            // Fetch staff details from the service, filtering by role, date, and school ID
+            $staffDetails = $this->StaffRoleDateService->getStaffDateRoleForDataTable($request);
 
-        return response()->json(['original' => $responseArray, 'date' => $date]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
+            $responseArray = [];
+
+            foreach ($staffDetails as $staff) {
+                $attendanceTypes = AttendanceType::where('is_active', 1)->get();
+                $attendance = '';
+
+                if (isset($staff->staffAttendance)) {
+                    $attendance = $staff->staffAttendance;
+                    $staff['attendance_type_id'] = $staff->staffAttendance ? $staff->staffAttendance->attendance_type_id : '';
+                    $staff['remarks'] = $staff->staffAttendance ? $staff->staffAttendance->remarks : '';
+                    $staff['staff_id'] = $staff->id;
+                }
+
+                // Check if role filtering is enabled and match the requested role
+            if ($role && $staff->role_id != $role) {
+                continue; // Skip this staff member if roles don't match
+            }
+
+                $responseArray[] = [
+                    'staff_id' => $staff->id,
+                    'staff' => $staff,
+                    'staff_name' => $staff->f_name,
+                    'role_id' => $staff->role_id,
+                    'attendance_types' => $attendanceTypes->toArray(),
+                    'staff_attendances' => $attendance
+                ];
+            }
+
+            return response()->json(['original' => $responseArray, 'date' => $date]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-}
 }
