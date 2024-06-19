@@ -58,7 +58,7 @@ class DashboardController extends Controller
         ->whereHas('student', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('updated_at', today()) // Filter by today's date
         ->count();
 
     // Count the present girls for today
@@ -82,7 +82,7 @@ class DashboardController extends Controller
         ->whereHas('student', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('updated_at', today()) // Filter by today's date
         ->count();
 
         //count the absent girls for today

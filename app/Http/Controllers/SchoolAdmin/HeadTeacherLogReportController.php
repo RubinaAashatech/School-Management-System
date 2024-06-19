@@ -11,6 +11,8 @@ use App\Models\StudentSession;
 use App\Models\StaffAttendance;
 use App\Models\Staff;
 use App\Models\StudentAttendance;
+use App\Models\AttendanceType;
+
 use App\Http\Controllers\Controller;
 
 use Carbon\Carbon;
@@ -20,7 +22,7 @@ class HeadTeacherLogReportController extends Controller
     public function index(Request $request)
     {
         $schoolId = Auth::user()->school_id;
-        $date = $request->input('logged_date', Carbon::today()->toDateString()); // Use today's date if not provided
+        $date = $request->input('date', Carbon::today()->toDateString()); // Use today's date if not provided
 
         // Fetch data based on the provided date
         $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
@@ -102,8 +104,6 @@ class HeadTeacherLogReportController extends Controller
             ->whereDate('created_at', $date)
             ->count();
 
-        $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
-
         if ($request->ajax()) {
             return response()->json([
                 'totalStudents' => $totalStudents,
@@ -112,7 +112,7 @@ class HeadTeacherLogReportController extends Controller
                 'totalGirls' => $totalGirls,
                 'totalBoys' => $totalBoys,
                 'presentGirls' => $presentGirls,
-                'presentBoys' => $presentBoys, 
+                'presentBoys' => $presentBoys,
                 'absentGirls' => $absentGirls,
                 'absentBoys' => $absentBoys,
                 'presentStaffs' => $presentStaffs,
@@ -123,6 +123,8 @@ class HeadTeacherLogReportController extends Controller
                 'miscellaneous' => $miscellaneous,
             ]);
         }
+
+        $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
 
         return view('backend.school_admin.logs.head_teacher_log_reports.index', compact(
             'page_title', 'totalStudents', 'presentStudents', 'absentStudents',
