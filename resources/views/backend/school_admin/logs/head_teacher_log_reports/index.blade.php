@@ -6,6 +6,7 @@
                 {{-- <h2>{{ $page_title }}</h2> --}}
             </div>
             @include('backend.school_admin.lessons.partials.action')
+
         </div>
         <div class="mt-4">
             <div class="card">
@@ -13,20 +14,29 @@
                     <h5>Select Criteria</h5>
                     <div class="mt-4 d-flex flex-column">
                         <div class="p-2 label-input">
-                            <label for="datetimepicker">Logged Date:</label>
+                            <label for="datetimepicker">Date:</label>
                             <div class="form-group">
-                                <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                                    <input id="nepali-datepicker" name="logged_date" type="text"
-                                        value="{{ old('logged_date') }}" class="form-control" />
+                                <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                                    <input id="nepali-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
                                 </div>
+                                @error('date')
+                                <strong class="text-danger">{{ $message }}</strong>
+                                @enderror
                             </div>
                         </div>
                         <script>
                             $(document).ready(function () {
                                 // Fetch current Nepali date
                                 var currentDate = NepaliFunctions.GetCurrentBsDate();
-                                // Format the current date
-                                var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                    
+                                // Pad month and day with leading zero if they are less than 10
+                                var padZero = function (num) {
+                                    return num < 10 ? '0' + num : num;
+                                };
+                    
+                                // Format the current date with padded month and day
+                                var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
+                    
                                 // Set the formatted date to the input field
                                 $('#nepali-datepicker').val(formattedDate);
                             });

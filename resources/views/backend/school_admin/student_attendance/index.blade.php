@@ -7,6 +7,8 @@
                 <h2>{{ $page_title }}</h2>
             </div>
             @include('backend.school_admin.student_attendance.partials.action')
+
+            
         </div>
 
         <div class="card">
@@ -56,8 +58,15 @@
                     $(document).ready(function () {
                         // Fetch current Nepali date
                         var currentDate = NepaliFunctions.GetCurrentBsDate();
-                        // Format the current date
-                        var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+            
+                        // Pad month and day with leading zero if they are less than 10
+                        var padZero = function (num) {
+                            return num < 10 ? '0' + num : num;
+                        };
+            
+                        // Format the current date with padded month and day
+                        var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
+            
                         // Set the formatted date to the input field
                         $('#admission-datepicker').val(formattedDate);
                     });
@@ -85,7 +94,7 @@
                     </div>
                 </div>
                 <!-- Search input -->
-                <div class="row mb-2">
+                {{-- <div class="row mb-2">
                     <div class="col-sm-3 col-md-3 col-3 d-flex justify-content-end position-relative">
                         <div style="position: relative;">
                             <input type="text" id="searchInput" class="form-control" placeholder="Search">
@@ -93,7 +102,7 @@
                         </div>
                     </div>
                    
-                </div>
+                </div> --}}
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-12">
                         <div class="report-table-container">
@@ -123,21 +132,53 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Initialize DataTable
+        var table = $('#student-table').DataTable({
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "order": [[1, 'asc']],  // Default sorting by Roll No column in ascending order
+            "columnDefs": [
+                { "targets": [0, 2, 3, 4], "orderable": false },  // Disable sorting for all columns except index 1 (Roll No)
+                { "targets": [1], "orderable": true }  // Roll No column - sortable
+            ],
+        });
+
         // Function to fetch students dynamically
-        function fetchStudents() {
+        function fetchStudents(sortBy, sortOrder) {
             $.ajax({
                 url: '/admin/student/get',
                 type: 'POST',
+                data: {
+                    sortBy: sortBy,
+                    sortOrder: sortOrder
+                },
                 success: function(response) {
-                    updateTable(response.students);
+                    updateTable(response.students); // Update the table with sorted data
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching student data:', error);
                 }
             });
         }
+
+        // Initial fetch of students
+        fetchStudents('roll_no', 'asc'); // Initial fetch sorted by Roll No column
+
+        // Handle DataTables sorting event for Roll No column only
+        $('#student-table').on('click', 'th', function() {
+            var columnIndex = table.column(this).index();
+            var column = table.settings().init().columns[columnIndex];
+            var sortBy = column.data;
+
+            if (sortBy === 'roll_no') {
+                var sortOrder = column.order()[0]; // Get the sort order ('asc' or 'desc')
+                fetchStudents(sortBy, sortOrder); // Fetch students based on clicked column for sorting
+            }
+        });
 
         // Function to update table based on student data
         function updateTable(students) {
@@ -146,23 +187,24 @@
 
             if (students.length === 0) {
                 tableBody.append('<tr><td colspan="5" class="text-center">No results found</td></tr>');
-                return;
+            } else {
+                students.forEach(student => {
+                    const row = `<tr>
+                        <td>${student.admission_no}</td>
+                        <td>${student.roll_no}</td>
+                        <td>${student.f_name}</td>
+                        <td>${student.attendance_type_id}</td>
+                        <td>${student.remarks}</td>
+                    </tr>`;
+                    tableBody.append(row);
+                });
             }
 
-            students.forEach(student => {
-                const row = `<tr>
-                    <td>${student.admission_no}</td>
-                    <td>${student.roll_no}</td>
-                    <td>${student.f_name}</td>
-                    <td>${student.attendance_type_id}</td>
-                    <td>${student.remarks}</td>
-                </tr>`;
-                tableBody.append(row);
-            });
+            // Redraw DataTable after updating table content
+            table.clear().rows.add(tableBody.find('tr')).draw();
         }
 
-        fetchStudents();
-
+        // Search functionality
         $('#searchInput').on('input', function () {
             const query = $(this).val().toLowerCase();
             updateTableBasedOnSearch(query);
@@ -170,7 +212,7 @@
 
         $('#clearSearchInput').on('click', function () {
             $('#searchInput').val('');
-            fetchStudents();
+            fetchStudents('roll_no', 'asc'); // Clear search and re-fetch sorted by Roll No column
         });
 
         // Function to update table based on search input
@@ -186,10 +228,8 @@
                 }
             });
         }
-       
     });
 </script>
-
 
     @section('scripts')
     @include('backend.includes.nepalidate')
@@ -544,6 +584,8 @@
             a.click();
             document.body.removeChild(a);
         });
+
+        
         
             });
         </script>
