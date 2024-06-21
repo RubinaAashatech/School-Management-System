@@ -42,8 +42,15 @@
                             $(document).ready(function () {
                                 // Fetch current Nepali date
                                 var currentDate = NepaliFunctions.GetCurrentBsDate();
-                                // Format the current date
-                                var formattedDate = currentDate.year + '-' + currentDate.month+ '-' + currentDate.day;
+                    
+                                // Pad month and day with leading zero if they are less than 10
+                                var padZero = function (num) {
+                                    return num < 10 ? '0' + num : num;
+                                };
+                    
+                                // Format the current date with padded month and day
+                                var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
+                    
                                 // Set the formatted date to the input field
                                 $('#admission-datepicker').val(formattedDate);
                             });

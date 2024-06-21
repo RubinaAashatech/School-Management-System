@@ -38,7 +38,8 @@
         href="{{ asset('adminassets/assets/datatables.net/css/buttons.dataTables.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('adminassets/assets/select2/dist/css/select2.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('adminassets/vendors/flatpickr/flatpickr.min.css') }}" />
-
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     {{-- <link rel="stylesheet" href="{{ asset('adminasset/css/custom.css') }}" asp-append-version="true" /> --}}
 
 
