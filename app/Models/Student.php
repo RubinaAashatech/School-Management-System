@@ -2,21 +2,31 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Classg;
-use App\Models\Section;
-use App\Models\StudentLeave;
-use App\Models\FeeCollection;
-use App\Models\StudentSession;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'school_id', 'reservation_quota_id', 'admission_no', 'roll_no', 'admission_date', 'school_house_id', 'student_photo', 'guardian_is', 'guardian_name', 'guardian_relation', 'guardian_phone', 'guardian_email', 'transfer_certificate', 'class_id', 'section_id'];
-
+    protected $fillable = [
+        'user_id', 
+        'school_id', 
+        'reservation_quota_id', 
+        'admission_no', 
+        'roll_no', 
+        'admission_date', 
+        'school_house_id', 
+        'student_photo', 
+        'guardian_is', 
+        'guardian_name', 
+        'guardian_relation', 
+        'guardian_phone', 
+        'guardian_email', 
+        'transfer_certificate', 
+        'class_id', 
+        'section_id'
+    ];
 
     public function user()
     {
@@ -32,10 +42,12 @@ class Student extends Model
     {
         return $this->belongsTo(SchoolHouse::class, 'school_house_id');
     }
+
     public function classes()
     {
         return $this->belongsTo(Classg::class, 'class_id');
     }
+
     public function sections()
     {
         return $this->belongsTo(Section::class, 'section_id');
@@ -51,13 +63,23 @@ class Student extends Model
         return $this->hasOne(User::class, 'student_id');
     }
 
-
     public function session()
     {
         return $this->belongsTo(StudentSession::class);
     }
+
     public function feeCollections()
     {
         return $this->hasMany(FeeCollection::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(StudentAttendance::class);
+    }
+
+    public function studentSessions()
+    {
+        return $this->hasMany(StudentSession::class, 'user_id');
     }
 }

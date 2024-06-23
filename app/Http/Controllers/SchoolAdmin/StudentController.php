@@ -16,6 +16,7 @@ use App\Models\BloodGroupType;
 use App\Models\StudentSession;
 use App\imports\CombinedImport;
 use App\Models\AcademicSession;
+use App\Models\StudentAttendance;
 use Yajra\Datatables\Datatables;
 use App\Http\Services\FormService;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +55,11 @@ class StudentController extends Controller
         $classes = Classg::where('school_id', $schoolId)
             ->orderBy('created_at', 'desc')
             ->get();
-        $students = Student::latest()->get();
+
+         // Retrieve only students whose associated users are active
+         $students = Student::whereHas('user', function ($query) {
+            $query->where('is_active', 1); // Ensure '1' matches the active status
+        })->where('school_id', $schoolId)->latest()->get();
 
         return view('backend.school_admin.student.index', compact('students', 'page_title', 'classes'));
     }
@@ -437,63 +442,105 @@ class StudentController extends Controller
                 'note' => 'nullable',
                 'is_active' => 'boolean',
                 'guardian_is' => 'nullable',
+
+                'admission_no' => 'nullable',
+                'roll_no' => 'nullable',
+                'admission_date' => 'nullable',
+                'reservation_quota_id' => 'nullable',
+                'class_id' => 'nullable',
+                'section_id' => 'nullable',
+                'school_house_id' => 'nullable',
+                'guardian_name' => 'nullable',
+                'guardian_relation' => 'nullable',
+                'guardian_phone' => 'nullable',
+                'guardian_email' => 'nullable'
             ]);
             // Validate user and student data
             // $validatedUserData = $this->validateUserData($request);
             // $validatedStudentData = $this->validateUserData($request, true);
 
-            // Retrieve the student by ID
-            $student = Student::findOrFail($id);
+          // Retrieve the student by ID
+        $student = Student::findOrFail($id);
 
-            // dd($student);
+        // Check if the user already exists for the student
+        if ($student->user) {
+            // Update existing user data
+            $userInput = $validatedData;
 
-            // Check if the user already exists for the student
-            if ($student->user) {
-                // Update existing user data
-                $userInput = $validatedData;
-
-                // Add conditional fields based on guardian_is value
-                if ($request->input('guardian_is') == 'other') {
-                    $userInput['guardian_name'] = $request->input('guardian_name');
-                    $userInput['guardian_relation'] = $request->input('guardian_relation');
-                    $userInput['guardian_phone'] = $request->input('guardian_phone');
-                }
-
-                // Check if a new photo is selected
-                if ($request->has('inputCroppedPic') && !is_null($request->inputCroppedPic)) {
-                    $userInput['image'] = $this->saveUserImage($request->input('inputCroppedPic'));
-                }
-
-                // Update the existing user
-                $student->user->update($userInput);
+            // Add conditional fields based on guardian_is value
+            if ($request->input('guardian_is') == 'other') {
+                $userInput['guardian_name'] = $request->input('guardian_name');
+                $userInput['guardian_relation'] = $request->input('guardian_relation');
+                $userInput['guardian_phone'] = $request->input('guardian_phone');
             }
 
+            // Check if a new photo is selected
+            if ($request->has('inputCroppedPic') && !is_null($request->inputCroppedPic)) {
+                $userInput['image'] = $this->saveUserImage($request->input('inputCroppedPic'));
+            }
 
-
-            // Update existing student data
-            $student->update($validatedData);
-
-            return redirect()->route('admin.students.index')->withToastSuccess('Student successfully Updated');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage())->withInput();
+            // Update the existing user
+            $student->user->update($userInput);
         }
+
+        // Update the student data
+        $student->update($validatedData);
+
+        // Manually assign additional fields if they are not in the validated data
+        $student->admission_no = $request->input('admission_no') ?? $student->admission_no;
+        $student->roll_no = $request->input('roll_no') ?? $student->roll_no;
+        $student->admission_date = $request->input('admission_date') ?? $student->admission_date;
+        $student->reservation_quota_id = $request->input('reservation_quota_id') ?? $student->reservation_quota_id;
+        $student->class_id = $request->input('class_id') ?? $student->class_id;
+        $student->section_id = $request->input('section_id') ?? $student->section_id;
+        $student->school_house_id = $request->input('school_house_id') ?? $student->school_house_id;
+        $student->guardian_name = $request->input('guardian_name') ?? $student->guardian_name;
+        $student->guardian_relation = $request->input('guardian_relation') ?? $student->guardian_relation;
+        $student->guardian_phone = $request->input('guardian_phone') ?? $student->guardian_phone;
+        $student->guardian_email = $request->input('guardian_email') ?? $student->guardian_email;
+        
+        $student->save(); // Save the changes
+
+        return redirect()->route('admin.students.index')->withToastSuccess('Student successfully updated');
+    } catch (\Exception $e) {
+        return back()->withToastError($e->getMessage())->withInput();
+    }
     }
 
     public function destroy($id)
-    {
-        try {
-            $student = Student::findOrFail($id);
+{
+    try {
+        // Find the student record
+        $student = Student::findOrFail($id);
 
-            // Get the associated User
-            $user = User::find($student->user_id);
+        // Start a database transaction
+        DB::beginTransaction();
 
+        // Delete related records first to avoid foreign key constraint violation
+
+        // 1. Delete related student attendances (if any)
+        $studentSessions = $student->studentSessions()->pluck('id'); // Get all student sessions related to the student
+        StudentAttendance::whereIn('student_session_id', $studentSessions)->delete();
+
+        // 2. Delete the associated User (if needed)
+        $user = User::find($student->user_id);
+        if ($user) {
             $user->delete();
-
-            return redirect()->back()->withToastSuccess('Student Successfully Deleted');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage());
         }
+
+        // 3. Now delete the student record itself
+        $student->delete();
+
+        // Commit the transaction if all actions succeed
+        DB::commit();
+
+        return redirect()->back()->withToastSuccess('Student Successfully Deleted');
+    } catch (\Exception $e) {
+        // Rollback the transaction if there's any error
+        DB::rollBack();
+        return back()->withToastError($e->getMessage());
     }
+}
 
     public function getAllStudent(Request $request)
     {
@@ -507,6 +554,10 @@ class StudentController extends Controller
                
                 ->where('class_id', $classId)
                 ->where('section_id', $sectionId);
+                //for active and inactive students.
+                // ->whereHas('user', function ($query) {
+                //     $query->where('is_active', true);
+                // });
                
 
 

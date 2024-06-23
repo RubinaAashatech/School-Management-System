@@ -62,7 +62,7 @@ class StaffController extends Controller
 {
     $page_title = 'Staff Create Form';
     $departments = Department::all();
-    $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist'])->get();
+    $roles = Role::whereIn('name', ['Teacher', 'Accountant', 'Librarian', 'Principal', 'Receptionist','Helper'])->get();
     $states = $this->formService->getProvinces();
     $adminStateId = Auth::user()->state_id;
     $adminDistrictId = Auth::user()->district_id;

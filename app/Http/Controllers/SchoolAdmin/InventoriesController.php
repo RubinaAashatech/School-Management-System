@@ -106,8 +106,8 @@ class InventoriesController extends Controller
             ->addColumn('created_at', function ($inventory) {
                 return $inventory->created_at->diffForHumans();
             })
-            ->addColumn('status', function ($attendanceType) {
-                return $attendanceType->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
+            ->addColumn('status', function ($inventory) {
+                return $inventory->status == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
             })
             ->addColumn('actions', function ($inventory) {
                 return view('backend.school_admin.inventory.partials.controller_action', ['inventory' => $inventory])->render();
@@ -116,7 +116,10 @@ class InventoriesController extends Controller
     }
     public function getForDataTable($request)
     {
-        $dataTableQuery = Inventory::where(function ($query) use ($request) {
+
+        $schoolId = session('school_id');
+        $dataTableQuery = Inventory::where('school_id', $schoolId) 
+        ->where(function ($query) use ($request) {
             if (isset($request->id)) {
                 $query->where('id', $request->id);
             }

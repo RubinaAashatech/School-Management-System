@@ -5,7 +5,7 @@
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                {{-- <h2>{{ $page_title }}</h2> --}}
             </div>
             @include('backend.school_admin.inventory.partials.action')
         </div>
@@ -72,7 +72,7 @@
                                 </div>
 
                                 <div class="p-2 label-input">
-                                    <label>Name<span class="must"> *</span></label>
+                                    <label>Title<span class="must"> *</span></label>
                                     <div class="single-input-modal">
                                         <input type="text" value="{{ old('name') }}" name="name"
                                             class="input-text single-input-text" id="dynamic_name" autofocus required>
@@ -191,13 +191,10 @@
             $('#dynamic_description').val(description);
             // $('#dynamic_document').val(document);
             // $('#dynamic_description').val(description);
-            fileInput.replaceWith(fileInput.val('').clone(true));
+            // fileInput.replaceWith(fileInput.val('').clone(true));
 
             $('input[name="status"]').prop('checked', false);
-            $('input[name="status"][value="' + status + '"]').prop('checked', true);
-
-            // $('#incomeForm').attr('action', '{{ route('admin.incomes.update', '') }}' + '/' +
-            //     id);
+            $('input[name="status"][value="' + status + '"]').prop('checked', true);          
             $('#inventoryForm').attr('action', '{{ route('admin.inventories.update', '') }}' + '/' + id);
             $('#methodField').val('PUT');
 

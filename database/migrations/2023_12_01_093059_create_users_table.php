@@ -69,7 +69,7 @@ return new class extends Migration
             $table->string('instagram')->nullable();
             $table->string('note')->nullable();
             $table->string('disable_at')->nullable();
-            $table->string('is_active')->nullable();
+            $table->boolean('is_active')->default(0);
             $table->string('password_code')->nullable();
             $table->string('lat')->nullable();
             $table->string('log')->nullable();

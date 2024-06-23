@@ -21,7 +21,8 @@ class DesignationSeeder extends Seeder
             'Principal',
             'Director',
             'Librarian',
-            'Technical Head'
+            'Technical Head',
+            'Helper'
         ];
 
 
