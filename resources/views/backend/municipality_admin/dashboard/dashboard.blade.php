@@ -513,6 +513,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>S.N.</th>
                     <th>Schools</th>
                     <th>Address</th>
                     <th>Total Students</th>
@@ -527,7 +528,7 @@
             <tbody>
                 @foreach ($schoolData as $school)
                 <tr>
-                    
+            <td>{{ $loop->iteration }}</td>
             <td>{{ $school['school_name'] }}</td>
             <td>{{ $school['school_address'] }}</td>
             <td>{{ $school['total_students'] }}</td>
