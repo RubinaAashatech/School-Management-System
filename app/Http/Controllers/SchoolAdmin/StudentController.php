@@ -542,7 +542,53 @@ class StudentController extends Controller
     }
 }
 
-    public function getAllStudent(Request $request)
+
+
+public function destroyMultiple(Request $request)
+{
+    $studentIds = $request->input('student_ids');
+
+    if (!is_array($studentIds) || empty($studentIds)) {
+        return redirect()->back()->withToastError('No students selected for deletion.');
+    }
+
+    try {
+        // Start a database transaction
+        DB::beginTransaction();
+
+        foreach ($studentIds as $id) {
+            // Find the student record
+            $student = Student::findOrFail($id);
+
+            // Delete related records first to avoid foreign key constraint violation
+            // 1. Delete related student attendances (if any)
+            $studentSessions = $student->studentSessions()->pluck('id'); // Get all student sessions related to the student
+            StudentAttendance::whereIn('student_session_id', $studentSessions)->delete();
+
+            // 2. Delete the associated User (if needed)
+            $user = User::find($student->user_id);
+            if ($user) {
+                $user->delete();
+            }
+
+            // 3. Now delete the student record itself
+            $student->delete();
+        }
+
+        // Commit the transaction if all actions succeed
+        DB::commit();
+
+        return redirect()->back()->withToastSuccess('Students Successfully Deleted');
+    } catch (\Exception $e) {
+        // Rollback the transaction if there's any error
+        DB::rollBack();
+        return back()->withToastError($e->getMessage());
+    }
+}
+
+
+
+   public function getAllStudent(Request $request)
     {
 
         if ($request->has('class_id') && $request->has('section_id')) {
@@ -557,7 +603,7 @@ class StudentController extends Controller
                 //for active and inactive students.
                 // ->whereHas('user', function ($query) {
                 //     $query->where('is_active', true);
-                // });
+                //  });
                
 
 
