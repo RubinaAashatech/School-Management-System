@@ -8,7 +8,7 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard2" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard1" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center">
                 <span class="nav-link-icon"><i class="fas fa-university"></i></span>
@@ -16,7 +16,7 @@
             </div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'academic-sessions' || Request::segment(2) == 'classes' || Request::segment(2) == 'assign-classteachers' || Request::segment(2) == 'subjects' || Request::segment(2) == 'sections' || Request::segment(2) == 'students-session' || Request::segment(2) == 'classes-time-table' || Request::segment(2) == 'lessons' || Request::segment(2) == 'topics' || Request::segment(2) == 'subject-groups' ? 'show' : '' }}"
-            id="dashboard2">
+            id="dashboard1">
             @can('list_academic_sessions')
                 <li class="nav-item">
                     <a class="nav-link {{ Request::segment(2) == 'academic-sessions' ? 'active' : '' }}"

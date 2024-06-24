@@ -383,7 +383,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-school"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $totalSchools }}</div>
@@ -412,7 +412,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-children"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $totalStudents }}</div>
@@ -474,7 +474,7 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-user"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $presentStaffs }}</div>
@@ -491,7 +491,7 @@
                 <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-user-minus"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $absentStaffs }}</div>
@@ -525,7 +525,7 @@
                 <div class="bg-white widget-style1 border-radius-10 height-100-p box-shadow">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
-                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-clipboard-user"></i></div>
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-xmark"></i></div>
                         </div>
                         <div class="widget-data">
                             <div class="weight-800 font-18">{{ $absentStudents }}</div>
@@ -545,6 +545,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>S.N.</th>
                     <th>Schools</th>
                     <th>Address</th>
                     <th>Total Students</th>
@@ -559,9 +560,9 @@
             <tbody>
                 @foreach ($schoolData as $school)
                 <tr>
-                    
+            <td>{{ $loop->iteration }}</td>
             <td>{{ $school['school_name'] }}</td>
-            <td>{{ $school['address']}}</td>
+            <td>{{ $school['school_address'] }}</td>
             <td>{{ $school['total_students'] }}</td>
             <td>{{ $school['present_students'] }}</td>
             <td>{{ $school['absent_students'] }}</td>

@@ -9,14 +9,14 @@
         </div>
     </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard6" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard10" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-users"></i></span><span
                     class="nav-link-text ps-1">{{__('Role Permission')}}
                     </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'roles' || Request::segment(2) == 'permissions' ? 'show' : '' }}"
-            id="dashboard6">
+            id="dashboard10">
             @can('list_roles')
             <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'roles' ? 'active' : '' }}"
                     href="{{ route('admin.roles.index') }}">

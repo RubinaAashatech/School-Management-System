@@ -9,14 +9,14 @@
     </div>
 
 <li class="nav-item">
-    <a class="nav-link dropdown-indicator" href="#dashboard1" role="button" data-bs-toggle="collapse"
+    <a class="nav-link dropdown-indicator" href="#dashboard11" role="button" data-bs-toggle="collapse"
         aria-expanded="true" aria-controls="dashboard">
         <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-users"></i></span><span
                 class="nav-link-text ps-1">{{__('Users') }}
             </span></div>
     </a>
     <ul class="nav collapse  {{ Request::segment(2) == 'district-users' || Request::segment(2) == 'municipality-users' || Request::segment(2) == 'designations' || Request::segment(2) == 'departments' || Request::segment(2) == 'inclusive-quotas' || Request::segment(2) == 'school-adminusers' ? 'show' : '' }}"
-        id="dashboard1">
+        id="dashboard11">
         @can('list_district_users')
         <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'district-users' ? 'active' : '' }}"
                 href="{{ route('admin.district-users.index') }}">

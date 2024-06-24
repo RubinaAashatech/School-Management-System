@@ -8,7 +8,7 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard22" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard2" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center">
                 <span class="nav-link-icon"><i class="fas fa-th-list"></i></span>
@@ -16,7 +16,7 @@
             </div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'lessons' || Request::segment(2) == 'topics' ? 'show' : '' }}"
-            id="dashboard22">
+            id="dashboard2">
 
             @can('list_lessons')
                 <li class="nav-item">

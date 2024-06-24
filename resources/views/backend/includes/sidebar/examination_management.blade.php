@@ -9,14 +9,14 @@
         </div>
     </li>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard7" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard5" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i
                         class="fas fa-credit-card"></i></span><span class="nav-link-text ps-1">{{ __('Examination (4-8)') }}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'marks_grades' || Request::segment(2) == 'marks_division' || Request::segment(2) == 'admit_card_design' || Request::segment(2) == 'mark_sheet_design' || Request::segment(2) == 'examinations' || Request::segment(2) == 'exam_schedules' || Request::segment(2) == 'exam_student' || Request::segment(2) == 'admit_card_designsprint' || Request::segment(2) == 'mark-sheetdesigns' || Request::segment(2) == 'generate-marksheets' || Request::segment(2) == 'exam-results' || Request::segment(2) == 'generate-results-marksheetdesigns' ? 'show' : '' }}"
-            id="dashboard7">
+            id="dashboard5">
             @can('list_marks_grades')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'marks-grades' ? 'active' : '' }}"
                         href="{{ route('admin.marks-grades.index') }}">

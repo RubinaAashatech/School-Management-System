@@ -174,6 +174,7 @@ $totalBoys = Student::whereHas('user', function ($query) {
             $schoolData[] = [
                 'school_id' => $school->id,
                 'school_name' => $school->name,
+                'school_address' => $school->address,
                 'total_students' => $totalStudentsInSchool,
                 'present_students' => $presentStudentsInSchool,
                 'absent_students' => $absentStudentsInSchool,
