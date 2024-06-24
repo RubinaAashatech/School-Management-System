@@ -90,6 +90,19 @@ class DashboardController extends Controller
     {
         // General Counts
         $totalStudents = Student::count();
+
+         // Count the total girls across all schools
+    $totalGirls = Student::whereHas('user', function ($query) {
+        $query->where('gender', 'female');
+    })
+    ->count();
+
+// Count the total boys across all schools
+$totalBoys = Student::whereHas('user', function ($query) {
+        $query->where('gender', 'male');
+    })
+    ->count();
+    
         $presentStudents = StudentAttendance::where('attendance_type_id', 1)
             ->whereDate('created_at', today()) // Filter by today's date
             ->count();
@@ -169,7 +182,7 @@ class DashboardController extends Controller
                 'absent_staffs' => $absentStaffsInSchool,
             ];
         }
-
+    
         $totalSchools = School::count();
     
         $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
@@ -182,8 +195,10 @@ class DashboardController extends Controller
             'presentStaffs' => $presentStaffs,
             'absentStaffs' => $absentStaffs,
             'schoolData' => $schoolData,
-            'major_incidents' => $majorIncidentsCount ,
-            'totalSchools' => $totalSchools
+            'major_incidents' => $majorIncidentsCount,
+            'totalSchools' => $totalSchools,
+            'totalGirls' => $totalGirls, // Pass total girls count
+            'totalBoys' => $totalBoys, // Pass total boys count
         ]);
     }
     

@@ -22,6 +22,9 @@ use Dompdf\Options;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Response;
 
+use Illuminate\Support\Facades\DB;
+
+
 class ExaminationController extends Controller
 
 {
@@ -37,15 +40,30 @@ class ExaminationController extends Controller
     protected function initializeSessionValues()
     {
         if (Auth::check()) {
-            if (!session()->has('academic_session_id')) {
-                $academicSessionId = Examination::where('is_active', 1)->value('id');
+            // Always fetch and set academic_session_id
+            $academicSessionId = DB::table('academic_sessions')
+                ->where('is_active', 1)
+                ->value('id');
+            if ($academicSessionId) {
                 session(['academic_session_id' => $academicSessionId]);
+                Log::info('Academic session ID set:', ['academic_session_id' => $academicSessionId]);
+            } else {
+                Log::error('No active academic session found.');
+                throw new \Exception('No active academic session found.');
             }
-
-            if (!session()->has('school_id')) {
-                $schoolId = Auth::user()->school_id;
+    
+            // Always fetch and set school_id
+            $schoolId = Auth::user()->school_id;
+            if ($schoolId) {
                 session(['school_id' => $schoolId]);
+                Log::info('School ID set:', ['school_id' => $schoolId]);
+            } else {
+                Log::error('User does not belong to any school.');
+                throw new \Exception('User does not belong to any school.');
             }
+        } else {
+            Log::error('User is not authenticated.');
+            throw new \Exception('User is not authenticated.');
         }
     }
 
@@ -58,59 +76,34 @@ class ExaminationController extends Controller
 
     public function store(Request $request)
     {
-        $this->initializeSessionValues();
-
-        Log::info('Request data:', $request->all());
-
-        $academicSessionId = session('academic_session_id');
-        Log::info('academic_session_id:', ['academic_session_id' => $academicSessionId]);
-
-        $schoolId = session('school_id');
-        Log::info('school_id:', ['school_id' => $schoolId]);
-
-        $validatedData = Validator::make($request->all(), [
-            'exam' => 'required|string',
-            'exam_type' => 'required|string',
-            'is_publish' => 'boolean',
-            'is_rank_generated' => 'boolean',
-            'is_active' => 'boolean',
-            'description' => 'required|string',
-        ]);
-
-        if ($validatedData->fails()) {
-            return back()->withToastError($validatedData->messages()->all()[0])->withInput();
-        }
-
         try {
-            if (!$academicSessionId) {
-                throw new \Exception('Academic session ID is not set.');
-            }
+            $this->initializeSessionValues();
 
-            if (!$schoolId) {
-                throw new \Exception('School ID is not set.');
+            // $academicSessionId = session('academic_session_id');
+            // dd('Session ID:', $academicSessionId);
+    
+            $validatedData = Validator::make($request->all(), [
+                'exam' => 'required|string',
+                'date' => 'required|string',
+                'exam_type' => 'required|string',
+                'is_publish' => 'boolean',
+                'is_rank_generated' => 'boolean',
+                'is_active' => 'boolean',
+                'description' => 'required|string',
+                // 'session_id' => 'required|integer',
+            ]);
+    
+            if ($validatedData->fails()) {
+                return back()->withToastError($validatedData->messages()->first())->withInput();
             }
-
-            if (!$request->filled('session_id')) {
-                $request->merge(['session_id' => $academicSessionId]);
-            }
-
+    
             $data = $validatedData->validated();
-            $data['session_id'] = $academicSessionId;
-            $data['school_id'] = $schoolId;
-
-            Log::info('Data to be inserted:', $data);
-
-            $savedData = Examination::create($data);
-
-            if ($request->exam_type === 'final') {
-                $validator = $this->validateTermExamination($request);
-                if ($validator->fails()) {
-                    return back()->withToastError($validator->messages()->all()[0])->withInput();
-                }
-                $savedData->finalTerminalExaminations()->sync($request->input('term_exam'));
-            }
-
-            return redirect()->back()->withToastSuccess('Examination Saved Successfully!');
+            $data['session_id'] = session('academic_session_id');
+            $data['school_id'] = session('school_id');
+    
+            Examination::create($data);
+    
+            return redirect()->route('admin.examinations.index')->withToastSuccess('Examination Saved Successfully!');
         } catch (\Exception $e) {
             Log::error('Exception in storing examination:', ['error' => $e->getMessage()]);
             return back()->withToastError($e->getMessage())->withInput();
@@ -129,6 +122,7 @@ class ExaminationController extends Controller
         $validatedData = Validator::make($request->all(), [
             // 'school_id' => 'filled|numeric',
             'exam' => 'required|string',
+            'date'=>'required|string',
             'is_publish' => 'boolean',
             'is_rank_generated' => 'boolean',
             'is_active' => 'boolean',

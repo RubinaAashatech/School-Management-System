@@ -427,6 +427,38 @@
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                     <div class="d-flex flex-wrap align-items-center">
                         <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalGirls }}</div>
+                            <div class="weight-500">Total Girls</div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
+                            <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-person-half-dress"></i></div>
+                        </div>
+                        <div class="widget-data">
+                            <div class="weight-800 font-18">{{ $totalBoys }}</div>
+                            <div class="weight-500">Total Boys</div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-4 mb-50">
+                <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div class="circle-icon">
                             <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-people-group"></i></div>
                         </div>
                         <div class="widget-data">
@@ -514,6 +546,7 @@
             <thead>
                 <tr>
                     <th>Schools</th>
+                    <th>Address</th>
                     <th>Total Students</th>
                     <th>Present Student</th>
                     <th>Absent Student</th>
@@ -528,6 +561,7 @@
                 <tr>
                     
             <td>{{ $school['school_name'] }}</td>
+            <td>{{ $school['address']}}</td>
             <td>{{ $school['total_students'] }}</td>
             <td>{{ $school['present_students'] }}</td>
             <td>{{ $school['absent_students'] }}</td>

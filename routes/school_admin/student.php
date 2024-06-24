@@ -21,3 +21,5 @@ Route::get('student/import/index', [StudentController::class, 'importAllStudentI
 
 Route::post('/import', [StudentController::class, 'import'])->name('students.bulkimport');
 
+Route::post('students/bulk-delete', [StudentController::class, 'destroyMultiple'])->name('students.bulk-delete');
+

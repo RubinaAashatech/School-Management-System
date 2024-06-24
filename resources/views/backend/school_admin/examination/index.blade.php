@@ -69,17 +69,23 @@
                                     </div>
                                 </div>
 
-                                <div class="p-2 label-input">
+                                {{-- <div class="p-2 label-input">
                                     <label for="datetimepicker">Date:</label>
                                     <div class="form-group">
                                         <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
                                             <input id="nepali-datepicker" name="date" type="text" class="form-control datetimepicker-input" />
                                         </div>
-                                        @error('date')
-                                        <strong class="text-danger">{{ $message }}</strong>
-                                        @enderror
+                                    </div>
+                                </div> --}}
+
+                                
+                                <div class="p-2 label-input">
+                                    <label>Date<span class="must">*</span></label>
+                                    <div class="single-input-modal">
+                                        <input type="text" name="date" class="form-control datetimepicker-input" id="nepali-datepicker" required>
                                     </div>
                                 </div>
+
                                 <div class="p-2 label-input">
                                     <label>Exam Type<span class="must">*</span></label>
 
@@ -144,6 +150,10 @@
                                     </div>
                                 </div>
 
+                                <!-- Add hidden input for session_id -->
+                                <input type="hidden" name="session_id" value="{{ session('academic_session_id') }}">
+
+
                                 <div class="p-2 label-input">
                                     <label>Description<span class="must">*</span></label>
 
@@ -185,145 +195,144 @@
 
 
     @section('scripts')
-    <script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
-    
-    <script>
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-    
-            $('#examination-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('admin.examinations.get') }}',
-                    type: 'POST'
-                },
-                columns: [
-                    { data: 'id', name: 'id' },
-                    { data: 'exam', name: 'exam' },
-                    { data: 'is_publish', name: 'is_publish' },
-                    { data: 'is_rank_generated', name: 'is_rank_generated' },
-                    { data: 'description', name: 'description' },
-                    { data: 'status', name: 'status' },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'actions', name: 'actions' }
-                ],
-                initComplete: function() {
-                    this.api().columns().every(function() {
-                        var column = this;
-                        var input = document.createElement("input");
-                        $(input).appendTo($(column.footer()).empty())
-                            .on('change', function() {
-                                column.search($(this).val()).draw();
-                            });
+<script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#examination-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route('admin.examinations.get') }}',
+            type: 'POST'
+        },
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'exam', name: 'exam' },
+            { data: 'is_publish', name: 'is_publish' },
+            { data: 'is_rank_generated', name: 'is_rank_generated' },
+            { data: 'description', name: 'description' },
+            { data: 'status', name: 'status' },
+            { data: 'created_at', name: 'created_at' },
+            { data: 'actions', name: 'actions' }
+        ],
+        initComplete: function() {
+            this.api().columns().every(function() {
+                var column = this;
+                var input = document.createElement("input");
+                $(input).appendTo($(column.footer()).empty())
+                    .on('change', function() {
+                        column.search($(this).val()).draw();
                     });
-                }
-            });
-    
-            $(document).on('click', '.edit-examination', function() {
-                $('.termexam_selection').empty();
-                $('.term_exam').hide();
-    
-                var id = $(this).data('id');
-                var exam = $(this).data('exam');
-                var date = $(this).data('date');
-                var exam_type = $(this).data('exam_type');
-                var is_publish = $(this).data('is_publish');
-                var is_rank_generated = $(this).data('is_rank_generated');
-                var description = $(this).data('description');
-                var is_active = $(this).data('is_active');
-                var finalTerminalExamination = $(this).data('final_term_examination');
-    
-                $('#dynamic_id').val(id);
-                $('#dynamic_date').val(date);
-                $('#dynamic_exam').val(exam);
-                $('#exam_type').val(exam_type);
-                $('#dynamic_description').val(description);
-    
-    
-            // Check the corresponding radio button for is_active
-                $('input[name="is_active"]').prop('checked', false);
-                $('input[name="is_active"][value="' + is_active + '"]').prop('checked', true);
-        
-                // Check the corresponding radio button for is_publish
-                $('input[name="is_publish"]').prop('checked', false);
-                $('input[name="is_publish"][value="' + is_publish + '"]').prop('checked', true);
-        
-                // Check the corresponding radio button for is_rank_generated
-                $('input[name="is_rank_generated"]').prop('checked', false);
-                $('input[name="is_rank_generated"][value="' + is_rank_generated + '"]').prop('checked', true);
-    
-                if (exam_type == 'final') {
-                    $('.term_exam').show();
-                    fetchTerminalExam(id, function() {
-                        $('input[name="term_exam[]"]').prop('checked', false);
-                        finalTerminalExamination.forEach(function(exam) {
-                            $('#term_exam' + exam.id).prop('checked', true);
-                        });
-                    });
-                }
-        
-                $('#examinationForm').attr('action', '{{ route('admin.examinations.update', '') }}' + '/' + id);
-                $('#methodField').val('PUT');
-        
-                $('#createExamination').modal('show');
-        
-                return false;
-        });
-    
-        $('select[name="exam_type"]').change(function() {
-            $('.termexam_selection').empty();
-            $('.term_exam').hide();
-            var exam_type = $(this).val();
-            if (exam_type == 'final') {
-                $('.term_exam').show();
-                fetchTerminalExam(exam_type);
-            }
-        });
-    
-        function fetchTerminalExam(id = null, callback) {
-            $.ajax({
-                url: '{{ url('admin/get-term-examination') }}',
-                type: 'GET',
-                data: id,
-                success: function(data) {
-                    $('.termexam_selection').empty();
-                    var checkboxContainer = $('.termexam_selection');
-                    var inputType = 'checkbox';
-    
-                    $.each(data, function(key, value) {
-                        var checkbox = $('<label class="l-checkbox" for="term_exam' + key +
-                            '">' +
-                            '<span>' + value + '</span>' +
-                            '<input class="section-checkbox" type="' + inputType +
-                            '" name="term_exam[]" id="term_exam' +
-                            key +
-                            '" value="' + key + '">' +
-                            '</label>');
-                        checkboxContainer.append(checkbox);
-                    });
-    
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                }
             });
         }
+    });
 
-        $(document).ready(function () {
-        // Initialize nepali-datepicker
-        $('#nepali-datepicker').nepaliDatePicker({
+    // Initialize nepali-datepicker
+    $('#nepali-datepicker').nepaliDatePicker({
             dateFormat: 'YYYY-MM-DD', // Set the format for submitting the date
             closeOnDateSelect: true,
             onChange: function () {
                 // Optionally handle change event
             }
         });
+
+    $(document).on('click', '.edit-examination', function() {
+        $('.termexam_selection').empty();
+        $('.term_exam').hide();
+
+        var id = $(this).data('id');
+        var exam = $(this).data('exam');
+        var date = $(this).data('date');
+        var exam_type = $(this).data('exam_type');
+        var is_publish = $(this).data('is_publish');
+        var is_rank_generated = $(this).data('is_rank_generated');
+        var description = $(this).data('description');
+        var is_active = $(this).data('is_active');
+        var finalTerminalExamination = $(this).data('final_term_examination');
+
+        $('#dynamic_id').val(id);
+        $('#nepali-datepicker').val(date);
+        $('#dynamic_exam').val(exam);
+        $('#exam_type').val(exam_type);
+        $('#dynamic_description').val(description);
+
+        // Check the corresponding radio button for is_active
+        $('input[name="is_active"]').prop('checked', false);
+        $('input[name="is_active"][value="' + is_active + '"]').prop('checked', true);
+
+        // Check the corresponding radio button for is_publish
+        $('input[name="is_publish"]').prop('checked', false);
+        $('input[name="is_publish"][value="' + is_publish + '"]').prop('checked', true);
+
+        // Check the corresponding radio button for is_rank_generated
+        $('input[name="is_rank_generated"]').prop('checked', false);
+        $('input[name="is_rank_generated"][value="' + is_rank_generated + '"]').prop('checked', true);
+
+        if (exam_type == 'final') {
+            $('.term_exam').show();
+            fetchTerminalExam(id, function() {
+                $('input[name="term_exam[]"]').prop('checked', false);
+                finalTerminalExamination.forEach(function(exam) {
+                    $('#term_exam' + exam.id).prop('checked', true);
+                });
+            });
+        }
+
+        $('#examinationForm').attr('action', '{{ route('admin.examinations.update', '') }}' + '/' + id);
+        $('#methodField').val('PUT');
+
+        $('#createExamination').modal('show');
+
+        return false;
     });
-    </script>
-    @endsection
+
+    $('select[name="exam_type"]').change(function() {
+        $('.termexam_selection').empty();
+        $('.term_exam').hide();
+        var exam_type = $(this).val();
+        if (exam_type == 'final') {
+            $('.term_exam').show();
+            fetchTerminalExam(exam_type);
+        }
+    });
+
+    function fetchTerminalExam(id = null, callback) {
+        $.ajax({
+            url: '{{ url('admin/get-term-examination') }}',
+            type: 'GET',
+            data: id,
+            success: function(data) {
+                $('.termexam_selection').empty();
+                var checkboxContainer = $('.termexam_selection');
+                var inputType = 'checkbox';
+
+                $.each(data, function(key, value) {
+                    var checkbox = $('<label class="l-checkbox" for="term_exam' + key +
+                        '">' +
+                        '<span>' + value + '</span>' +
+                        '<input class="section-checkbox" type="' + inputType +
+                        '" name="term_exam[]" id="term_exam' +
+                        key +
+                        '" value="' + key + '">' +
+                        '</label>');
+                    checkboxContainer.append(checkbox);
+                });
+
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            }
+        });
+    }
+});
+</script>
+@endsection
     
 @endsection

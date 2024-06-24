@@ -67,6 +67,7 @@
                                         aria-describedby="example1_info">
                                         <thead>
                                             <tr>
+                                                {{-- <th><input type="checkbox" id="select-all"></th> --}}
                                                 <th>Id</th>
                                                 <th>First Name</th>
                                                 <th>Last Name</th>
@@ -84,6 +85,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group col-md-12 d-flex justify-content-end pt-2">
+                        <button type="button" class="btn btn-danger" id="bulkDeleteButton">Bulk Delete</button>
                     </div>
                 </div>
             </div>
@@ -161,6 +165,44 @@
                         [4, 'asc']
                     ]).ajax.reload();
                 });
+
+                $('#select-all').change(function () {
+                $('.student-checkbox').prop('checked', $(this).prop('checked'));
+            });
+
+            // Handle bulk delete button click
+            $('#bulkDeleteButton').on('click', function () {
+                var studentIds = [];
+
+                // Get all checked checkboxes
+                $('.student-checkbox:checked').each(function () {
+                    studentIds.push($(this).data('student-id'));
+                });
+
+                if (studentIds.length === 0) {
+                    alert('Please select at least one student to delete.');
+                    return;
+                }
+
+                // Confirm delete
+                if (confirm('Are you sure you want to delete selected students?')) {
+                    // Perform bulk delete via AJAX
+                    $.ajax({
+                        url: '{{ route('admin.students.bulk-delete') }}',
+                        type: 'POST',
+                        data: {
+                            studentIds: studentIds
+                        },
+                        success: function (response) {
+                            // Reload datatable or update UI as needed
+                            dataTable.ajax.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error deleting students:', error);
+                        }
+                    });
+                }
+            });
 
             });
         </script>
