@@ -514,6 +514,7 @@
             <thead>
                 <tr>
                     <th>Schools</th>
+                    <th>Address</th>
                     <th>Total Students</th>
                     <th>Present Student</th>
                     <th>Absent Student</th>
