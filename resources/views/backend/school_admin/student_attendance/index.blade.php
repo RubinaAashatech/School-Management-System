@@ -144,7 +144,7 @@
             "columnDefs": [
                 { "targets": [0, 2, 3, 4], "orderable": false },  // Disable sorting for all columns except index 1 (Roll No)
                 { "targets": [1], "orderable": true }  // Roll No column - sortable
-            ],
+            ]
         });
 
         // Function to fetch students dynamically
@@ -175,7 +175,7 @@
             var sortBy = column.data;
 
             if (sortBy === 'roll_no') {
-                var sortOrder = column.order()[0]; // Get the sort order ('asc' or 'desc')
+                var sortOrder = table.order()[0][1]; // Get the sort order ('asc' or 'desc')
                 fetchStudents(sortBy, sortOrder); // Fetch students based on clicked column for sorting
             }
         });

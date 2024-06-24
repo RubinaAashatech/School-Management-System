@@ -1,5 +1,5 @@
 @can('edit_inventories')
-    <a href="#" class="btn btn-outline-primary btn-sm mx-1 edit-inventory" data-id="{{ $inventory->id }}"
+    <a href="{{route('admin.inventories.edit' ,$inventory->id)}}" class="btn btn-outline-primary btn-sm mx-1 edit-inventory" data-id="{{ $inventory->id }}"
         data-inventory_head_id="{{ $inventory->inventory_head_id }}" data-name="{{ $inventory->name }}"
         data-unit="{{ $inventory->unit }}" data-date="{{ $inventory->date }}" data-amount="{{ $inventory->amount }}"
         data-description="{{ $inventory->description }}" data-document="{{ $inventory->document }}"
