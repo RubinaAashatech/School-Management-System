@@ -8,14 +8,14 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard30" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard6" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center">
                 <span class="nav-link-icon"><i class="fas fa-th-list"></i></span>
                 <span class="nav-link-text ps-1">{{ __('Examination (1-3)') }}</span>
             </div>
         </a>
-        <ul class="nav collapse  {{ Request::segment(2) == 'primary_marks' ? 'show' : '' }}" id="dashboard30">
+        <ul class="nav collapse  {{ Request::segment(2) == 'primary_marks' ? 'show' : '' }}" id="dashboard6">
 
             @can('list_primary_lessonmarks')
                 <li class="nav-item">

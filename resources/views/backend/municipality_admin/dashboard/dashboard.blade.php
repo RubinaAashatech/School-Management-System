@@ -528,6 +528,7 @@
                 <tr>
                     
             <td>{{ $school['school_name'] }}</td>
+            <td>{{ $school['school_address'] }}</td>
             <td>{{ $school['total_students'] }}</td>
             <td>{{ $school['present_students'] }}</td>
             <td>{{ $school['absent_students'] }}</td>

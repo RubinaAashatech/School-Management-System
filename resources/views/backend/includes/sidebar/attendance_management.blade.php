@@ -9,14 +9,14 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard5" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard4" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i
                         class="fas fa-calendar-check"></i></span><span class="nav-link-text ps-1">{{ __('Attendance') }}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'attendance-types' || Request::segment(2) == 'student-attendances' || Request::segment(2) == 'staff-attendance' || Request::segment(2) == 'leave-types' || Request::segment(2) == 'student-leaverequests' || Request::segment(2) == 'staff-leaverequests' ? 'show' : '' }}"
-            id="dashboard5">
+            id="dashboard4">
             @can('list_attendance_types')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'attendance-types' ? 'active' : '' }}"
                         href="{{ route('admin.attendance-types.index') }}">

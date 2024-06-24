@@ -9,14 +9,14 @@
         </div>
 
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard21" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard9" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-history"></i></span><span
                     class="nav-link-text ps-1">{{__('Log Books') }}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'teacher-logs' || Request::segment(2) == 'headteacher-logs' ? 'show' : '' }}"
-            id="dashboard21">
+            id="dashboard9">
             @can('list_teacher_logs')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'teacher-logs' ? 'active' : '' }}"
                         href="{{ route('admin.teacher-logs.index') }}">

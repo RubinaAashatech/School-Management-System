@@ -10,14 +10,14 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard4" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard3" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i
                         class="fa-solid fa-school"></i></span><span class="nav-link-text ps-1">{{ __('Schools') }}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'school-houses' || Request::segment(2) == 'students' || Request::segment(2) == 'staffs' ? 'show' : '' }}"
-            id="dashboard4">
+            id="dashboard3">
 
             @can('list_school_houses')
                 <li class="nav-item">

@@ -9,14 +9,14 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard3" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard7" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i
                         class="fas fa-credit-card"></i></span><span class="nav-link-text ps-1">{{ __("Accounts")}}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'income-head' || Request::segment(2) == 'incomes' || Request::segment(2) == 'expense-head' || Request::segment(2) == 'expenses' || Request::segment(2) == 'fee-types' || Request::segment(2) == 'fee-groups' || Request::segment(2) == 'fee-gropus-types' || Request::segment(2) == 'fee-collections' || Request::segment(2) == 'payment_mode' || Request::segment(2) == 'fee-dues' ? 'show' : '' }}"
-            id="dashboard3">
+            id="dashboard7">
             @can('list_income_head')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'income-head' ? 'active' : '' }}"
                         href="{{ route('admin.income-head.index') }}">

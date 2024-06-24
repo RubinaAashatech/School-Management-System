@@ -8,14 +8,14 @@
             </div>
         </div>
     <li class="nav-item">
-        <a class="nav-link dropdown-indicator" href="#dashboard9" role="button" data-bs-toggle="collapse" aria-expanded="true"
+        <a class="nav-link dropdown-indicator" href="#dashboard12" role="button" data-bs-toggle="collapse" aria-expanded="true"
             aria-controls="dashboard">
             <div class="d-flex align-items-center"><span class="nav-link-icon"><i
                         class="fas fa-credit-card"></i></span><span class="nav-link-text ps-1">{{ __("ECA Activities")}}
                 </span></div>
         </a>
         <ul class="nav collapse  {{ Request::segment(2) == 'extracurricular-head'? 'show' : '' }}"
-            id="dashboard3">
+            id="dashboard12">
             @can('list_extracurricular_head')
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'extracurricular-head' ? 'active' : '' }}"
                         href="{{ route('admin.extracurricular-head.index') }}">
