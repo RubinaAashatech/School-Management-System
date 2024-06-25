@@ -55,23 +55,25 @@ class InventoriesController extends Controller
         return view('backend.school_admin.inventory.index', compact('inventory'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-    $validatedData = Validator::make($request->all(), [
-        'school_id' => 'filled|numeric',
-        'inventory_head_id' => 'required|string',
-        'name' => 'required|string',
-        'unit' => 'required|string',
-        'description' => 'nullable|string',
-        'status' => 'required',
-    ]);
-
-    if ($validatedData->fails()) {
-        return back()->withToastError($validatedData->messages()->all()[0])->withInput();
-    }
-    $inventory = Inventory::findOrFail($id);
-   
-    return back()->withToastError('Cannot Update Inventory. Please try again')->withInput();
+        $request->validate([
+            'inventory_head_id' => 'required',
+            'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => 'required|boolean',
+        ]);
+    
+        $inventory = Inventory::findOrFail($id);
+        $inventory->inventory_head_id = $request->inventory_head_id;
+        $inventory->name = $request->name;
+        $inventory->unit = $request->unit;
+        $inventory->description = $request->description;
+        $inventory->status = $request->status;
+        $inventory->save();
+    
+        return redirect()->route('admin.inventories.index')->with('success', 'Inventory updated successfully');
     }
 
     public function destroy(string $id)
