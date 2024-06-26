@@ -12,6 +12,7 @@ use App\Models\StaffAttendance;
 use App\Models\Staff;
 use App\Models\StudentAttendance;
 use App\Models\AttendanceType;
+use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 
 use App\Http\Controllers\Controller;
 
@@ -22,31 +23,13 @@ class HeadTeacherLogReportController extends Controller
     public function index(Request $request)
 {
     $schoolId = Auth::user()->school_id;
-    $date = Carbon::parse($request->input('date', Carbon::today()->toDateString()))->toDateString();
+    $inputDate = $request->input('date', Carbon::today()->format('Y-m-d'));
+    $date = LaravelNepaliDate::from($inputDate)->toEnglishDate();
 
     // Fetch data based on the provided date
-    $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
-        ->whereHas('staff', function ($query) use ($schoolId) {
-            $query->where('school_id', $schoolId);
-        })
-        ->whereDate('created_at', $date)
-        ->count();
-
-    $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
-        ->whereHas('staff', function ($query) use ($schoolId) {
-            $query->where('school_id', $schoolId);
-        })
-        ->whereDate('created_at', $date)
-        ->count();
-
     $teacherLog = HeadTeacherLog::whereDate('created_at', $date)
         ->select('major_incidents', 'major_work_observation', 'assembly_management', 'miscellaneous')
         ->first();
-
-    $majorIncident = $teacherLog->major_incidents ?? '';
-    $majorWorkObservation = $teacherLog->major_work_observation ?? '';
-    $assemblyManagement = $teacherLog->assembly_management ?? '';
-    $miscellaneous = $teacherLog->miscellaneous ?? '';
 
     $totalStudents = Student::where('school_id', $schoolId)->count();
 
@@ -62,18 +45,6 @@ class HeadTeacherLogReportController extends Controller
             $query->where('school_id', $schoolId);
         })
         ->whereDate('created_at', $date)
-        ->count();
-
-    $totalGirls = Student::where('school_id', $schoolId)
-        ->whereHas('user', function ($query) {
-            $query->where('gender', 'female');
-        })
-        ->count();
-
-    $totalBoys = Student::where('school_id', $schoolId)
-        ->whereHas('user', function ($query) {
-            $query->where('gender', 'male');
-        })
         ->count();
 
     $presentGirls = StudentAttendance::where('attendance_type_id', 1)
@@ -104,32 +75,45 @@ class HeadTeacherLogReportController extends Controller
         ->whereDate('created_at', $date)
         ->count();
 
+    $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
+        ->whereHas('staff', function ($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->whereDate('created_at', $date)
+        ->count();
+
+    $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
+        ->whereHas('staff', function ($query) use ($schoolId) {
+            $query->where('school_id', $schoolId);
+        })
+        ->whereDate('created_at', $date)
+        ->count();
+
+    $data = [
+        'totalStudents' => $totalStudents,
+        'presentStudents' => $presentStudents,
+        'absentStudents' => $absentStudents,
+        'presentGirls' => $presentGirls,
+        'presentBoys' => $presentBoys,
+        'absentGirls' => $absentGirls,
+        'absentBoys' => $absentBoys,
+        'presentStaffs' => $presentStaffs,
+        'absentStaffs' => $absentStaffs,
+        'majorIncident' => $teacherLog->major_incidents ?? '',
+        'majorWorkObservation' => $teacherLog->major_work_observation ?? '',
+        'assemblyManagement' => $teacherLog->assembly_management ?? '',
+        'miscellaneous' => $teacherLog->miscellaneous ?? '',
+    ];
+
     if ($request->ajax()) {
-        return response()->json([
-            'totalStudents' => $totalStudents,
-            'presentStudents' => $presentStudents,
-            'absentStudents' => $absentStudents,
-            'totalGirls' => $totalGirls,
-            'totalBoys' => $totalBoys,
-            'presentGirls' => $presentGirls,
-            'presentBoys' => $presentBoys,
-            'absentGirls' => $absentGirls,
-            'absentBoys' => $absentBoys,
-            'presentStaffs' => $presentStaffs,
-            'absentStaffs' => $absentStaffs,
-            'majorIncident' => $majorIncident,
-            'majorWorkObservation' => $majorWorkObservation,
-            'assemblyManagement' => $assemblyManagement,
-            'miscellaneous' => $miscellaneous,
-        ]);
+        return response()->json($data);
     }
 
     $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
 
-    return view('backend.school_admin.logs.head_teacher_log_reports.index', compact(
-        'page_title', 'totalStudents', 'presentStudents', 'absentStudents',
-        'totalGirls', 'totalBoys', 'presentGirls', 'presentBoys', 'absentGirls', 'absentBoys',
-        'presentStaffs', 'absentStaffs', 'majorIncident', 'majorWorkObservation', 'assemblyManagement', 'miscellaneous'
+    return view('backend.school_admin.logs.head_teacher_log_reports.index', array_merge(
+        compact('page_title'),
+        $data
     ));
 }
 

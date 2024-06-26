@@ -546,121 +546,91 @@ class StudentController extends Controller
 
 public function destroyMultiple(Request $request)
 {
-    $studentIds = $request->input('student_ids');
+    $studentIds = $request->input('studentIds');
 
     if (!is_array($studentIds) || empty($studentIds)) {
-        return redirect()->back()->withToastError('No students selected for deletion.');
+        return response()->json(['error' => 'No students selected for deletion.'], 400);
     }
 
     try {
-        // Start a database transaction
         DB::beginTransaction();
 
         foreach ($studentIds as $id) {
-            // Find the student record
             $student = Student::findOrFail($id);
 
-            // Delete related records first to avoid foreign key constraint violation
-            // 1. Delete related student attendances (if any)
-            $studentSessions = $student->studentSessions()->pluck('id'); // Get all student sessions related to the student
+            $studentSessions = $student->studentSessions()->pluck('id');
             StudentAttendance::whereIn('student_session_id', $studentSessions)->delete();
 
-            // 2. Delete the associated User (if needed)
             $user = User::find($student->user_id);
             if ($user) {
                 $user->delete();
             }
 
-            // 3. Now delete the student record itself
             $student->delete();
         }
 
-        // Commit the transaction if all actions succeed
         DB::commit();
 
-        return redirect()->back()->withToastSuccess('Students Successfully Deleted');
+        return response()->json(['success' => 'Students Successfully Deleted']);
     } catch (\Exception $e) {
-        // Rollback the transaction if there's any error
         DB::rollBack();
-        return back()->withToastError($e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
     }
 }
 
 
 
-   public function getAllStudent(Request $request)
-    {
+public function getAllStudent(Request $request)
+{
+    if ($request->has('class_id') && $request->has('section_id')) {
+        $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
 
-        if ($request->has('class_id') && $request->has('section_id')) {
-            $classId = $request->input('class_id');
-            $sectionId = $request->input('section_id');
+        $students = Student::with(['classes', 'user'])
+            ->where('class_id', $classId)
+            ->where('section_id', $sectionId)
+            ->get();
 
-            //  $students = $this->studentUserService->getStudentsForDataTable($request->all())
-              $students = Student::with(['classes','user']) 
-               
-                ->where('class_id', $classId)
-                ->where('section_id', $sectionId);
-                //for active and inactive students.
-                // ->whereHas('user', function ($query) {
-                //     $query->where('is_active', true);
-                //  });
-               
-
-
-            if ($students instanceof \Illuminate\Database\Query\Builder) {
-                // Fetch the data from the query
-                $students = $students->get();
-            } else {
-            }
-            // dd($students);
-
-            return Datatables::of($students)
-                ->escapeColumns([])
-
-            
-                ->editColumn('f_name', function ($row) {
-                    return $row->user->f_name;
-                })
-
-                ->editColumn('l_name', function ($row) {
-                    return $row->user->l_name;
-                })
-                ->editColumn('class', function ($row) {
-                    return $row->classes->class;
-                })
-                ->editColumn('roll_no', function ($row) {
-                    return $row->roll_no;
-                })
-                ->editColumn('father_name', function ($row) {
-                    return $row->user->father_name;
-                })
-                ->editColumn('mother_name', function ($row) {
-                    return $row->user->mother_name;
-                })
-                ->editColumn('guardian_is', function ($row) {
-                    return $row->guardian_is;
-                })
-
-                ->addColumn('created_at', function ($user) {
-                    return $user->created_at->diffForHumans();
-                })
-                ->addColumn('status', function ($student) {
-                    return $student->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
-                })
-                ->addColumn('actions', function ($student) {
-                    return view(
-                        'backend.school_admin.student.partials.controller_action',
-                        ['student' => $student]
-                    )->render();
-                })
-
-                ->make(true);
-
-            return Datatables::of([])
-                ->escapeColumns([])
-                ->make(true);
-        }
+        return Datatables::of($students)
+            ->escapeColumns([])
+            ->addColumn('checkbox', function($student) {
+                return '<input type="checkbox" class="student-checkbox" data-student-id="' . $student->id . '">';
+            })
+            ->editColumn('f_name', function ($row) {
+                return $row->user->f_name;
+            })
+            ->editColumn('l_name', function ($row) {
+                return $row->user->l_name;
+            })
+            ->editColumn('class', function ($row) {
+                return $row->classes->class;
+            })
+            ->editColumn('roll_no', function ($row) {
+                return $row->roll_no;
+            })
+            ->editColumn('father_name', function ($row) {
+                return $row->user->father_name;
+            })
+            ->editColumn('mother_name', function ($row) {
+                return $row->user->mother_name;
+            })
+            ->editColumn('guardian_is', function ($row) {
+                return $row->guardian_is;
+            })
+            ->addColumn('created_at', function ($row) {
+                return $row->created_at->diffForHumans();
+            })
+            ->addColumn('status', function ($row) {
+                return $row->user->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
+            })
+            ->addColumn('actions', function ($row) {
+                return view('backend.school_admin.student.partials.controller_action', ['student' => $row])->render();
+            })
+            ->make(true);
     }
+
+    return Datatables::of([])->escapeColumns([])->make(true);
+}
 
     
 
