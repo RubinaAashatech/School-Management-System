@@ -14,10 +14,20 @@ use Yajra\Datatables\Datatables;
 use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use App\Http\Services\StudentUserService;
+use App\Http\Services\FormService;
 
 
 class StudentAttendanceController extends Controller
 {
+    // protected $formService;
+    // protected $studentUserService;
+
+    // public function __construct(FormService $formService, StudentUserService $studentUserService)
+    // {
+    //     $this->formService = $formService;
+    //     $this->studentUserService = $studentUserService;
+    // }
     public function index()
     {
         $page_title = 'Student Attendance Listing';
@@ -280,43 +290,96 @@ class StudentAttendanceController extends Controller
 
     public function getAllStudentAttendance(Request $request)
     {
-        $studentAttendances = $this->getForDataTable($request->all());
-
-        return Datatables::of($studentAttendances)
+        // if ($request->has('class_id') && $request->has('section_id')) {
+        //     $classId = $request->input('class_id');
+        //     $sectionId = $request->input('section_id');
+    
+          
+                
+        $query = $this->getForDataTable($request->all());
+        // $query = StudentAttendance::with(['student', 'student.user', 'attendanceType'])
+        // ->where('class_id', $classId)
+        //         ->where('section_id', $sectionId)
+        //         ->get();
+        
+        return Datatables::of($query)
             ->escapeColumns([])
-            ->addColumn('biometric_attendance', function ($studentAttendance) {
-                return $studentAttendance->biometric_attendance;
+            ->addColumn('admission_no', function ($query) {
+                return $query->student->admission_no;
             })
-            // ->addColumn('attendance_type_id', function ($studentAttendance) {
-            //     return $studentAttendance->attendance_type_id;
+            ->addColumn('roll_no', function ($query) {
+                return $query->student->roll_no;
+            })
+            ->addColumn('f_name', function ($query) {
+                return $query->student->user->f_name;
+            })
+            ->addColumn('attendance_type_id', function ($query) {
+                return $query->attendanceType->type;
+            })
+            // ->addColumn('date', function ($studentAttendance) {
+            //     return $studentAttendance->date;
             // })
-            ->addColumn('date', function ($studentAttendance) {
-                return $studentAttendance->date;
+            ->addColumn('remarks', function ($query) {
+                return $query->remarks;
             })
-            ->addColumn('remarks', function ($studentAttendance) {
-                return $studentAttendance->remarks;
+            ->addColumn('created_at', function ($query) {
+                return $query->created_at->diffForHumans();
             })
-            ->addColumn('created_at', function ($studentAttendance) {
-                return $studentAttendance->created_at->diffForHumans();
-            })
-            ->addColumn('status', function ($studentAttendance) {
-                return $studentAttendance->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
+            ->addColumn('status', function ($query) {
+                return $query->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
             })
             ->addColumn('actions', function ($studentAttendance) {
                 return view('backend.school_admin.student_attendance.partials.controller_action', ['studentAttendance' => $studentAttendance])->render();
             })
             ->make(true);
+        
+        return Datatables::of([])->escapeColumns([])->make(true);
     }
 
     public function getForDataTable($request)
     {
-        $dataTableQuery = StudentAttendance::where(function ($query) use ($request) {
-            if (isset($request->id)) {
-                $query->where('id', $request->id);
-            }
-        })
-            ->get();
+        $query = StudentAttendance::with(['student', 'student.user', 'attendanceType']);
 
-        return $dataTableQuery;
+        if (isset($request['class_id'])) {
+            $query->whereHas('student', function ($q) use ($request) {
+                $q->where('class_id', $request['class_id']);
+            });
+        }
+        if (isset($request['section_id'])) {
+            $query->whereHas('student', function ($q) use ($request) {
+                $q->where('section_id', $request['section_id']);
+            });
+        }
+        if (isset($request['date'])) {
+            $query->whereDate('date', $request['date']);
+        }
+
+        // Handle sorting
+        if (isset($request['order'][0]['column'])) {
+            $column = $request['columns'][$request['order'][0]['column']]['name'];
+            $direction = $request['order'][0]['dir'];
+            
+            switch ($column) {
+                case 'admission_no':
+                case 'roll_no':
+                    $query->join('students', 'student_attendances.student_id', '=', 'students.id')
+                          ->orderBy($column, $direction);
+                    break;
+                case 'f_name':
+                    $query->join('students', 'student_attendances.student_id', '=', 'students.id')
+                          ->join('users', 'students.user_id', '=', 'users.id')
+                          ->orderBy('users.f_name', $direction);
+                    break;
+                default:
+                    $query->orderBy($column, $direction);
+            }
+        } else {
+            // Default sorting
+            $query->join('students', 'student_attendances.student_id', '=', 'students.id')
+                  ->orderBy('students.roll_no', 'asc');
+        }
+
+        return $query->get();
     }
+
 }

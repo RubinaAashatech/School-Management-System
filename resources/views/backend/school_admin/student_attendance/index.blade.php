@@ -131,103 +131,58 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
-        var table = $('#student-table').DataTable({
-            "paging": true,
-            "ordering": true,
-            "info": true,
-            "order": [[1, 'asc']],  // Default sorting by Roll No column in ascending order
-            "columnDefs": [
-                { "targets": [0, 2, 3, 4], "orderable": false },  // Disable sorting for all columns except index 1 (Roll No)
-                { "targets": [1], "orderable": true }  // Roll No column - sortable
-            ]
-        });
-
-        // Function to fetch students dynamically
-        function fetchStudents(sortBy, sortOrder) {
-            $.ajax({
-                url: '/admin/student/get',
-                type: 'POST',
-                data: {
-                    sortBy: sortBy,
-                    sortOrder: sortOrder
-                },
-                success: function(response) {
-                    updateTable(response.students); // Update the table with sorted data
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching student data:', error);
-                }
-            });
-        }
-
-        // Initial fetch of students
-        fetchStudents('roll_no', 'asc'); // Initial fetch sorted by Roll No column
-
-        // Handle DataTables sorting event for Roll No column only
-        $('#student-table').on('click', 'th', function() {
-            var columnIndex = table.column(this).index();
-            var column = table.settings().init().columns[columnIndex];
-            var sortBy = column.data;
-
-            if (sortBy === 'roll_no') {
-                var sortOrder = table.order()[0][1]; // Get the sort order ('asc' or 'desc')
-                fetchStudents(sortBy, sortOrder); // Fetch students based on clicked column for sorting
-            }
-        });
-
-        // Function to update table based on student data
-        function updateTable(students) {
-            const tableBody = $('#studentTableBody');
-            tableBody.empty();
-
-            if (students.length === 0) {
-                tableBody.append('<tr><td colspan="5" class="text-center">No results found</td></tr>');
-            } else {
-                students.forEach(student => {
-                    const row = `<tr>
-                        <td>${student.admission_no}</td>
-                        <td>${student.roll_no}</td>
-                        <td>${student.f_name}</td>
-                        <td>${student.attendance_type_id}</td>
-                        <td>${student.remarks}</td>
-                    </tr>`;
-                    tableBody.append(row);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
                 });
-            }
-
-            // Redraw DataTable after updating table content
-            table.clear().rows.add(tableBody.find('tr')).draw();
-        }
-
-        // Search functionality
-        $('#searchInput').on('input', function () {
-            const query = $(this).val().toLowerCase();
-            updateTableBasedOnSearch(query);
+        
+                var dataTable = $('#student-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '{{ url('admin/student-attendances/get') }}',
+                        type: 'post',
+                        data: function(d) {
+                            d.class_id = $('select[name="class_id"]').val();
+                            d.section_id = $('select[name="section_id"]').val();
+                        }
+                    },
+                    columns: [
+                        { data: 'admission_no', name: 'admission_no' },
+                        { data: 'roll_no', name: 'roll_no' },
+                        { data: 'f_name', name: 'f_name' },
+                        { data: 'attendance_type_id', name: 'attendance_type_id' },
+                        { data: 'roll_no', name: 'roll_no',orderable:true },
+                        { data: 'remarks', name: 'remarks' },
+                    ],
+                    initComplete: function() {
+                        this.api().columns().every(function() {
+                            var column = this;
+                            var input = document.createElement("input");
+                            $(input).appendTo($(column.footer()).empty())
+                                .on('change', function() {
+                                    column.search($(this).val()).draw();
+                                });
+                        });
+                    }
+                });
+        
+                // $('#searchButton').on('click', function() {
+                //     dataTable.order([
+                //         [5, 'asc']
+                //     ]).ajax.reload();
+                // });
+        
+                $('#searchButton').on('click', function() {
+            dataTable.order([
+                [5, 'asc']
+            ]).ajax.reload();
         });
-
-        $('#clearSearchInput').on('click', function () {
-            $('#searchInput').val('');
-            fetchStudents('roll_no', 'asc'); // Clear search and re-fetch sorted by Roll No column
-        });
-
-        // Function to update table based on search input
-        function updateTableBasedOnSearch(query) {
-            const tableRows = $('#studentTableBody').find('tr');
-
-            tableRows.each(function() {
-                const studentName = $(this).find('td:nth-child(3)').text().toLowerCase();
-                if (studentName.includes(query)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
     });
 </script>
 

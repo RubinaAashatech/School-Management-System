@@ -6,6 +6,8 @@ use App\Models\StudentAttendance;
 use App\Models\StaffAttendance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
+
 class AttendenceReportController extends Controller
 {
     public function index()
@@ -14,7 +16,8 @@ class AttendenceReportController extends Controller
     }
     public function report(Request $request)
     {
-        $date = $request->input('date', Carbon::today()->toDateString()); // Default to today's date if not provided
+        $inputDate = $request->input('date', Carbon::today()->format('Y-m-d')); // Default to today's date if not provided
+        $date = LaravelNepaliDate::from($inputDate)->toEnglishDate();
         $studentAttendances = StudentAttendance::whereDate('created_at', $date)
             ->get();
         return view('backend.municipality_admin.attendencereport.index', compact('studentAttendances', 'date'));
