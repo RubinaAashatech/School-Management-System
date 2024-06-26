@@ -27,9 +27,10 @@ class HeadTeacherLogReportController extends Controller
     $date = LaravelNepaliDate::from($inputDate)->toEnglishDate();
 
     // Fetch data based on the provided date
-    $teacherLog = HeadTeacherLog::whereDate('created_at', $date)
-        ->select('major_incidents', 'major_work_observation', 'assembly_management', 'miscellaneous')
-        ->first();
+    $teacherLog = HeadTeacherLog::where('school_id', $schoolId)
+    ->whereDate('created_at', $date)
+    ->select('major_incidents', 'major_work_observation', 'assembly_management', 'miscellaneous')
+    ->first();
 
     $totalStudents = Student::where('school_id', $schoolId)->count();
 
