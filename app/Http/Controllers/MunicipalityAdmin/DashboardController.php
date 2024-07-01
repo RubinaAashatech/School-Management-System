@@ -187,6 +187,9 @@ $totalBoys = Student::whereHas('user', function ($query) {
         $totalSchools = School::count();
     
         $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
+
+        $todays_major_incidents = HeadTeacherLog::whereDate('created_at', Carbon::today())
+            ->get(['major_incidents','school_id']);
         
         return view('backend.municipality_admin.dashboard.dashboard', [
             'presentStudents' => $presentStudents,
@@ -200,6 +203,7 @@ $totalBoys = Student::whereHas('user', function ($query) {
             'totalSchools' => $totalSchools,
             'totalGirls' => $totalGirls, // Pass total girls count
             'totalBoys' => $totalBoys, // Pass total boys count
+            'todays_major_incidents' => $todays_major_incidents,
         ]);
     }
     
@@ -246,5 +250,18 @@ $totalBoys = Student::whereHas('user', function ($query) {
                 ]
             ]
         ];
+    }
+
+
+    public function fetchMajorIncidents()
+    {
+         // Fetch major incidents reported today with school names
+         $today = Carbon::now()->format('Y-m-d');
+        
+         $incidents = HeadTeacherLog::whereDate('created_at', $today)
+             ->with('schools:id,name') // Load school name only
+             ->get(['major_incidents', 'school_id']);
+ 
+         return response()->json($incidents);
     }
 }

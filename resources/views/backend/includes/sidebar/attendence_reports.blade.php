@@ -1,4 +1,4 @@
-@hasanyrole('Municipality Admin')
+@hasanyrole('Municipality Admin|School Admin')
     <li class="nav-item">
         {{-- <hr class="my-4"> --}}
         <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
@@ -20,11 +20,19 @@
                 <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'extracurricular-head' ? 'active' : '' }}"
                         href="{{ route('admin.attendance_reports.report') }}">
                         <div class="d-flex align-items-center"><i class="fa fa-angle-double-right"></i> {{ __('Attendence report')}}
-
                         </div>
                     </a>
                 </li>
             @endcan
+            {{-- @can('list_studentattendence_report')
+            <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'extracurricular-head' ? 'active' : '' }}"
+                href="{{ route('admin.attendance_reports.report') }}">
+                <div class="d-flex align-items-center"><i class="fa fa-angle-double-right"></i> {{ __(' School Attendence report')}}
+
+                </div>
+            </a>
+        </li>
+        @endcan --}}
         </ul>
     </li>
 

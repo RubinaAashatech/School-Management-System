@@ -394,19 +394,71 @@
             </div>
 
                 <!-- Widget for Major Incidents -->
-                <div class="col-xl-4 mb-50">
+                <div class="col-xl-4 mb-50" onclick="$('#majorIncidentsModal').modal('show')" style="cursor: pointer;">
                     <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
                         <div class="d-flex flex-wrap align-items-center">
                             <div class="circle-icon">
-                                <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-exclamation-circle"></i></div>
+                                <div class="icon border-radius-100 font-24 text-blue"><i class="fa-solid fa-bell-school"></i></div>
                             </div>
                             <div class="widget-data">
                                 <div class="weight-800 font-18">{{ $major_incidents }}</div>
-                                <div class="weight-500">Major Incidents</div>
+                                <div class="weight-500"> Major Incidents</div>
                             </div>
                         </div>
                     </div>
                 </div>
+    
+        <!-- Modal for Major Incidents -->
+        <div class="modal fade" id="majorIncidentsModal" tabindex="-1" aria-labelledby="majorIncidentsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="majorIncidentsModalLabel">Major Incidents Today</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if ($todays_major_incidents->isNotEmpty())
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>School Name</th>
+                                        <th>Major Incidents</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($todays_major_incidents as $incident)
+                                        <tr>
+                                            <td>{{ optional($incident->school)->name ?: 'Unknown School' }}</td>
+                                            {{-- <td>{{ $incident->major_incidents }}</td> --}}
+                                            <td style="max-width: 300px; word-wrap: break-word;">{{ $incident->major_incidents }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <p>No major incidents reported today.</p>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Scripts -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Optional: You can initialize tooltips and other features here if needed.
+
+            // Click handler for showing the modal
+            $('.show-major-incidents-modal').click(function() {
+                $('#majorIncidentsModal').modal('show');
+            });
+        });
+    </script>
 
             <div class="col-xl-4 mb-50">
                 <div class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
