@@ -331,6 +331,7 @@ class RolePermissionSeeder extends Seeder
             'edit_extracurricular_head',
             'delete_extracurricular_head',
             'list_attendence_report',
+            'list_studentattendence_report',
 
 
         ];
@@ -899,6 +900,7 @@ class RolePermissionSeeder extends Seeder
             'edit_inventories',
             'delete_inventories',
             'list_extracurricular_head',
+            'list_studentattendence_report',
 
         ];
 

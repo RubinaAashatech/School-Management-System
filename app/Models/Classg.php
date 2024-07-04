@@ -43,4 +43,9 @@ class Classg extends Model
     {
         return $this->hasMany(FeeDue::class, 'class_id');
     }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
 }

@@ -1,11 +1,11 @@
 @extends('backend.layouts.master')
+
 @section('content')
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
             <div class="border-bottom border-primary">
-                <h2>{{ $page_title }}</h2>
+                <h2>Head Teacher Log Reports</h2>
             </div>
-            @include('backend.school_admin.lessons.partials.action')
         </div>
         <div class="mt-4">
             <div class="card">
@@ -34,6 +34,23 @@
                         <table id="report-table" class="table table-bordered table-striped dataTable dtr-inline" aria-describedby="example1_info">
                             <thead>
                                 <tr>
+                                    <th>Class</th>
+                                    <th>Section</th>
+                                    <th>Present Boys</th>
+                                    <th>Present Girls</th>
+                                    <th>Absent Boys</th>
+                                    <th>Absent Girls</th>
+                                    <th>Total Boys</th>
+                                    <th>Total Girls</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-table-body">
+                                <!-- Table rows will be dynamically generated here -->
+                            </tbody>
+                        </table>
+                        <table id="summary-table" class="table table-bordered table-striped dataTable dtr-inline" aria-describedby="example1_info">
+                            <thead>
+                                <tr>
                                     <th>Particulars</th>
                                     <th>Description</th>
                                     <th>Remarks</th>
@@ -46,36 +63,19 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>Present Students: </td>
-                                    <td class="">
-                                        <div id="presentBoys">Male: {{ $presentBoys }}</div>
-                                        <div class="mt-2" id="presentGirls">Female: {{ $presentGirls }}</div>
-                                        <div class="mt-2" id="totalPresentStudents">Total: {{ $presentStudents }}</div>
-                                    </td>
+                                    <td>Present Staffs: </td>
+                                    <td id="presentStaffs">{{ $presentStaffs }}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>Absent Students: </td>
-                                    <td class="">
-                                        <div id="absentBoys">Male: {{ $absentBoys }}</div>
-                                        <div id="absentGirls" class="mt-2">Female: {{ $absentGirls }}</div>
-                                        <div id="totalAbsentStudents" class="mt-2">Total: {{ $absentStudents }}</div>
-                                    </td>
+                                    <td>Absent Staffs: </td>
+                                    <td id="absentStaffs">{{ $absentStaffs }}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>Present Number of Teachers/Staffs: </td>
-                                    <td id="presentStaffCount">{{ $presentStaffs }}</td>
+                                    <td>Major Incident: </td>
+                                    <td id="majorIncident">{{ $majorIncident }}</td>
                                     <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Absent Number of Teachers/Staffs: </td>
-                                    <td id="absentStaffCount">{{ $absentStaffs }}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Record of the Major Incidents: </td>
-                                    <td colspan="2" id="majorIncident">{{ $majorIncident }}</td>
                                 </tr>
                                 <tr>
                                     <td>Major Work Observation: </td>
@@ -83,7 +83,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>ECA: </td>
+                                    <td>Assembly Management: </td>
                                     <td id="assemblyManagement">{{ $assemblyManagement }}</td>
                                     <td></td>
                                 </tr>
@@ -102,76 +102,77 @@
 @endsection
 
 @section('scripts')
-@include('backend.includes.nepalidate')
-<script>
-$(document).ready(function () {
-    // Fetch current Nepali date
-    var currentDate = NepaliFunctions.GetCurrentBsDate();
+    @include('backend.includes.nepalidate')
+    <script>
+        $(document).ready(function() {
+            var currentDate = NepaliFunctions.GetCurrentBsDate();
+            var formattedDate = currentDate.year + '-' + ('0' + currentDate.month).slice(-2) + '-' + ('0' + currentDate.day).slice(-2);
 
-    // Pad month and day with leading zero if they are less than 10
-    var padZero = function (num) {
-        return num < 10 ? '0' + num : num;
-    };
+            $('#nepali-datepicker').val(formattedDate);
 
-    // Format the current date with padded month and day
-    var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
+            $('#nepali-datepicker').nepaliDatePicker({
+                ndpYear: true,
+                ndpMonth: true,
+                ndpYearCount: 10
+            });
 
-    // Set the formatted date to the input field
-    $('#nepali-datepicker').val(formattedDate);
+            $('#searchButton').click(function () {
+                var selectedDate = $('#nepali-datepicker').val();
 
-    // Initialize nepali-datepicker
-    $('#nepali-datepicker').nepaliDatePicker({
-        dateFormat: 'YYYY-MM-DD',
-        closeOnDateSelect: true,
-        onChange: function () {
-            // Optionally handle change event
-        }
-    });
+                $.ajax({
+                    url: "{{ route('admin.headteacherlog-reports.index') }}",
+                    method: 'GET',
+                    data: { date: selectedDate },
+                    success: function(response) {
+                        console.log(response); // Check response in console for debugging
+                        // Update table and summary with response data
+                        var tableBody = $('#report-table-body');
+                        tableBody.empty();
 
-    // Function to update table with fetched data
-    function updateTable(data) {
-        $('#totalStudents').text(data.totalStudents);
-        $('#presentBoys').text('Male: ' + data.presentBoys);
-        $('#presentGirls').text('Female: ' + data.presentGirls);
-        $('#totalPresentStudents').text('Total: ' + data.presentStudents);
-        $('#absentBoys').text('Male: ' + data.absentBoys);
-        $('#absentGirls').text('Female: ' + data.absentGirls);
-        $('#totalAbsentStudents').text('Total: ' + data.absentStudents);
-        $('#presentStaffCount').text(data.presentStaffs);
-        $('#absentStaffCount').text(data.absentStaffs);
-        $('#majorIncident').text(data.majorIncident);
-        $('#majorWorkObservation').text(data.majorWorkObservation);
-        $('#assemblyManagement').text(data.assemblyManagement);
-        $('#miscellaneous').text(data.miscellaneous);
-    }
+                        var previousClass = null;
+                        var rowspanCount = 0;
+                        var classDataMap = {};
 
-    // Fetch and display data based on the selected Nepali date
-    $('#searchButton').click(function () {
-        var selectedDate = $('#nepali-datepicker').val();
+                        $.each(response.classWiseCounts, function(index, data) {
+                            if (!classDataMap[data.class_name]) {
+                                classDataMap[data.class_name] = [];
+                            }
+                            classDataMap[data.class_name].push(data);
+                        });
 
-        $.ajax({
-            url: '{{ route("admin.headteacherlog-reports.index") }}',
-            method: 'GET',
-            data: {
-                date: selectedDate
-            },
-            success: function (response) {
-                console.log('Data fetched successfully:', response);
-                if (response.message) {
-                    $('#messagePlaceholder').text(response.message);
-                    $('#report-table tbody').hide();
-                } else {
-                    $('#messagePlaceholder').text('');
-                    $('#report-table tbody').show();
-                    updateTable(response);
-                }
-            },
-            error: function (error) {
-                console.error('Error fetching data:', error);
-                $('#messagePlaceholder').text('Error fetching data. Please try again.');
-            }
+                        $.each(classDataMap, function(className, sections) {
+                            rowspanCount = sections.length;
+                            $.each(sections, function(index, data) {
+                                var rowHtml = '<tr>';
+                                if (index === 0) {
+                                    rowHtml += '<td rowspan="' + rowspanCount + '">' + data.class_name + '</td>';
+                                }
+                                rowHtml += '<td>' + data.section_name + '</td>';
+                                rowHtml += '<td>' + data.present_boys + '</td>';
+                                rowHtml += '<td>' + data.present_girls + '</td>';
+                                rowHtml += '<td>' + data.absent_boys + '</td>';
+                                rowHtml += '<td>' + data.absent_girls + '</td>';
+                                rowHtml += '<td>' + data.total_boys + '</td>';
+                                rowHtml += '<td>' + data.total_girls + '</td>';
+                                rowHtml += '</tr>';
+                                tableBody.append(rowHtml);
+                            });
+                        });
+
+                        $('#totalStudents').text(response.totalStudents);
+                        $('#presentStaffs').text(response.presentStaffs);
+                        $('#absentStaffs').text(response.absentStaffs);
+                        $('#majorIncident').text(response.majorIncident);
+                        $('#majorWorkObservation').text(response.majorWorkObservation);
+                        $('#assemblyManagement').text(response.assemblyManagement);
+                        $('#miscellaneous').text(response.miscellaneous);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText); // Log detailed error message
+                        $('#messagePlaceholder').text('Error: ' + xhr.responseText); // Display error message
+                    }
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 @endsection

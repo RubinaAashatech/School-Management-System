@@ -9,4 +9,9 @@ class ClassSection extends Model
 {
     use HasFactory;
     protected $fillable = ['class_id', 'section_id', 'school_id'];
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
 }

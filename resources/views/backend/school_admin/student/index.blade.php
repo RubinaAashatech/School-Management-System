@@ -54,6 +54,8 @@
             </div>
         </div>
 
+        <button type="button" class="btn btn-success" id="addRollNumbersButton">Add Roll Numbers</button>
+
         <div class="card">
             <div class="card-body">
                 <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -187,6 +189,44 @@
                 });
             }
         });
+
+
+        $('#addRollNumbersButton').on('click', function() {
+    // Fetch all student rows currently displayed in the table
+    var studentRows = dataTable.rows().nodes();
+
+    // Loop through each row to create input fields for roll numbers
+    $.each(studentRows, function(index, row) {
+        // Extract student ID from the row's data attribute or any identifier
+        var studentId = dataTable.row(row).data().id;
+
+        // Append an input field for roll number to each row
+        $(row).find('td:nth-child(6)').html('<input type="text" class="form-control roll-number-input" data-student-id="' + studentId + '" placeholder="Enter Roll Number">');
+    });
+
+    // Add event listener for saving roll numbers
+    $(document).on('blur', '.roll-number-input', function() {
+        var studentId = $(this).data('student-id');
+        var rollNumber = $(this).val().trim();
+
+        // Make an AJAX request to save the roll number
+        $.ajax({
+            url: '{{ route('admin.students.save-roll-number') }}',
+            type: 'POST',
+            data: {
+                student_id: studentId,
+                roll_number: rollNumber
+            },
+            success: function(response) {
+                // Optionally handle success response
+                console.log('Roll number saved successfully for student ID ' + studentId);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error saving roll number:', error);
+            }
+        });
+    });
+});
     });
         </script>
         
