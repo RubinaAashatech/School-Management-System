@@ -19,81 +19,58 @@ class SchoolAttendanceReportController extends Controller
     {
         $schoolId = Auth::user()->school_id;
         $classes = Classg::where('school_id', $schoolId)->get();
-        $sections = ClassSection::where('school_id', $schoolId)->get();
-        return view('backend.school_admin.attendancereport.index', compact('classes', 'sections'));
+        return view('backend.school_admin.attendancereport.index', compact('classes'));
     }
 
     public function report(Request $request)
     {
-        $inputDate = $request->input('date', Carbon::today()->format('Y-m-d'));
+        $inputFromDate = $request->input('from_date', Carbon::today()->format('Y-m-d'));
+        $inputToDate = $request->input('to_date', Carbon::today()->format('Y-m-d'));
+        $fromDate = LaravelNepaliDate::from($inputFromDate)->toEnglishDate();
+        $toDate = LaravelNepaliDate::from($inputToDate)->toEnglishDate();
         $schoolId = Auth::user()->school_id;
         $classes = Classg::where('school_id', $schoolId)->get();
-        $sections = ClassSection::where('school_id', $schoolId)->get();
-        return view('backend.school_admin.attendancereport.index', compact('classes', 'sections', 'inputDate'));
+        $studentAttendances = StudentAttendance::whereDate('created_at', [$fromDate, $toDate])->get();
+        return view('backend.school_admin.attendancereport.index', compact('classes', 'fromDate', 'toDate', 'studentAttendances'));
     }
-
-    public function getSectionsByClass($classId)
-    {
-        $schoolId = Auth::user()->school_id;
-
-        // Fetch sections based on the school ID and class ID
-        $sections = ClassSection::where('school_id', $schoolId)
-                                ->where('class_id', $classId)
-                                ->pluck('name', 'id')
-                                ->toArray();
-
-        // Return JSON response
-        return response()->json($sections);
-    }
- 
-
-
     public function getData(Request $request)
-    {
-        $query = StudentAttendance::with(['student.user', 'studentSession'])
-            ->whereHas('studentSession', function ($q) {
-                $q->where('school_id', Auth::user()->school_id); // Filter by logged-in school
+{
+    $fromDate = $request->input('from_date');
+    $toDate = $request->input('to_date');
+    $classId = $request->input('class_id');
+    $studentName = $request->input('student_name');
+
+    $query = StudentAttendance::with(['student.user', 'studentSession'])
+        ->whereBetween('created_at', [$fromDate, $toDate])
+        ->when($classId, function ($query, $classId) {
+            return $query->whereHas('studentSession', function ($q) use ($classId) {
+                $q->where('class_id', $classId);
             });
-
-        if ($request->has('class')) {
-            $query->whereHas('studentSession', function ($q) use ($request) {
-                $q->where('class_id', $request->class);
+        })
+        ->when($studentName, function ($query, $studentName) {
+            return $query->whereHas('student.user', function ($q) use ($studentName) {
+                $q->where('f_name', 'like', '%'.$studentName.'%')
+                  ->orWhere('l_name', 'like', '%'.$studentName.'%');
             });
-        }
+        })
+        ->get();
 
-        if ($request->has('section')) {
-            $query->whereHas('studentSession', function ($q) use ($request) {
-                $q->where('section_id', $request->section);
-            });
-        }
-
-        if ($request->has('from_date') && $request->has('to_date')) {
-            $fromDate = LaravelNepaliDate::from($request->from_date)->toEnglishDate();
-            $toDate = LaravelNepaliDate::from($request->to_date)->toEnglishDate();
-            $query->whereBetween('created_at', [$fromDate, $toDate]);
-        }
-
-        if ($request->has('student_name')) {
-            $query->whereHas('student.user', function ($q) use ($request) {
-                $q->where('f_name', 'like', '%' . $request->student_name . '%')
-                  ->orWhere('l_name', 'like', '%' . $request->student_name . '%');
-            });
-        }
-
-        if ($request->has('admission_no')) {
-            $query->whereHas('student', function ($q) use ($request) {
-                $q->where('admission_no', 'like', '%' . $request->admission_no . '%');
-            });
-        }
-
-        return DataTables::of($query)
-            ->addColumn('student_name', function ($attendance) {
-                return $attendance->student->user->f_name . ' ' . $attendance->student->user->l_name;
-            })
-            ->addColumn('attendance_type', function ($attendance) {
-                return $attendance->attendance_type_id == 1 ? 'Present' : 'Absent';
-            })
-            ->rawColumns(['student_name', 'attendance_type'])
-            ->make(true);
-    }
+    return DataTables::of($query)
+        ->addColumn('date', function($row) {
+            return date('Y-m-d', strtotime($row->created_at));
+        })
+        ->addColumn('student_name', function($row) {
+            return $row->student->user->f_name . ' ' . $row->student->user->l_name;
+        })
+        ->addColumn('attendance_type', function($row) {
+            return $row->attendance_type;
+        })
+        ->make(true);
+}
+     // RETRIVING SECTIONS OF THE RESPECTIVE CLASS
+    //  public function getSections($classId)
+    //  {
+    //      $sections = Classg::find($classId)->sections()->pluck('sections.section_name', 'sections.id');
+    //      return response()->json($sections);
+    //  }
 }

@@ -1,66 +1,55 @@
 @extends('backend.layouts.master')
 @section('content')
 <div class="container">
-    <h1>Student Attendance Report</h1>
+    <h1>Attendance Report</h1>
     <div class="row">
-        <div class=" col-lg-3 col-sm-3 mt-2">
-            <label for="class_id"> Class:</label>
-            <div class="select">
-                <select name="class_id">
-                    <option value="">Select Class</option>
+        <div class="col-lg-3 col-sm-3 mt-2">
+            <div class="p-2 label-input">
+                <label for="nepali-datepicker">From Date:</label>
+                <div class="form-group">
+                    <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                        <input id="fromDatepicker" name="date" type="text" class="form-control datetimepicker-input" />
+                    </div>
+                    @error('date')
+                        <strong class="text-danger">{{ $message }}</strong>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-3 mt-2">
+            <div class="p-2 label-input">
+                <label for="nepali-datepicker">To Date:</label>
+                <div class="form-group">
+                    <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
+                        <input id="toDatepicker" name="date" type="text" class="form-control datetimepicker-input" />
+                    </div>
+                    @error('date')
+                        <strong class="text-danger">{{ $message }}</strong>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-3 mt-2">
+            <div class="p-2 label-input">
+                <label for="classSelect">Select class:</label>
+                <select id="classSelect" name="class_id" class="form-control">
+                    <option value="">Select class</option>
                     @foreach ($classes as $class)
                         <option value="{{ $class->id }}">{{ $class->class }}</option>
                     @endforeach
                 </select>
-            </div>
-            @error('class_id')
-                <strong class="text-danger">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class=" col-lg-3 col-sm-3 mt-2">
-            <label for="section_id"> Section:</label>
-            <div class="select">
-                <select name="section_id">
-                    <option disabled>Select Section</option>
-                    <option value=""></option>
-                </select>
-            </div>
-            @error('section_id')
-                <strong class="text-danger">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class="col-lg-3 col-sm-3 mt-2">
-            <div class="p-2 label-input">
-                <label for="from_date">From Date:</label>
-                <input type="text" id="from_date" name="from_date" class="form-control nepali-datepicker">
-                @error('from_date')
+                @error('class_id')
                     <strong class="text-danger">{{ $message }}</strong>
                 @enderror
             </div>
         </div>
         <div class="col-lg-3 col-sm-3 mt-2">
             <div class="p-2 label-input">
-                <label for="to_date">To Date:</label>
-                <input type="text" id="to_date" name="to_date" class="form-control nepali-datepicker">
-                @error('to_date')
-                    <strong class="text-danger">{{ $message }}</strong>
-                @enderror
-            </div>
-        </div>
-        <div class="col-lg-3 col-sm-3 mt-2">
-            <div class="p-2 label-input">
-                <label for="student_name">Student Name:</label>
-                <input type="text" id="student_name" name="student_name" class="form-control">
+                <label for="studentName">Student Name:</label>
+                <input id="studentName" name="student_name" type="text" class="form-control" placeholder="Enter student name" />
                 @error('student_name')
-                    <strong class="text-danger">{{ $message }}</strong>
-                @enderror
-            </div>
-        </div>
-        <div class="col-lg-3 col-sm-3 mt-2">
-            <div class="p-2 label-input">
-                <label for="admission_no">Admission No:</label>
-                <input type="text" id="admission_no" name="admission_no" class="form-control">
-                @error('admission_no')
                     <strong class="text-danger">{{ $message }}</strong>
                 @enderror
             </div>
@@ -77,8 +66,10 @@
     <table id="attendanceTable" class="table table-striped table-bordered">
         <thead>
             <tr>
+                <th>Date</th>
                 <th>Student Name</th>
                 <th>Attendance Type</th>
+
             </tr>
         </thead>
         <tbody>
@@ -122,47 +113,27 @@
 </style>
 
 <script type="text/javascript">
-$(document).ready(function() {
-    // Initialize nepali-datepicker for all date inputs
-    $('.nepali-datepicker').nepaliDatePicker({
+  $(document).ready(function() {
+    // Initialize nepali-datepicker
+    $('#fromDatepicker').nepaliDatePicker({
         dateFormat: 'YYYY-MM-DD',
         closeOnDateSelect: true
     });
 
-    // Attach change event handler to the class dropdown
-    // Attach change event handler to the class dropdown
-    $('select[name="class_id"]').change(function() {
-        // Get the selected class ID
-        var classId = $(this).val();
-        
-        // Fetch sections based on the selected class ID
-        $.ajax({
-            url: '{{ route("admin.get.sections.by.class", ":classId") }}'.replace(':classId', classId),
-            type: 'GET',
-            success: function(data) {
-                // Clear existing options
-                $('select[name="section_id"]').empty();
-
-                // Add the default option
-                $('select[name="section_id"]').append('<option value="">Select Section</option>');
-
-                // Check if data is empty or not
-                if ($.isEmptyObject(data)) {
-                    console.error('No sections found for class ID:', classId);
-                } else {
-                    // Add new options based on the fetched sections
-                    $.each(data, function(key, value) {
-                        $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching sections:', error);
-            }
-        });
+      // Initialize nepali-datepicker
+      $('#toDatepicker').nepaliDatePicker({
+        dateFormat: 'YYYY-MM-DD',
+        closeOnDateSelect: true
     });
 
-
+    // // Set today's date in the date picker
+    // var currentDate = NepaliFunctions.GetCurrentBsDate();
+    // var padZero = function (num) {
+    //     return num < 10 ? '0' + num : num;
+    // };
+    // var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
+    // $('#fromDate').val(formattedDate);
+    // $('#toDate').val(formattedDate);
 
     // Initialize DataTable with Buttons extension but without data
     var table = $('#attendanceTable').DataTable({
@@ -170,18 +141,17 @@ $(document).ready(function() {
         serverSide: true,
         searching: false,
         ajax: {
-            url: '{{ route("admin.attendance_reports.data") }}',
+            url: '{{ route("admin.attendance_schoolreports.data") }}',
             data: function (d) {
-                d.date = $('#nepali-datepicker').val();
-                d.class = $('#classSelect').val();
-                d.section = $('#sectionSelect').val();
-                d.from_date = $('#from_date').val();
-                d.to_date = $('#to_date').val();
-                d.student_name = $('#student_name').val();
-                d.admission_no = $('#admission_no').val();
+                d.from_date = $('#fromDate').val();
+                d.to_date = $('#toDate').val();
+                d.class_id = $('#classSelect').val();
+                d.student_name = $('#studentName').val();
+               
             }
         },
         columns: [
+            { data: 'date', name: 'date' }, // Display date column
             { data: 'student_name', name: 'student_name' },
             { data: 'attendance_type', name: 'attendance_type' }
         ],
@@ -201,34 +171,16 @@ $(document).ready(function() {
         ordering: false,
         language: {
             emptyTable: "No matching records found"
-        },
-        drawCallback: function(settings) {
-            var api = this.api();
-            if (api.rows({page: 'current'}).count() === 0) {
-                $(api.table().container()).find('.dataTables_paginate').hide();
-            } else {
-                $(api.table().container()).find('.dataTables_paginate').show();
-            }
-        },
-        initComplete: function(settings, json) {
-            var api = this.api();
-            if (api.rows({page: 'current'}).count() === 0) {
-                $(api.table().container()).find('.dataTables_paginate').hide();
-            } else {
-                $(api.table().container()).find('.dataTables_paginate').show();
-            }
         }
     });
 
-    // Redraw the table when the search button is clicked
     $('#searchButton').on('click', function() {
-        table.draw();
+        if ($('#fromDate').val() && $('#toDate').val()) {
+            table.draw();
+        } else {
+            alert('Please select both From Date and To Date before searching.');
+        }
     });
-    
 });
-
-
-
 </script>
 @endsection
-

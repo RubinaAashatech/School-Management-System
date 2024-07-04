@@ -23,3 +23,5 @@ Route::post('/import', [StudentController::class, 'import'])->name('students.bul
 
 Route::post('students/bulk-delete', [StudentController::class, 'destroyMultiple'])->name('students.bulk-delete');
 
+Route::post('students/save-roll-number', [StudentController::class, 'saveRollNumber'])->name('students.save-roll-number');
+

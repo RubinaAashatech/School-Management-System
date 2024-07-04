@@ -579,6 +579,26 @@ public function destroyMultiple(Request $request)
 }
 
 
+public function saveRollNumber(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'roll_number' => 'required|string|max:255',
+        ]);
+
+        // Find the student
+        $student = Student::findOrFail($request->input('student_id'));
+
+        // Update roll number
+        $student->roll_no = $request->input('roll_number');
+        $student->save();
+
+        return response()->json(['success' => 'Roll number saved successfully']);
+    }
+
+    
+
+
 
 public function getAllStudent(Request $request)
 {
