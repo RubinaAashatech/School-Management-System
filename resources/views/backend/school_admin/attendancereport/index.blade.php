@@ -8,7 +8,7 @@
                 <label for="nepali-datepicker">From Date:</label>
                 <div class="form-group">
                     <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
-                        <input id="fromDatepicker" name="date" type="text" class="form-control datetimepicker-input" />
+                        <input id="fromDatepicker" name="from_date" type="text" class="form-control datetimepicker-input" />
                     </div>
                     @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
@@ -22,7 +22,7 @@
                 <label for="nepali-datepicker">To Date:</label>
                 <div class="form-group">
                     <div class="input-group date" id="admission-datetimepicker" data-target-input="nearest">
-                        <input id="toDatepicker" name="date" type="text" class="form-control datetimepicker-input" />
+                        <input id="toDatepicker" name="to_date" type="text" class="form-control datetimepicker-input" />
                     </div>
                     @error('date')
                         <strong class="text-danger">{{ $message }}</strong>
@@ -66,10 +66,10 @@
     <table id="attendanceTable" class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>Date</th>
                 <th>Student Name</th>
-                <th>Attendance Type</th>
-
+                @foreach ($dates as $date)
+                    <th>{{ $date }}</th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
@@ -113,74 +113,65 @@
 </style>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    // Initialize nepali-datepicker
-    $('#fromDatepicker').nepaliDatePicker({
-        dateFormat: 'YYYY-MM-DD',
-        closeOnDateSelect: true
-    });
-
+    $(document).ready(function() {
       // Initialize nepali-datepicker
-      $('#toDatepicker').nepaliDatePicker({
-        dateFormat: 'YYYY-MM-DD',
-        closeOnDateSelect: true
-    });
-
-    // // Set today's date in the date picker
-    // var currentDate = NepaliFunctions.GetCurrentBsDate();
-    // var padZero = function (num) {
-    //     return num < 10 ? '0' + num : num;
-    // };
-    // var formattedDate = currentDate.year + '-' + padZero(currentDate.month) + '-' + padZero(currentDate.day);
-    // $('#fromDate').val(formattedDate);
-    // $('#toDate').val(formattedDate);
-
-    // Initialize DataTable with Buttons extension but without data
-    var table = $('#attendanceTable').DataTable({
-        processing: true,
-        serverSide: true,
-        searching: false,
-        ajax: {
-            url: '{{ route("admin.attendance_schoolreports.data") }}',
-            data: function (d) {
-                d.from_date = $('#fromDate').val();
-                d.to_date = $('#toDate').val();
-                d.class_id = $('#classSelect').val();
-                d.student_name = $('#studentName').val();
-               
-            }
-        },
-        columns: [
-            { data: 'date', name: 'date' }, // Display date column
-            { data: 'student_name', name: 'student_name' },
-            { data: 'attendance_type', name: 'attendance_type' }
-        ],
-        dom: '<"d-flex justify-content-between"lfB>rtip',
-        buttons: {
-            dom: {
-                button: {
-                    className: 'btn btn-sm btn-primary'
-                }
-            },
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            container: '#buttons-container'
-        },
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        ordering: false,
-        language: {
-            emptyTable: "No matching records found"
-        }
-    });
-
-    $('#searchButton').on('click', function() {
-        if ($('#fromDate').val() && $('#toDate').val()) {
-            table.draw();
-        } else {
-            alert('Please select both From Date and To Date before searching.');
-        }
-    });
-});
-</script>
-@endsection
+      $('#fromDatepicker').nepaliDatePicker({
+          dateFormat: 'YYYY-MM-DD',
+          closeOnDateSelect: true
+      });
+  
+        // Initialize nepali-datepicker
+        $('#toDatepicker').nepaliDatePicker({
+          dateFormat: 'YYYY-MM-DD',
+          closeOnDateSelect: true
+      });
+  
+      // Initialize DataTable with Buttons extension but without data
+      var table = $('#attendanceTable').DataTable({
+          processing: true,
+          serverSide: true,
+          searching: false,
+          ajax: {
+              url: '{{ route("admin.attendance_schoolreports.data") }}',
+              data: function (d) {
+                  d.from_date = $('#fromDatepicker').val();
+                  d.to_date = $('#toDatepicker').val();
+                  d.class_id = $('#classSelect').val();
+                  d.student_name = $('#studentName').val();
+              }
+          },
+          columns: [
+              { data: 'student_name', name: 'student_name' },
+              @foreach ($dates as $date)
+                  { data: '{{ $date }}', name: '{{ $date }}' },
+              @endforeach
+          ],
+          dom: '<"d-flex justify-content-between"lfB>rtip',
+          buttons: {
+              dom: {
+                  button: {
+                      className: 'btn btn-sm btn-primary'
+                  }
+              },
+              buttons: [
+                  'copy', 'csv', 'excel', 'pdf', 'print'
+              ],
+              container: '#buttons-container'
+          },
+          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+          ordering: false,
+          language: {
+              emptyTable: "No matching records found"
+          }
+      });
+  
+      $('#searchButton').on('click', function() {
+          if ($('#fromDatepicker').val() && $('#toDatepicker').val()) {
+              table.draw();
+          } else {
+              alert('Please select both From Date and To Date before searching.');
+          }
+      });
+  });
+  </script>
+  @endsection

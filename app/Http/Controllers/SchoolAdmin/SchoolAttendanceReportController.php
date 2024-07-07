@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 use Yajra\DataTables\DataTables;
+use Carbon\CarbonPeriod;
 use DB, Auth;
 
 class SchoolAttendanceReportController extends Controller
@@ -30,43 +31,60 @@ class SchoolAttendanceReportController extends Controller
         $toDate = LaravelNepaliDate::from($inputToDate)->toEnglishDate();
         $schoolId = Auth::user()->school_id;
         $classes = Classg::where('school_id', $schoolId)->get();
-        $studentAttendances = StudentAttendance::whereDate('created_at', [$fromDate, $toDate])->get();
-        return view('backend.school_admin.attendancereport.index', compact('classes', 'fromDate', 'toDate', 'studentAttendances'));
+
+        // Generate date range
+        $period = CarbonPeriod::create($fromDate, $toDate);
+        $dates = [];
+        foreach ($period as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
+
+        return view('backend.school_admin.attendancereport.index', compact('classes', 'dates'));
     }
+
     public function getData(Request $request)
-{
-    $fromDate = $request->input('from_date');
-    $toDate = $request->input('to_date');
-    $classId = $request->input('class_id');
-    $studentName = $request->input('student_name');
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $classId = $request->input('class_id');
+        $studentName = $request->input('student_name');
 
-    $query = StudentAttendance::with(['student.user', 'studentSession'])
-        ->whereBetween('created_at', [$fromDate, $toDate])
-        ->when($classId, function ($query, $classId) {
-            return $query->whereHas('studentSession', function ($q) use ($classId) {
-                $q->where('class_id', $classId);
-            });
-        })
-        ->when($studentName, function ($query, $studentName) {
-            return $query->whereHas('student.user', function ($q) use ($studentName) {
-                $q->where('f_name', 'like', '%'.$studentName.'%')
-                  ->orWhere('l_name', 'like', '%'.$studentName.'%');
-            });
-        })
-        ->get();
+        $period = CarbonPeriod::create($fromDate, $toDate);
+        $dates = [];
+        foreach ($period as $date) {
+            $dates[] = $date->format('Y-m-d');
+        }
 
-    return DataTables::of($query)
-        ->addColumn('date', function($row) {
-            return date('Y-m-d', strtotime($row->created_at));
-        })
-        ->addColumn('student_name', function($row) {
-            return $row->student->user->f_name . ' ' . $row->student->user->l_name;
-        })
-        ->addColumn('attendance_type', function($row) {
-            return $row->attendance_type;
-        })
-        ->make(true);
-}
+        $query = StudentAttendance::with(['student.user', 'studentSession'])
+            ->whereBetween('created_at', [$fromDate, $toDate])
+            ->when($classId, function ($query, $classId) {
+                return $query->whereHas('studentSession', function ($q) use ($classId) {
+                    $q->where('class_id', $classId);
+                });
+            })
+            ->when($studentName, function ($query, $studentName) {
+                return $query->whereHas('student.user', function ($q) use ($studentName) {
+                    $q->where('f_name', 'like', '%'.$studentName.'%')
+                      ->orWhere('l_name', 'like', '%'.$studentName.'%');
+                });
+            })
+            ->get();
+
+        $data = [];
+        foreach ($query as $attendance) {
+            foreach ($dates as $date) {
+                if (Carbon::parse($attendance->created_at)->format('Y-m-d') == $date) {
+                    $data[] = [
+                        'date' => $date,
+                        'student_name' => $attendance->student->user->f_name . ' ' . $attendance->student->user->l_name,
+                        'attendance_type' => $attendance->attendance_type,
+                    ];
+                }
+            }
+        }
+
+        return DataTables::of($data)->make(true);
+    }
      // RETRIVING SECTIONS OF THE RESPECTIVE CLASS
     //  public function getSections($classId)
     //  {

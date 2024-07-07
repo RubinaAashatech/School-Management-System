@@ -4,7 +4,6 @@
 @section('content')
     <div class="mt-4">
         <div class="d-flex justify-content-between mb-4">
-
             <div class="border-bottom border-primary">
                 <h2>
                     {{ $page_title }}
@@ -17,8 +16,8 @@
                 <form id="filterForm">
                     @csrf
                     <div class="d-flex justify-content-between">
-                        <div class=" col-lg-3 col-sm-3 mt-2 ">
-                            <label for="class_id"> Class:</label>
+                        <div class="col-lg-3 col-sm-3 mt-2">
+                            <label for="class_id">Class:</label>
                             <div class="select">
                                 <select name="class_id">
                                     <option value="">Select Class</option>
@@ -32,8 +31,8 @@
                             @enderror
                         </div>
 
-                        <div class=" col-lg-3 col-sm-3 mt-2">
-                            <label for="section_id"> Section:</label>
+                        <div class="col-lg-3 col-sm-3 mt-2">
+                            <label for="section_id">Section:</label>
                             <div class="select">
                                 <select name="section_id">
                                     <option disabled>Select Section</option>
@@ -49,12 +48,12 @@
                     <div class="form-group col-md-12 d-flex justify-content-end pt-2">
                         <button type="button" class="btn btn-primary" id="searchButton">Search</button>
                     </div>
-
                 </form>
             </div>
         </div>
 
         <button type="button" class="btn btn-success" id="addRollNumbersButton">Add Roll Numbers</button>
+        <button type="button" class="btn btn-primary" id="saveRollNumbersButton" style="display: none;">Save Roll Numbers</button>
 
         <div class="card">
             <div class="card-body">
@@ -62,7 +61,6 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col-12">
                             <div class="report-table-container">
-
                                 <div class="table-responsive">
                                     <table id="student-table"
                                         class="table table-bordered table-striped dataTable dtr-inline"
@@ -70,7 +68,7 @@
                                         <thead>
                                             <tr>
                                                 <th><input type="checkbox" id="select-all"></th>
-                                               <th>Id</th> 
+                                                <th>Id</th> 
                                                 <th>First Name</th>
                                                 <th>Last Name</th>
                                                 <th>Class</th>
@@ -89,7 +87,7 @@
                         </div>
                     </div>
                     <div class="form-group col-md-12 d-flex justify-content-end pt-2">
-                        <button type="button" class="btn btn-danger" id="bulkDeleteButton"> Delete</button>
+                        <button type="button" class="btn btn-danger" id="bulkDeleteButton">Delete</button>
                     </div>
                 </div>
             </div>
@@ -102,7 +100,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-        
+
                 var dataTable = $('#student-table').DataTable({
                     processing: true,
                     serverSide: true,
@@ -139,115 +137,122 @@
                         });
                     }
                 });
-        
-                // $('#searchButton').on('click', function() {
-                //     dataTable.order([
-                //         [5, 'asc']
-                //     ]).ajax.reload();
-                // });
-        
+
                 $('#searchButton').on('click', function() {
-            dataTable.order([
-                [5, 'asc']
-            ]).ajax.reload();
-        });
+                    dataTable.order([
+                        [5, 'asc']
+                    ]).ajax.reload();
+                });
 
-        $('#select-all').change(function() {
-            $('.student-checkbox').prop('checked', $(this).prop('checked'));
-        });
+                $('#select-all').change(function() {
+                    $('.student-checkbox').prop('checked', $(this).prop('checked'));
+                });
 
-        $('#bulkDeleteButton').on('click', function() {
-            var studentIds = [];
+                $('#bulkDeleteButton').on('click', function() {
+                    var studentIds = [];
 
-            $('.student-checkbox:checked').each(function() {
-                studentIds.push($(this).data('student-id'));
-            });
+                    $('.student-checkbox:checked').each(function() {
+                        studentIds.push($(this).data('student-id'));
+                    });
 
-            if (studentIds.length === 0) {
-                alert('Please select at least one student to delete.');
-                return;
-            }
+                    if (studentIds.length === 0) {
+                        alert('Please select at least one student to delete.');
+                        return;
+                    }
 
-            if (confirm('Are you sure you want to delete selected students?')) {
-                $.ajax({
-                    url: '{{ route('admin.students.bulk-delete') }}',
-                    type: 'POST',
-                    data: {
-                        studentIds: studentIds
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            dataTable.ajax.reload();
-                            alert(response.success);
-                        } else {
-                            alert('Error deleting students.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error deleting students:', error);
+                    if (confirm('Are you sure you want to delete selected students?')) {
+                        $.ajax({
+                            url: '{{ route('admin.students.bulk-delete') }}',
+                            type: 'POST',
+                            data: {
+                                studentIds: studentIds
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    dataTable.ajax.reload();
+                                    alert(response.success);
+                                } else {
+                                    alert('Error deleting students.');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error deleting students:', error);
+                            }
+                        });
                     }
                 });
-            }
-        });
 
+                $('#addRollNumbersButton').on('click', function() {
+                    // Fetch all student rows currently displayed in the table
+                    var studentRows = dataTable.rows().nodes();
 
-        $('#addRollNumbersButton').on('click', function() {
-    // Fetch all student rows currently displayed in the table
-    var studentRows = dataTable.rows().nodes();
+                    // Loop through each row to create input fields for roll numbers
+                    $.each(studentRows, function(index, row) {
+                        // Extract student ID from the row's data attribute or any identifier
+                        var studentId = dataTable.row(row).data().id;
 
-    // Loop through each row to create input fields for roll numbers
-    $.each(studentRows, function(index, row) {
-        // Extract student ID from the row's data attribute or any identifier
-        var studentId = dataTable.row(row).data().id;
+                        // Append an input field for roll number to each row
+                        $(row).find('td:nth-child(6)').html('<input type="text" class="form-control roll-number-input" data-student-id="' + studentId + '" placeholder="Enter Roll Number">');
+                    });
 
-        // Append an input field for roll number to each row
-        $(row).find('td:nth-child(6)').html('<input type="text" class="form-control roll-number-input" data-student-id="' + studentId + '" placeholder="Enter Roll Number">');
-    });
+                    // Show the Save Roll Numbers button
+                    $('#saveRollNumbersButton').show();
+                });
 
-    // Add event listener for saving roll numbers
-    $(document).on('blur', '.roll-number-input', function() {
-        var studentId = $(this).data('student-id');
-        var rollNumber = $(this).val().trim();
+                $('#saveRollNumbersButton').on('click', function() {
+                    var rollNumbers = [];
 
-        // Make an AJAX request to save the roll number
-        $.ajax({
-            url: '{{ route('admin.students.save-roll-number') }}',
-            type: 'POST',
-            data: {
-                student_id: studentId,
-                roll_number: rollNumber
-            },
-            success: function(response) {
-                // Optionally handle success response
-                console.log('Roll number saved successfully for student ID ' + studentId);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error saving roll number:', error);
-            }
-        });
-    });
-});
-    });
-        </script>
-        
-        <script>
-            $('select[name="class_id"]').change(function() {
-                var classId = $(this).val();
-        
-                $.ajax({
-                    url: 'get-section-by-class/' + classId,
-                    type: 'GET',
-                    success: function(data) {
-                        $('select[name="section_id"]').empty();
-                        $('select[name="section_id"]').append('<option disabled>Select Section</option>');
-        
-                        $.each(data, function(key, value) {
-                            $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
+                    $('.roll-number-input').each(function() {
+                        var studentId = $(this).data('student-id');
+                        var rollNumber = $(this).val().trim();
+
+                        rollNumbers.push({
+                            student_id: studentId,
+                            roll_number: rollNumber
                         });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching sections:', error);
-                    }
+                    });
+
+                    console.log('Roll Numbers to be saved:', rollNumbers); // Debugging log
+
+                    $.ajax({
+                        url: '{{ route('admin.students.save-roll-number') }}',
+                        type: 'POST',
+                        data: {
+                            rollNumbers: rollNumbers
+                        },
+                        success: function(response) {
+                            console.log('Response from server:', response); // Debugging log
+                            if(response.success) {
+                                alert('Roll numbers saved successfully.');
+                                dataTable.ajax.reload();
+                            } else {
+                                alert('Error saving roll numbers.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error saving roll numbers:', error);
+                        }
+                    });
+                });
+
+                $('select[name="class_id"]').change(function() {
+                    var classId = $(this).val();
+
+                    $.ajax({
+                        url: 'get-section-by-class/' + classId,
+                        type: 'GET',
+                        success: function(data) {
+                            $('select[name="section_id"]').empty();
+                            $('select[name="section_id"]').append('<option disabled>Select Section</option>');
+
+                            $.each(data, function(key, value) {
+                                $('select[name="section_id"]').append('<option value="' + key + '">' + value + '</option>');
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching sections:', error);
+                        }
+                    });
                 });
             });
         </script>        

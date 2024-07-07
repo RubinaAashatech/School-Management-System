@@ -64,32 +64,32 @@ class HeadTeacherLogReportController extends Controller
                 $classDebugInfo = [];
 
                 foreach ($sessions as $session) {
-                    $gender = strtolower($session->student->user->gender ?? 'unknown');
-
-                    if ($gender == 'male') {
+                    $gender = $session->student->user->gender ?? 'Unknown'; 
+                
+                    if ($gender == 'Male') { 
                         $totalBoys++;
-                    } elseif ($gender == 'female') {
+                    } elseif ($gender == 'Female') { 
                         $totalGirls++;
                     } else {
                         $unknownGender++;
                     }
-
+                
                     $attendance = $session->studentAttendances->first();
                     $attendanceStatus = 'No attendance';
-
+                
                     if ($attendance) {
                         if ($attendance->attendance_type_id == 1) { // Present
                             $attendanceStatus = 'Present';
-                            if ($gender == 'male') {
+                            if ($gender == 'Male') {
                                 $presentBoys++;
-                            } elseif ($gender == 'female') {
+                            } elseif ($gender == 'Female') {
                                 $presentGirls++;
                             }
                         } elseif ($attendance->attendance_type_id == 2) { // Absent
                             $attendanceStatus = 'Absent';
-                            if ($gender == 'male') {
+                            if ($gender == 'Male') {
                                 $absentBoys++;
-                            } elseif ($gender == 'female') {
+                            } elseif ($gender == 'Female') {
                                 $absentGirls++;
                             }
                         }
