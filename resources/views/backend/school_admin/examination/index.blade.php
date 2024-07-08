@@ -199,6 +199,22 @@
 
 <script>
 $(document).ready(function () {
+
+     // Initialize nepali-datepicker
+     var currentDate = NepaliFunctions.GetCurrentBsDate();
+            var formattedDate = currentDate.year + '-' + ('0' + currentDate.month).slice(-2) + '-' + ('0' + currentDate.day).slice(-2);
+
+            $('#nepali-datepicker').val(formattedDate);
+
+    $('#nepali-datepicker').nepaliDatePicker({
+            dateFormat: 'YYYY-MM-DD', // Set the format for submitting the date
+            closeOnDateSelect: true,
+            onChange: function () {
+                // Optionally handle change event
+                console.log('Datepicker date changed to ' + $('#nepali-datepicker').val());
+            }
+        });
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -234,14 +250,7 @@ $(document).ready(function () {
         }
     });
 
-    // Initialize nepali-datepicker
-    $('#nepali-datepicker').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD', // Set the format for submitting the date
-            closeOnDateSelect: true,
-            onChange: function () {
-                // Optionally handle change event
-            }
-        });
+   
 
     $(document).on('click', '.edit-examination', function() {
         $('.termexam_selection').empty();
