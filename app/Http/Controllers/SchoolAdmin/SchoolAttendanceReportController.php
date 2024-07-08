@@ -44,46 +44,63 @@ class SchoolAttendanceReportController extends Controller
 
     public function getData(Request $request)
     {
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
-        $classId = $request->input('class_id');
-        $studentName = $request->input('student_name');
-
-        $period = CarbonPeriod::create($fromDate, $toDate);
-        $dates = [];
-        foreach ($period as $date) {
-            $dates[] = $date->format('Y-m-d');
-        }
-
-        $query = StudentAttendance::with(['student.user', 'studentSession'])
-            ->whereBetween('created_at', [$fromDate, $toDate])
-            ->when($classId, function ($query, $classId) {
-                return $query->whereHas('studentSession', function ($q) use ($classId) {
-                    $q->where('class_id', $classId);
-                });
-            })
-            ->when($studentName, function ($query, $studentName) {
-                return $query->whereHas('student.user', function ($q) use ($studentName) {
-                    $q->where('f_name', 'like', '%'.$studentName.'%')
-                      ->orWhere('l_name', 'like', '%'.$studentName.'%');
-                });
-            })
-            ->get();
-
-        $data = [];
-        foreach ($query as $attendance) {
-            foreach ($dates as $date) {
-                if (Carbon::parse($attendance->created_at)->format('Y-m-d') == $date) {
-                    $data[] = [
-                        'date' => $date,
+        try {
+            $fromDate = LaravelNepaliDate::from($request->input('from_date'))->toEnglishDate();
+            $toDate = LaravelNepaliDate::from($request->input('to_date'))->toEnglishDate();
+            $classId = $request->input('class_id');
+            $studentName = $request->input('student_name');
+    
+            $period = CarbonPeriod::create($fromDate, $toDate);
+            $dates = [];
+            foreach ($period as $date) {
+                $dates[] = $date->format('Y-m-d');
+            }
+    
+            $query = StudentAttendance::with(['student.user', 'studentSession'])
+                ->whereBetween('created_at', [$fromDate, $toDate])
+                ->when($classId, function ($query, $classId) {
+                    return $query->whereHas('studentSession', function ($q) use ($classId) {
+                        $q->where('class_id', $classId);
+                    });
+                })
+                ->when($studentName, function ($query, $studentName) {
+                    return $query->whereHas('student.user', function ($q) use ($studentName) {
+                        $q->where('f_name', 'like', '%'.$studentName.'%')
+                          ->orWhere('l_name', 'like', '%'.$studentName.'%');
+                    });
+                })
+                ->get();
+    
+            $students = [];
+            foreach ($query as $attendance) {
+                $studentId = $attendance->student->id;
+                if (!isset($students[$studentId])) {
+                    $students[$studentId] = [
                         'student_name' => $attendance->student->user->f_name . ' ' . $attendance->student->user->l_name,
-                        'attendance_type' => $attendance->attendance_type,
+                        'attendance' => array_fill_keys($dates, null),
                     ];
                 }
+                $students[$studentId]['attendance'][Carbon::parse($attendance->created_at)->format('Y-m-d')] = $attendance->attendance_type;
             }
+    
+            $data = array_values($students);
+    
+            return DataTables::of($data)
+                ->addColumn('student_name', function($row) {
+                    return $row['student_name'];
+                })
+                ->addColumn('attendance', function($row) use ($dates) {
+                    $attendance = [];
+                    foreach ($dates as $date) {
+                        $attendance[] = $row['attendance'][$date] ?? '-';
+                    }
+                    return implode(',', $attendance);
+                })
+                ->rawColumns(['attendance'])
+                ->make(true);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return DataTables::of($data)->make(true);
     }
      // RETRIVING SECTIONS OF THE RESPECTIVE CLASS
     //  public function getSections($classId)
