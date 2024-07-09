@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\SchoolService;
 use App\Http\Services\DashboardService;
 use App\Models\HeadTeacherLog;
+use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 
 class DashboardController extends Controller
 {
@@ -91,85 +92,86 @@ class DashboardController extends Controller
         // General Counts
         $totalStudents = Student::count();
 
-         // Count the total girls across all schools
-    $totalGirls = Student::whereHas('user', function ($query) {
-        $query->where('gender', 'female');
-    })
-    ->count();
+        // Count the total girls across all schools
+        $totalGirls = Student::whereHas('user', function ($query) {
+            $query->where('gender', 'female');
+        })->count();
 
-// Count the total boys across all schools
-$totalBoys = Student::whereHas('user', function ($query) {
-        $query->where('gender', 'male');
-    })
-    ->count();
-    
+        // Count the total boys across all schools
+        $totalBoys = Student::whereHas('user', function ($query) {
+            $query->where('gender', 'male');
+        })->count();
+        
+        $today = Carbon::today()->format('Y-m-d');
+
+        // Convert today's date to Nepali date
+        $nepaliDateToday = LaravelNepaliDate::from($today)->toNepaliDate();
+
         $presentStudents = StudentAttendance::where('attendance_type_id', 1)
-            ->whereDate('created_at', today()) // Filter by today's date
+            ->where('date', $nepaliDateToday)
             ->count();
-    
+
         $absentStudents = StudentAttendance::where('attendance_type_id', 2)
-            ->whereDate('created_at', today()) // Filter by today's date
+            ->where('date', $nepaliDateToday)
             ->count();
-    
+
         $totalStaffs = Staff::count();
         $presentStaffs = StaffAttendance::where('attendance_type_id', 1)
-            ->whereDate('created_at', today()) // Filter by today's date
+            ->where('date', $nepaliDateToday)
             ->count();
-    
+
         $absentStaffs = StaffAttendance::where('attendance_type_id', 2)
-            ->whereDate('created_at', today()) // Filter by today's date
+            ->where('date', $nepaliDateToday)
             ->count();
-    
-        $majorIncidentsCount = HeadTeacherLog::whereDate('created_at', today()) // Filter by today's date
-            ->count();
-    
+
+        $majorIncidentsCount = HeadTeacherLog::where('logged_date', $nepaliDateToday)->count();
+
         // Municipality specific data
         $municipalityId = Auth::user()->municipality_id;
-        $today = Carbon::today();
         $schools = School::where('municipality_id', $municipalityId)->get();
         $schoolData = [];
-    
+
         foreach ($schools as $school) {
             $schoolId = $school->id;
-    
+
             // Count the total students in the school
             $totalStudentsInSchool = Student::where('school_id', $schoolId)->count();
-    
+
             // Count the present students for today
             $presentStudentsInSchool = StudentAttendance::where('attendance_type_id', 1)
                 ->whereHas('student', function($query) use ($schoolId) {
                     $query->where('school_id', $schoolId);
                 })
-                ->whereDate('created_at', $today) // Filter by today's date
+                ->where('date', $nepaliDateToday)
                 ->count();
-    
+
             // Count the absent students for today
             $absentStudentsInSchool = StudentAttendance::where('attendance_type_id', 2)
                 ->whereHas('student', function($query) use ($schoolId) {
                     $query->where('school_id', $schoolId);
                 })
-                ->whereDate('created_at', $today) // Filter by today's date
+                ->where('date', $nepaliDateToday)
                 ->count();
-    
+
             // Count the total staff in the school
             $totalStaffsInSchool = Staff::where('school_id', $schoolId)->count();
-    
+
             // Count the present staff members for today
             $presentStaffsInSchool = StaffAttendance::where('attendance_type_id', 1)
                 ->whereHas('staff', function($query) use ($schoolId) {
                     $query->where('school_id', $schoolId);
                 })
-                ->whereDate('created_at', $today) // Filter by today's date
+                ->where('date', $nepaliDateToday)
                 ->count();
-    
+
             // Count the absent staff members for today
             $absentStaffsInSchool = StaffAttendance::where('attendance_type_id', 2)
                 ->whereHas('staff', function($query) use ($schoolId) {
                     $query->where('school_id', $schoolId);
                 })
-                ->whereDate('created_at', $today) // Filter by today's date
+                ->where('date', $nepaliDateToday)
                 ->count();
-    
+
             // Add the data to the array
             $schoolData[] = [
                 'school_id' => $school->id,
@@ -183,14 +185,13 @@ $totalBoys = Student::whereHas('user', function ($query) {
                 'absent_staffs' => $absentStaffsInSchool,
             ];
         }
-    
+
         $totalSchools = School::count();
-    
         $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";
 
-        $todays_major_incidents = HeadTeacherLog::whereDate('created_at', Carbon::today())
-            ->get(['major_incidents','school_id']);
-        
+        $todays_major_incidents = HeadTeacherLog::where('logged_date', $nepaliDateToday)
+            ->get(['major_incidents', 'school_id']);
+
         return view('backend.municipality_admin.dashboard.dashboard', [
             'presentStudents' => $presentStudents,
             'totalStudents' => $totalStudents,
@@ -206,7 +207,7 @@ $totalBoys = Student::whereHas('user', function ($query) {
             'todays_major_incidents' => $todays_major_incidents,
         ]);
     }
-    
+
     public function schoolWiseCountOfStudent($originalData)
     {
         $labels = [];
@@ -215,7 +216,6 @@ $totalBoys = Student::whereHas('user', function ($query) {
         foreach ($originalData as $item) {
             $labels[] = $item['name'];
             $data[] = $item['total_student'];
-            
         }
 
         return [
@@ -252,16 +252,15 @@ $totalBoys = Student::whereHas('user', function ($query) {
         ];
     }
 
-
     public function fetchMajorIncidents()
     {
-         // Fetch major incidents reported today with school names
-         $today = Carbon::now()->format('Y-m-d');
-        
-         $incidents = HeadTeacherLog::whereDate('created_at', $today)
-             ->with('schools:id,name') // Load school name only
-             ->get(['major_incidents', 'school_id']);
- 
-         return response()->json($incidents);
+        // Fetch major incidents reported today with school names
+        $today = Carbon::now()->format('Y-m-d');
+
+        $incidents = HeadTeacherLog::where('logged_date', $today)
+            ->with('schools:id,name') // Load school name only
+            ->get(['major_incidents', 'school_id']);
+
+        return response()->json($incidents);
     }
 }

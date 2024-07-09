@@ -113,65 +113,69 @@
 </style>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-      // Initialize nepali-datepicker
-      $('#fromDatepicker').nepaliDatePicker({
-          dateFormat: 'YYYY-MM-DD',
-          closeOnDateSelect: true
-      });
-  
-        // Initialize nepali-datepicker
-        $('#toDatepicker').nepaliDatePicker({
-          dateFormat: 'YYYY-MM-DD',
-          closeOnDateSelect: true
-      });
-  
-      // Initialize DataTable with Buttons extension but without data
-      var table = $('#attendanceTable').DataTable({
-          processing: true,
-          serverSide: true,
-          searching: false,
-          ajax: {
-              url: '{{ route("admin.attendance_schoolreports.data") }}',
-              data: function (d) {
-                  d.from_date = $('#fromDatepicker').val();
-                  d.to_date = $('#toDatepicker').val();
-                  d.class_id = $('#classSelect').val();
-                  d.student_name = $('#studentName').val();
-              }
-          },
-          columns: [
-              { data: 'student_name', name: 'student_name' },
-              @foreach ($dates as $date)
-                  { data: '{{ $date }}', name: '{{ $date }}' },
-              @endforeach
-          ],
-          dom: '<"d-flex justify-content-between"lfB>rtip',
-          buttons: {
-              dom: {
-                  button: {
-                      className: 'btn btn-sm btn-primary'
-                  }
-              },
-              buttons: [
-                  'copy', 'csv', 'excel', 'pdf', 'print'
-              ],
-              container: '#buttons-container'
-          },
-          lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-          ordering: false,
-          language: {
-              emptyTable: "No matching records found"
-          }
-      });
-  
-      $('#searchButton').on('click', function() {
-          if ($('#fromDatepicker').val() && $('#toDatepicker').val()) {
-              table.draw();
-          } else {
-              alert('Please select both From Date and To Date before searching.');
-          }
-      });
-  });
+  $(document).ready(function() {
+    // Initialize nepali-datepicker
+    $('#fromDatepicker').nepaliDatePicker({
+        dateFormat: 'YYYY-MM-DD',
+        closeOnDateSelect: true
+    });
+
+    $('#toDatepicker').nepaliDatePicker({
+        dateFormat: 'YYYY-MM-DD',
+        closeOnDateSelect: true
+    });
+
+    var table = $('#attendanceTable').DataTable({
+        processing: true,
+        serverSide: true,
+        searching: false,
+        ajax: {
+            url: '{{ route("admin.attendance_schoolreports.data") }}',
+            data: function (d) {
+                d.from_date = $('#fromDatepicker').val();
+                d.to_date = $('#toDatepicker').val();
+                d.class_id = $('#classSelect').val();
+                d.student_name = $('#studentName').val();
+            },
+            error: function(xhr, error, code) {
+                console.log(xhr.responseText);
+            }
+        },
+        columns: [
+            { data: 'student_name', name: 'student_name' },
+            @foreach ($dates as $date)
+                { data: 'attendance', name: 'attendance', render: function(data, type, row) {
+                    const attendance = data.split(',');
+                    return attendance[@foreach ($dates as $index => $date){{ $index }}@endforeach];
+                }},
+            @endforeach
+        ],
+        dom: '<"d-flex justify-content-between"lfB>rtip',
+        buttons: {
+            dom: {
+                button: {
+                    className: 'btn btn-sm btn-primary'
+                }
+            },
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            container: '#buttons-container'
+        },
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        ordering: false,
+        language: {
+            emptyTable: "No matching records found"
+        }
+    });
+
+    $('#searchButton').on('click', function() {
+        if ($('#fromDatepicker').val() && $('#toDatepicker').val()) {
+            table.draw();
+        } else {
+            alert('Please select both From Date and To Date before searching.');
+        }
+    });
+});
   </script>
   @endsection
