@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <form id="quickForm" novalidate="novalidate" method="POST"
-                                action="{{ route('admin.schools.store') }}">
+                                action="{{ route('admin.schools.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <div class="hr-line-dashed"></div>
@@ -247,7 +247,7 @@
                                         <img src="" id="image" style="width: 20%;">
                                         <div class="form-group">
                                             <input type="file" id="imageFile" class="form-control"
-                                                placeholder="Image" name="logo" data-ratio="16" data-ratiowidth="16">
+                                                placeholder="Image" name="image" data-ratio="16" data-ratiowidth="16">
                                         </div>
                                         <div id="previewWrapper" class="hidden">
                                             <br>

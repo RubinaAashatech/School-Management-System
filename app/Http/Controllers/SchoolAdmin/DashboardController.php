@@ -34,6 +34,20 @@ class DashboardController extends Controller
 
     public function index(Request $request)
 {
+
+     
+    $user = Auth::user();
+    $schoolName = $user->f_name;
+
+    // Calculate initials from all words in the school name
+    $words = explode(' ', $schoolName);
+    $initials = '';
+    foreach ($words as $word) {
+        $initials .= strtoupper(substr($word, 0, 1));
+    }
+
+   
+
     $schoolId = Auth::user()->school_id;
 
     // Count the students in the same school
@@ -139,7 +153,7 @@ class DashboardController extends Controller
         'page_title', 'school_students_count', 'school_staffs_count', 'school_wise_student_attendences',
         'school_wise_staffs_attendences', 'class_wise_students', 'totalStudents', 'presentStudents',
         'absentStudents', 'totalStaffs', 'presentStaffs', 'absentStaffs', 'totalGirls', 'totalBoys',
-        'presentGirls', 'presentBoys','absentGirls','absentBoys'
+        'presentGirls', 'presentBoys','absentGirls','absentBoys','initials'
     ));
 }
 

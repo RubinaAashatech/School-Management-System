@@ -14,7 +14,7 @@ class AttendenceReportController extends Controller
     public function index()
     {
         $schools = School::all(); 
-        return view('backend.municipality_admin.attendencereport.index', compact('schools'));
+        return view('backend.municipality_admin.report.attendencereport.index', compact('schools'));
     }
 
     public function report(Request $request)
@@ -23,7 +23,7 @@ class AttendenceReportController extends Controller
         $date = LaravelNepaliDate::from($inputDate)->toEnglishDate();
         $schools = School::all(); // Fetch all schools
         $studentAttendances = StudentAttendance::whereDate('created_at', $date)->get();
-        return view('backend.municipality_admin.attendencereport.index', compact('studentAttendances', 'date','schools'));
+        return view('backend.municipality_admin.report.attendencereport.index', compact('studentAttendances', 'date','schools'));
     }
 
     public function getData(Request $request)

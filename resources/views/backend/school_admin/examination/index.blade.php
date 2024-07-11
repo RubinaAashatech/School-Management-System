@@ -80,9 +80,13 @@
 
                                 
                                 <div class="p-2 label-input">
-                                    <label>Date<span class="must">*</span></label>
-                                    <div class="single-input-modal">
-                                        <input type="text" name="date" class="form-control datetimepicker-input" id="nepali-datepicker" required>
+                                    <label for="datetimepicker">Date:</label>
+                                    <div class="form-group">
+                                        <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                                            <input id="nepali-datepicker" name="date" type="text"
+                                                value="{{ old('date') }}" class="form-control" />
+
+                                        </div>
                                     </div>
                                 </div>
 
@@ -201,18 +205,13 @@
 $(document).ready(function () {
 
      // Initialize nepali-datepicker
-     var currentDate = NepaliFunctions.GetCurrentBsDate();
-            var formattedDate = currentDate.year + '-' + ('0' + currentDate.month).slice(-2) + '-' + ('0' + currentDate.day).slice(-2);
-
-            $('#nepali-datepicker').val(formattedDate);
-
-    $('#nepali-datepicker').nepaliDatePicker({
-            dateFormat: 'YYYY-MM-DD', // Set the format for submitting the date
-            closeOnDateSelect: true,
-            onChange: function () {
-                // Optionally handle change event
-                console.log('Datepicker date changed to ' + $('#nepali-datepicker').val());
-            }
+     $("#nepali-datepicker").nepaliDatePicker();
+        $("#nepali-datepicker").nepaliDatePicker({
+            container: "#createExamination",
+            dateFormat: "YYYY-MM-DD",
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 200
         });
 
     $.ajaxSetup({

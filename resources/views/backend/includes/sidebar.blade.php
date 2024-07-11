@@ -12,8 +12,8 @@
                     class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
         </div><a class="navbar-brand" href="{{ url('/') }}">
             <div class="d-flex align-items-center py-3"><img class="me-2"
-                    src="{{ asset('adminassets/assets/img/icons/spot-illustrations/falcon.png') }}" alt=""
-                    width="40"><span class="font-sans-serif">Admin</span></div>
+                    src="{{ asset('uploads/logo.png') }}" alt=""
+                    width="40"><span class="font-sans-serif">{{ $initials ?? 'Admin' }}</span></div>
         </a>
     </div>
     <div class="collapse navbar-collapse" id="navbarVerticalCollapse">

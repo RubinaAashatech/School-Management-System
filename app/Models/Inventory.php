@@ -22,4 +22,9 @@ class Inventory extends Model
     {
         return $this->belongsTo(InventoryHead::class, 'inventory_head_id');
     }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
 }
