@@ -247,7 +247,7 @@
                                         <img src="" id="image" style="width: 20%;">
                                         <div class="form-group">
                                             <input type="file" id="imageFile" class="form-control"
-                                                placeholder="Image" name="image" data-ratio="16" data-ratiowidth="16">
+                                                placeholder="Image" name="logo" data-ratio="16" data-ratiowidth="16">
                                         </div>
                                         <div id="previewWrapper" class="hidden">
                                             <br>

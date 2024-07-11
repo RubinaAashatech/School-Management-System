@@ -97,9 +97,8 @@ class SchoolController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        DB::beginTransaction();
-        $validatedData = $request->validate([
+        // Validate the request
+        $validator = Validator::make($request->all(), [
             'state_id' => 'required',
             'district_id' => 'required',
             'municipality_id' => 'required',
@@ -109,88 +108,79 @@ class SchoolController extends Controller
             'name' => 'required',
             'address' => 'required',
             'phone_number' => 'required',
-            // 'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'email' => 'required|unique:users,email',
-            // 'emergency_contact' => 'required',
-            // 'bank_name' => 'required',
-            // 'disable_reason' => 'required',
-            // 'facebook' => 'required',
-            // 'twitter' => 'required',
-            // 'linkedin' => 'required',
-            // 'instagram' => 'required',
-            // 'website' => 'required',
-            // 'note' => 'required',
-            // 'disable_at' => 'required',
-            // 'verification_code' => 'required',
-            // 'head_teacher' => 'nullable',
-            // 'established_date' => 'nullable',
             'is_active' => 'required',
-
-
         ]);
-
-
+    
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+    
         try {
-            $input = $request->all();
-            if ($request->has('inputCroppedPic') && !is_null($request->inputCroppedPic)) {
-                if (!File::exists($this->imageSavePath)) {
-                    File::makeDirectory($this->imageSavePath, 0775, true, true);
-                }
-                $destinationPath = $this->imageSavePath . $this->getDateFormatFileName('jpg');
-                Image::make($request->input('inputCroppedPic'))
-                    ->encode('jpg')
-                    ->save(public_path($destinationPath));
-
-                $input['logo'] = $destinationPath;
-            }
-            // dd($input);
-            $school = School::create($input);
+            // Begin transaction
+            DB::beginTransaction();
+    
+              // Handle file upload for logo
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $newLogoName = time() . '.' . $logo->getClientOriginalName();
+            $logoPath = 'uploads/schoollogo/';
+            $logo->move(public_path($logoPath), $newLogoName);
+            $fullLogoPath = $logoPath . $newLogoName;
+        } else {
+            throw new \Exception('Logo file not found.');
+        }
+    
+            // Create the school record
+            $school = School::create([
+                'state_id' => $request->state_id,
+                'district_id' => $request->district_id,
+                'municipality_id' => $request->municipality_id,
+                'ward_id' => $request->ward_id,
+                'school_type' => $request->school_type,
+                'school_code' => $request->school_code,
+                'name' => $request->name,
+                'address' => $request->address,
+                'phone_number' => $request->phone_number,
+                'logo' => $fullLogoPath, // Store the image filename in 'logo' column
+                'email' =>$request->email,
+                'is_active' => $request->is_active,
+            ]);
+    
             if ($school) {
-
+                // Create the user associated with the school
                 $user = new User();
-                $user->user_type_id = 5;
-                $user->role_id = 5;
+                $user->user_type_id = 5; // Assuming this is the user type for schools
+                $user->role_id = 5; // Assuming this is the role ID for schools
                 $user->school_id = $school->id;
                 $user->state_id = $school->state_id;
                 $user->district_id = $school->district_id;
                 $user->municipality_id = $school->municipality_id;
                 $user->ward_id = $school->ward_id;
                 $user->f_name = $school->name;
-                $user->email = $school->email;
+                $user->email = $request->email; // Use the provided email from the form
                 $user->phone = $school->phone_number;
+                $user->image = $fullLogoPath; // Store the same image filename in 'image' column of the users table
                 $user->username = strtolower(str_replace(' ', '', $school->name) . '-' . trim($school->school_code));
-                $user->password = Hash::make('password');
+                $user->password = Hash::make('password'); // Temporary password, change as per your logic
                 $user->local_address = $school->address;
-                // $user->pan_no = $request->input('pan_no');
-                // $user->password = Hash::make('schooluser@123');
-                $user->image = $school->logo;
-                $user->bank_name = $school->bank_name;
-                $user->disable_reason = $school->disable_reason;
-                $user->facebook = $school->facebook;
-                $user->twitter = $school->twitter;
-                $user->linkedin = $school->linkedin;
-                $user->instagram = $school->instagram;
-                $user->note = $school->note;
-                // $user->head_teacher = $school->head_teacher;
-                // $user->established_date = $school->established_date;
-                $user->disable_at = $school->disable_at;
-                $user->is_active = $school->is_active;
-
+                $user->is_active = $request->is_active;
                 $user->save();
-
-
+    
                 if ($user) {
-                    $user->assignRole(5);
+                    $user->assignRole(5); // Assign role if using a role management system
                     SchoolUser::create([
                         'school_id' => $school->id,
                         'user_id' => $user->id
                     ]);
                 }
-
+    
                 DB::commit();
                 return redirect()->back()->withToastSuccess('School Successfully Registered!');
             }
         } catch (\Exception $e) {
+            // Rollback transaction in case of error
             DB::rollBack();
             return back()->withToastError($e->getMessage())->withInput();
         }
