@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <form id="quickForm" novalidate="novalidate" method="POST"
-                                action="{{ route('admin.schools.store') }}">
+                                action="{{ route('admin.schools.store') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <div class="hr-line-dashed"></div>

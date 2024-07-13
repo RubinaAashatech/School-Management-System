@@ -88,12 +88,14 @@
                                             class="input-text single-input-text" id="dynamic_invoice_number" required>
                                     </div>
                                 </div>
-
                                 <div class="p-2 label-input">
-                                    <label>Date<span class="must"> *</span></label>
-                                    <div class="single-input-modal">
-                                        <input type="date" value="{{ old('date') }}" name="date"
-                                            class="input-text single-input-text" id="dynamic_date" required>
+                                    <label for="datetimepicker">Date:</label>
+                                    <div class="form-group">
+                                        <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                                            <input id="nepali-datepicker" name="date" type="text"
+                                                value="{{ old('date') }}" class="form-control" />
+
+                                        </div>
                                     </div>
                                 </div>
 
@@ -145,7 +147,22 @@
         </div>
     </div>
 @section('scripts')
-    <script>
+    <script
+
+src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js"
+        type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $("#nepali-datepicker").nepaliDatePicker();
+        $("#nepali-datepicker").nepaliDatePicker({
+            container: "#createIncome",
+            dateFormat: "YYYY-MM-DD",
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 200
+        });
+    </script>
+<script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
