@@ -8,10 +8,43 @@
             </div>
             @include('backend.school_admin.student_attendance.partials.action')
         </div>
+        <!-- Holiday Range Modal -->
+<div class="modal fade" id="holidayRangeModal" tabindex="-1" role="dialog" aria-labelledby="holidayRangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="holidayRangeModalLabel">Mark Holiday Range</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="holidayStartDate">Start Date:</label>
+                    <input type="text" class="form-control" id="holidayStartDate">
+                </div>
+                <div class="form-group">
+                    <label for="holidayEndDate">End Date:</label>
+                    <input type="text" class="form-control" id="holidayEndDate">
+                </div>
+                <div class="form-group">
+                    <label for="holidayReason">Reason:</label>
+                    <input type="text" class="form-control" id="holidayReason" placeholder="e.g., Summer Vacation, Dashain Vacation">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveHolidayRange">Save Holiday Range</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <!-- Add the new button for marking holiday for entire school -->
         <div class="mb-4">
             <button type="button" class="btn btn-primary" id="markSchoolHolidayButton">Mark Holiday for Entire School</button>
+            <button type="button" class="btn btn-primary" id="markHolidayRangeButton">Mark Holiday Range</button>
         </div>
         <div class="card">
             <div class="class-body">
@@ -518,6 +551,76 @@
                     a.click();
                     document.body.removeChild(a);
                 });
+
+
+                    // Initialize date pickers for the holiday range modal
+    $('#holidayStartDate, #holidayEndDate').nepaliDatePicker()
+    $("#holidayStartDate").nepaliDatePicker({
+    container: "#holidayRangeModal",
+    dateFormat: "YYYY-MM-DD",
+    ndpYear: true,
+    ndpMonth: true,
+    ndpYearCount: 200,
+    onChange: function() {
+        $(this).change();
+    }
+});
+
+$("#holidayEndDate").nepaliDatePicker({
+    container: "#holidayRangeModal",
+    dateFormat: "YYYY-MM-DD",
+    ndpYear: true,
+    ndpMonth: true,
+    ndpYearCount: 200,
+    onChange: function() {
+        $(this).change();
+    }
+});
+
+// Open the holiday range modal
+$('#markHolidayRangeButton').click(function() {
+    $('#holidayRangeModal').modal('show');
+});
+
+// Handle saving the holiday range
+$('#saveHolidayRange').click(function() {
+    var startDate = $('#holidayStartDate').val();
+    var endDate = $('#holidayEndDate').val();
+    var reason = $('#holidayReason').val();
+
+    if (!startDate || !endDate) {
+        toastr.warning('Please select both start and end dates.');
+        return;
+    }
+
+    if (confirm('Are you sure you want to mark holidays from ' + startDate + ' to ' + endDate + '?')) {
+        $.ajax({
+            url: '{{ route("admin.student.mark-holiday-range") }}',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { 
+                start_date: startDate, 
+                end_date: endDate,
+                reason: reason
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#holidayRangeModal').modal('hide');
+                    // Optionally, update UI or refresh data
+                } else {
+                    toastr.error(response.message || 'Error marking holiday range.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error details:', xhr.responseText);
+                toastr.error('Error marking holiday range. Please check the console for details.');
+            }
+        });
+    }
+});
             });
         </script>
     @endsection

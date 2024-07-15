@@ -7,4 +7,5 @@ Route::post('student-attendances/get', [StudentAttendanceController::class, 'get
 
 Route::post('student-attendances/save-attendance', [StudentAttendanceController::class, 'saveAttendance']);
 Route::post('student/mark-holiday',  [StudentAttendanceController::class, 'markSchoolHoliday'])->name('student.mark-holiday');
+Route::post('/admin/student/mark-holiday-range', 'StudentAttendanceController@markHolidayRange')->name('student.mark-holiday-range');
 

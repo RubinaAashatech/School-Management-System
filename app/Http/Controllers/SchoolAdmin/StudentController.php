@@ -28,6 +28,9 @@ use App\Http\Services\StudentUserService;
 use App\Models\Municipality;
 use Illuminate\Support\Facades\Validator;
 
+use App\Exports\StudentsExport;
+
+
 class StudentController extends Controller
 {
     protected $formService;
@@ -911,6 +914,20 @@ public function getAllStudent(Request $request)
             DB::rollback();
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+
+    public function exportSelected(Request $request)
+    {
+        $classId = $request->input('class_id');
+        $sectionId = $request->input('section_id');
+
+        return Excel::download(new StudentsExport($classId, $sectionId), 'students.xlsx');
+    }
+
+    public function exportAll()
+    {
+        return Excel::download(new StudentsExport(), 'all_students.xlsx');
     }
 
 }
