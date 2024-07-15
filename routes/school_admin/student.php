@@ -25,3 +25,6 @@ Route::post('students/bulk-delete', [StudentController::class, 'destroyMultiple'
 
 Route::post('students/save-roll-number', [StudentController::class, 'saveRollNumber'])->name('students.save-roll-number');
 
+Route::get('/admin/students/export-selected', [StudentController::class, 'exportSelected'])->name('students.export-selected');
+Route::get('/admin/students/export-all', [StudentController::class, 'exportAll'])->name('students.export-all');
+
