@@ -19,4 +19,9 @@ class ExtraCurricularHead extends Model
     {
         return $this->hasMany(Income::class, 'extra_curricular_heads_id');
     }
+
+    public function ecaActivities()
+    {
+        return $this->hasMany(EcaActivity::class, 'eca_activity_id');
+    }
 }
