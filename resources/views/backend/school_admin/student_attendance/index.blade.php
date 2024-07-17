@@ -14,9 +14,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="holidayRangeModalLabel">Mark Holiday Range</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -33,19 +31,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="saveHolidayRange">Save Holiday Range</button>
             </div>
         </div>
     </div>
 </div>
-
-
-        <!-- Add the new button for marking holiday for entire school -->
-        <div class="mb-4">
-            <button type="button" class="btn btn-primary" id="markSchoolHolidayButton">Mark Holiday for Entire School</button>
-            <button type="button" class="btn btn-primary" id="markHolidayRangeButton">Mark Holiday Range</button>
-        </div>
         <div class="card">
             <div class="class-body">
                 <form id="attendanceFilterForm">

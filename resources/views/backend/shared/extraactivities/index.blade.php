@@ -26,7 +26,7 @@
                                                 <th>Player Type</th>
                                                 <th>Status</th>
                                                 <th>ECA Head</th>
-                                                <th>Created At</th>
+                                                {{-- <th>Created At</th> --}}
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -52,6 +52,16 @@
                             <input type="hidden" name="_method" id="methodField" value="POST">
                             <input type="hidden" name="dynamic_id" id="dynamic_id">
                             <div class="col-md-12">
+                                <div class="p-2 input-label">
+                                    <label>ECA Head<span class="must">*</span></label>
+                                    <div class="single-input-modal">
+                                        <select name="eca_head_id" class="input-text single-input-text" id="dynamic_eca_head_id" required>
+                                            @foreach($ecaHeads as $head)
+                                                <option value="{{ $head->id }}">{{ $head->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="p-2 input-label">
                                     <label>Title<span class="must">*</span></label>
                                     <div class="single-input-modal">
@@ -80,6 +90,21 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="p-2 input-label">
+                                    <label>Select Schools<span class="must">*</span></label>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="select_all_schools">
+                                        <label class="form-check-label" for="select_all_schools">Select All Schools</label>
+                                    </div>
+                                    <div class="single-input-modal">
+                                        <select name="school_ids[]" class="input-text single-input-text" id="dynamic_school_ids" multiple required>
+                                            @foreach($schools as $school)
+                                                <option value="{{ $school->id }}">{{ $school->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="p-2 input-label">
                                     <label>Status<span class="must">*</span></label>
                                     <div class="col-sm-10">
@@ -92,16 +117,6 @@
                                                 value="0" autocomplete="off" />
                                             <label class="btn btn-secondary" for="option2">Inactive</label>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="p-2 input-label">
-                                    <label>ECA Head<span class="must">*</span></label>
-                                    <div class="single-input-modal">
-                                        <select name="eca_head_id" class="input-text single-input-text" id="dynamic_eca_head_id" required>
-                                            @foreach($ecaHeads as $head)
-                                                <option value="{{ $head->id }}">{{ $head->name }}</option>
-                                            @endforeach
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="border-top col-md-12 d-flex justify-content-end">
@@ -153,10 +168,10 @@
                     data: 'eca_head.name',
                     name: 'eca_head.name'
                 },
-                {
-                    data: 'created_at',
-                    name: 'created_at'
-                },
+                // {
+                //     data: 'created_at',
+                //     name: 'created_at'
+                // },
                 {
                     data: 'actions',
                     name: 'actions'
@@ -197,6 +212,16 @@
             $('#createEcaActivity').modal('show');
 
             return false;
+        });
+
+        $('#select_all_schools').change(function() {
+            if ($(this).is(':checked')) {
+                $('#dynamic_school_ids option').prop('selected', true);
+                $('#dynamic_school_ids').trigger('change');
+            } else {
+                $('#dynamic_school_ids option').prop('selected', false);
+                $('#dynamic_school_ids').trigger('change');
+            }
         });
     </script>
 @endsection

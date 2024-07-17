@@ -19,9 +19,13 @@ class EcaActivity extends Model
         'eca_head_id',
     ];
 
+    protected $casts = [
+        'school_ids' => 'array',
+    ];
+
     public function school()
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsToMany(School::class);
     }
 
     public function ecaHead()

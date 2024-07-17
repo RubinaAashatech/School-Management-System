@@ -1,4 +1,4 @@
-@can('edit_eca_activity')
+@can('edit_eca_activities')
     <a href="#" class="btn btn-outline-primary btn-sm mx-1 edit-eca-activity" data-id="{{ $ecaActivity->id }}"
         data-title="{{ $ecaActivity->title }}" data-description="{{ $ecaActivity->description }}"
         data-is_active="{{ $ecaActivity->is_active }}" data-toggle="tooltip" data-placement="top" title="Edit">
@@ -6,7 +6,7 @@
     </a>
 @endcan
 
-@can('delete_eca_activity')
+@can('delete_eca_activities')
     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
         data-bs-target="#delete{{ $ecaActivity->id }}" data-toggle="tooltip" data-placement="top" title="Delete">
         <i class="far fa-trash-alt"></i>

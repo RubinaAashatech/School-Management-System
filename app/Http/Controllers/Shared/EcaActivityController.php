@@ -5,119 +5,99 @@ use App\Models\EcaActivity;
 use App\Models\ExtraCurricularHead;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\School;
 use Yajra\Datatables\Datatables;
 
 class EcaActivityController extends Controller
 {
     public function index()
     {
-        $page_title = 'ExtraCurricular Head Listing';
-        $extracurricularHeads = ExtraCurricularHead::orderBy('created_at', 'desc')->paginate(10);
-        return view('backend.shared.extraCurricularHead.index', compact('page_title', 'extracurricularHeads'));
+        $page_title = 'ECA Activities';
+        $ecaHeads = ExtraCurricularHead::where('is_active', 1)->get();
+        $schools = School::all();
+        return view('backend.shared.extraactivities.index', compact('page_title', 'ecaHeads','schools'));
+    }
+
+    public function getEcaActivities(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = EcaActivity::with('ecaHead')->get();
+            return Datatables::of($data)
+                ->addColumn('actions', function($row){
+                    $btn = '<a href="javascript:void(0)" class="edit-eca-activity btn btn-warning btn-sm" data-id="'.$row->id.'" data-title="'.$row->title.'" data-description="'.$row->description.'" data-player_type="'.$row->player_type.'" data-is_active="'.$row->is_active.'" data-eca_head_id="'.$row->eca_head_id.'">Edit</a>';
+                    $btn .= ' <form action="'.route('admin.eca_activities.destroy', $row->id).'" method="POST" style="display:inline-block;">';
+                    $btn .= csrf_field();
+                    $btn .= method_field('DELETE');
+                    $btn .= ' <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Are you sure?\')">Delete</button>';
+                    $btn .= '</form>';
+                    return $btn;
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
     }
 
     public function store(Request $request)
     {
-        $validatedData = Validator::make($request->all(), [
-            'name' => 'required|unique:extra_curricular_heads',
-            'description' => 'required',
-            'is_active' => 'required',
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'player_type' => 'required|in:single,multi',
+            'is_active' => 'required|boolean',
+            'eca_head_id' => 'required|exists:extra_curricular_heads,id',
+            'school_ids' => 'required|array',
+            'school_ids.*' => 'exists:schools,id',
+            'pdf_image' => 'nullable|mimes:pdf,jpeg,png,jpg|max:2048',
         ]);
 
-        if ($validatedData->fails()) {
-            return back()->withToastError($validatedData->messages()->all()[0])->withInput();
+        $data = $request->all();
+        if ($request->hasFile('pdf_image')) {
+            $fileName = time() . '.' . $request->pdf_image->extension();
+            $request->pdf_image->move(public_path('uploads/eca_activities'), $fileName);
+            $data['pdf_image'] = $fileName;
         }
 
-        try {
-            $extracurricularHead = $request->all();
-            // $incomeHead['school_id'] = 1;
-            $savedData = ExtraCurricularHead::create($extracurricularHead);
-            return redirect()->back()->withToastSuccess('ExtraCurricular Head Saved Successfully!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage());
-        }
+        $data['school_ids'] = json_encode($request->school_ids);
+
+    $ecaActivity = EcaActivity::create($data);
+        return redirect()->route('admin.eca_activities.index')->with('success', 'ECA Activity created successfully.');
     }
 
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        $extracurricularHead = ExtraCurricularHead::find($id);
-        return view('backend.shared.extracurricularHead.index', compact('extracurricularHead'));
-    }
-
-    public function update(Request $request, string $id)
-    {
-        $validatedData = Validator::make($request->all(), [
-            'name' => 'required|unique:extra_curricular_heads,name,' . $id,
-            'description' => 'required',
-            'is_active' => 'required',
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'player_type' => 'required|in:single,multi',
+            'is_active' => 'required|boolean',
+            'eca_head_id' => 'required|exists:extra_curricular_heads,id',
+            'school_ids' => 'required|array',
+            'school_ids.*' => 'exists:schools,id',
+            'pdf_image' => 'nullable|mimes:pdf,jpeg,png,jpg|max:2048',
         ]);
 
-        if ($validatedData->fails()) {
-            return back()->withToastError($validatedData->messages()->all()[0])->withInput();
+        $ecaActivity = EcaActivity::findOrFail($id);
+        $data = $request->all();
+
+        if ($request->hasFile('pdf_image')) {
+            $fileName = time() . '.' . $request->pdf_image->extension();
+            $request->pdf_image->move(public_path('uploads/eca_activities'), $fileName);
+            $data['pdf_image'] = $fileName;
+        } else {
+            $data['pdf_image'] = $ecaActivity->pdf_image;
         }
 
-        $extracurricularHead = ExtraCurricularHead::findOrFail($id);
+        $ecaActivity->update($data);
+        return redirect()->route('admin.eca_activities.index')->with('success', 'ECA Activity updated successfully.');
+    }
 
-        try {
-            $data = $request->all();
-            // $data['school_id'] = 1;
-            $updateNow = $extracurricularHead->update($data);
-
-            return redirect()->back()->withToastSuccess('Successfully Updated ExtraCurricular Head!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage())->withInput();
+    public function destroy($id)
+    {
+        $ecaActivity = EcaActivity::findOrFail($id);
+        if ($ecaActivity->pdf_image) {
+            unlink(public_path('uploads/eca_activities') . '/' . $ecaActivity->pdf_image);
         }
-
-        return back()->withToastError('Cannot Update ExtraCurricular Head. Please try again')->withInput();
-    }
-
-    public function destroy(string $id)
-    {
-        $extracurricularHead = ExtraCurricularHead::find($id);
-
-        try {
-            $updateNow = $extracurricularHead->delete();
-            return redirect()->back()->withToastSuccess('ExtraCurricularHead has been Successfully Deleted!');
-        } catch (\Exception $e) {
-            return back()->withToastError($e->getMessage());
-        }
-
-        return back()->withToastError('Something went wrong. Please try again');
-    }
-
-    public function getAllExtraCurricularHead(Request $request)
-    {
-        $extracurricularHeads = $this->getForDataTable($request->all());
-
-        return Datatables::of($extracurricularHeads)
-            ->escapeColumns([])
-            ->addColumn('name', function ($extracurricularHead) {
-                return $extracurricularHead->name;
-            })
-            ->addColumn('description', function ($extracurricularHead) {
-                return $extracurricularHead->description;
-            })
-            ->addColumn('created_at', function ($extracurricularHead) {
-                return $extracurricularHead->created_at->diffForHumans();
-            })
-            ->addColumn('status', function ($extracurricularHead) {
-                return $extracurricularHead->is_active == 1 ? '<span class="btn-sm btn-success">Active</span>' : '<span class="btn-sm btn-danger">Inactive</span>';
-            })
-            ->addColumn('actions', function ($extracurricularHead) {
-                return view('backend.shared.extracurricularHead.partials.controller_action', ['extracurricularHead' => $extracurricularHead])->render();
-            })
-            ->make(true);
-    }
-
-    public function getForDataTable($request)
-    {
-        $dataTableQuery = ExtraCurricularHead::where(function ($query) use ($request) {
-            if (isset($request->id)) {
-                $query->where('id', $request->id);
-            }
-        })
-            ->get();
-
-        return $dataTableQuery;
+        $ecaActivity->delete();
+        return redirect()->route('admin.eca_activities.index')->with('success', 'ECA Activity deleted successfully.');
     }
 }

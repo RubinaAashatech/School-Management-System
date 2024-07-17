@@ -333,10 +333,10 @@ class RolePermissionSeeder extends Seeder
             'list_attendence_report',
             'list_studentattendence_report',
             'list_inventory_report',
-            'create_eca_activity',
-            'list_eca_activity',
-            'edit_eca_activity',
-            'delete_eca_activity',
+            'create_eca_activities',
+            'list_eca_activities',
+            'edit_eca_activities',
+            'delete_eca_activities',
 
 
         ];
@@ -589,10 +589,10 @@ class RolePermissionSeeder extends Seeder
             'delete_extracurricular_head',
             'list_attendence_report',
             'list_inventory_report',
-            'create_eca_activity',
-            'list_eca_activity',
-            'edit_eca_activity',
-            'delete_eca_activity',
+            'create_eca_activities',
+            'list_eca_activities',
+            'edit_eca_activities',
+            'delete_eca_activities',
 
         ];
 
@@ -911,10 +911,6 @@ class RolePermissionSeeder extends Seeder
             'delete_inventories',
             'list_extracurricular_head',
             'list_studentattendence_report',
-            'create_eca_activity',
-            'list_eca_activity',
-            'edit_eca_activity',
-            'delete_eca_activity',
 
         ];
 
