@@ -15,7 +15,7 @@ class EcaActivityController extends Controller
         $page_title = 'ECA Activities';
         $ecaHeads = ExtraCurricularHead::where('is_active', 1)->get();
         $schools = School::all();
-        return view('backend.shared.extraactivities.index', compact('page_title', 'ecaHeads','schools'));
+        return view('backend.shared.extraactivities.index', compact('page_title', 'ecaHeads', 'schools'));
     }
 
     public function getEcaActivities(Request $request)
@@ -52,18 +52,16 @@ class EcaActivityController extends Controller
 
         $data = $request->all();
         if ($request->hasFile('pdf_image')) {
-            $fileName = time() . '.' . $request->pdf_image->extension();
-            $request->pdf_image->move(public_path('uploads/eca_activities'), $fileName);
-            $data['pdf_image'] = $fileName;
+            $data['pdf_image'] = $request->file('pdf_image')->store('pdf_images');
         }
 
-        $data['school_ids'] = json_encode($request->school_ids);
+        $ecaActivity = EcaActivity::create($data);
+        $ecaActivity->schools()->sync($request->school_ids);
 
-    $ecaActivity = EcaActivity::create($data);
         return redirect()->route('admin.eca_activities.index')->with('success', 'ECA Activity created successfully.');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, EcaActivity $ecaActivity)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -76,18 +74,14 @@ class EcaActivityController extends Controller
             'pdf_image' => 'nullable|mimes:pdf,jpeg,png,jpg|max:2048',
         ]);
 
-        $ecaActivity = EcaActivity::findOrFail($id);
         $data = $request->all();
-
         if ($request->hasFile('pdf_image')) {
-            $fileName = time() . '.' . $request->pdf_image->extension();
-            $request->pdf_image->move(public_path('uploads/eca_activities'), $fileName);
-            $data['pdf_image'] = $fileName;
-        } else {
-            $data['pdf_image'] = $ecaActivity->pdf_image;
+            $data['pdf_image'] = $request->file('pdf_image')->store('pdf_images');
         }
 
         $ecaActivity->update($data);
+        $ecaActivity->schools()->sync($request->school_ids);
+
         return redirect()->route('admin.eca_activities.index')->with('success', 'ECA Activity updated successfully.');
     }
 

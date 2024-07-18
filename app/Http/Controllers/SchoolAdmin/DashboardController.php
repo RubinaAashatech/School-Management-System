@@ -18,6 +18,8 @@ use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
 use App\Http\Services\SchoolService;
 use App\Http\Services\DashboardService;
+use Carbon\Carbon;
+use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 
 
 
@@ -66,13 +68,17 @@ class DashboardController extends Controller
             $query->where('gender', 'male');
         })
         ->count();
+      // Convert today's date to Nepali date
+        $today = Carbon::today()->format('Y-m-d');
+
+        $nepaliDateToday = LaravelNepaliDate::from($today)->toNepaliDate();
 
     // Count the present students for today
     $presentStudents = StudentAttendance::where('attendance_type_id', 1)
         ->whereHas('student', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('updated_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
     // Count the present girls for today
@@ -80,7 +86,7 @@ class DashboardController extends Controller
         ->whereHas('student.user', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId)->where('gender', 'female');
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
     // Count the present boys for today
@@ -88,7 +94,7 @@ class DashboardController extends Controller
         ->whereHas('student.user', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId)->where('gender', 'male');
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
     // Count the absent students for today
@@ -96,7 +102,7 @@ class DashboardController extends Controller
         ->whereHas('student', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('updated_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
         //count the absent girls for today
@@ -104,7 +110,7 @@ class DashboardController extends Controller
         ->whereHas('student.user', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId)->where('gender', 'female');
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
          //count the absent boys for today
@@ -112,7 +118,7 @@ class DashboardController extends Controller
          ->whereHas('student.user', function ($query) use ($schoolId) {
              $query->where('school_id', $schoolId)->where('gender', 'male');
          })
-         ->whereDate('created_at', today()) // Filter by today's date
+         ->whereDate('date',  $nepaliDateToday) // Filter by today's date
          ->count();
 
     $totalStaffs = Staff::where('school_id', $schoolId)->count();
@@ -121,7 +127,7 @@ class DashboardController extends Controller
         ->whereHas('staff', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
     // Count the absent staff members for today
@@ -129,7 +135,7 @@ class DashboardController extends Controller
         ->whereHas('staff', function ($query) use ($schoolId) {
             $query->where('school_id', $schoolId);
         })
-        ->whereDate('created_at', today()) // Filter by today's date
+        ->whereDate('date',  $nepaliDateToday) // Filter by today's date
         ->count();
 
     $page_title = Auth::user()->getRoleNames()[0] . ' ' . "Dashboard";

@@ -10,22 +10,12 @@ class EcaActivity extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'pdf_image',
-        'player_type',
-        'is_active',
-        'school_id',
-        'eca_head_id',
+        'title', 'description', 'pdf_image', 'player_type', 'is_active', 'eca_head_id'
     ];
 
-    protected $casts = [
-        'school_ids' => 'array',
-    ];
-
-    public function school()
+    public function schools()
     {
-        return $this->belongsToMany(School::class);
+        return $this->belongsToMany(School::class, 'eca_activity_school');
     }
 
     public function ecaHead()
