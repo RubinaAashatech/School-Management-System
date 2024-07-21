@@ -78,6 +78,11 @@ class School extends Model
     {
         return $this->hasMany(HeadTeacherLog::class);
     }
+
+    public function ecaActivities()
+    {
+        return $this->belongsToMany(EcaActivity::class, 'eca_activity_school');
+    }
 }
 
 

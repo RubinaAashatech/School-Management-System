@@ -14,4 +14,10 @@
             </button>
         </a>
     @endcan --}}
+
+     <!-- Add the new button for marking holiday for entire school -->
+    
+        <button type="button" class="btn-primary btn-sm" id="markSchoolHolidayButton">Mark Holiday for Entire School</button>
+        <button type="button" class="btn-primary btn-sm" id="markHolidayRangeButton">Mark Holiday Range</button>
+
 </div>

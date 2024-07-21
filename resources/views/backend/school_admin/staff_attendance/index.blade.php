@@ -9,6 +9,36 @@
             @include('backend.school_admin.staff_attendance.partials.action')
         </div>
 
+        <div class="modal fade" id="holidayRangeModal" tabindex="-1" role="dialog" aria-labelledby="holidayRangeModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="holidayRangeModalLabel">Mark Holiday Range</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="holidayStartDate">Start Date:</label>
+                            <input type="text" class="form-control" id="holidayStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayEndDate">End Date:</label>
+                            <input type="text" class="form-control" id="holidayEndDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayReason">Reason:</label>
+                            <input type="text" class="form-control" id="holidayReason" placeholder="e.g., Summer Vacation, Dashain Vacation">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveHolidayRange">Save Holiday Range</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="card">
             <div class="card-body">
                 <form id="filterForm">
@@ -86,7 +116,7 @@
                                         aria-describedby="example1_info">
                                         <thead>
                                             <tr>
-                                                <th>Staff Id</th>
+                                                <th>SN</th>
                                                 <th>Staff Name</th>
                                                 <th>Attendance</th>
                                                 <th>Remarks</th>
@@ -138,7 +168,7 @@
                                 var user = staffData.user;
                                 var row = '<tr data-staff-id="' + staffData.staff_id +
                                     '">' +
-                                    '<td>' + staffData.staff_id + '</td>' +
+                                    '<td>' + (index + 1) + '</td>' + 
                                     '<td>' + staff.f_name + ' ' + staff.l_name + '</td>'+
                                     '<td>';
                                 if (typeof attendance_types !== 'undefined') {
@@ -336,6 +366,76 @@
                 // Remove the link element from the document
                 document.body.removeChild(link);
             });
+
+
+               // Initialize date pickers for the holiday range modal
+    $('#holidayStartDate, #holidayEndDate').nepaliDatePicker()
+    $("#holidayStartDate").nepaliDatePicker({
+    container: "#holidayRangeModal",
+    dateFormat: "YYYY-MM-DD",
+    ndpYear: true,
+    ndpMonth: true,
+    ndpYearCount: 200,
+    onChange: function() {
+        $(this).change();
+    }
+});
+
+$("#holidayEndDate").nepaliDatePicker({
+    container: "#holidayRangeModal",
+    dateFormat: "YYYY-MM-DD",
+    ndpYear: true,
+    ndpMonth: true,
+    ndpYearCount: 200,
+    onChange: function() {
+        $(this).change();
+    }
+});
+
+// Open the holiday range modal
+$('#markHolidayRangeButton').click(function() {
+    $('#holidayRangeModal').modal('show');
+});
+
+// Handle saving the holiday range
+$('#saveHolidayRange').click(function() {
+    var startDate = $('#holidayStartDate').val();
+    var endDate = $('#holidayEndDate').val();
+    var reason = $('#holidayReason').val();
+
+    if (!startDate || !endDate) {
+        toastr.warning('Please select both start and end dates.');
+        return;
+    }
+
+    if (confirm('Are you sure you want to mark holidays from ' + startDate + ' to ' + endDate + '?')) {
+        $.ajax({
+            url: '{{ route("admin.staff.mark-holiday-range") }}',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { 
+                start_date: startDate, 
+                end_date: endDate,
+                reason: reason
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#holidayRangeModal').modal('hide');
+                    // Optionally, update UI or refresh data
+                } else {
+                    toastr.error(response.message || 'Error marking holiday range.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error details:', xhr.responseText);
+                toastr.error('Error marking holiday range. Please check the console for details.');
+            }
+        });
+    }
+});
         });
     </script>
 @endsection

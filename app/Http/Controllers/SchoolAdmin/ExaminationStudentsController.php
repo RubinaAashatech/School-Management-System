@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SchoolAdmin;
 use Validator;
 use App\Models\User;
 use App\Models\Classg;
+use App\Models\Section;
 use App\Models\Student;
 use App\Models\Examination;
 use App\Models\ExamStudent;
@@ -14,6 +15,7 @@ use App\Http\Services\FormService;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ExaminationStudentsController extends Controller
 {
@@ -202,36 +204,68 @@ class ExaminationStudentsController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    // public function showAssignStudentsForm(Request $request, $classId, $sectionId)
+    // {
+    //     // Fetch class and section details
+    //     $className = Classg::find($classId)->name;
+    //     $sectionName = Section::find($sectionId)->name;
+    //     $examinationId = $request->input('examination_id'); // Get examination_id from request
+    
+    //     // Pass variables to the view
+    //     return view('backend.school_admin.examination.student.create', compact('classId', 'sectionId', 'examinationId', 'className', 'sectionName'));
+    // }
+
+
     public function saveAssignStudentsToExam(Request $request)
     {
         try {
-            // Delete records that are not present in the updated input data
-            $studentSessionsToDelete = $this->studentSessionsToDelete($request);
-            //store the records
-            foreach ($request->input('student_sessions') as $studentSessionId) {
+            // Validate the request data
+            $validatedData = $request->validate([
+                'class_id' => 'required|integer',
+                'section_id' => 'required|integer',
+                'examination_id' => 'required|integer',
+                'student_sessions' => 'required|array',
+            ]);
+    
+            // Fetch students based on class and section
+            $students = Student::where('class_id', $validatedData['class_id'])
+                ->where('section_id', $validatedData['section_id'])
+                ->with('user') // Assuming there's a relationship to fetch user details
+                ->get();
+    
+            // Begin transaction
+            DB::beginTransaction();
+    
+            foreach ($students as $student) {
+                // Prepare data for exam student assignment
                 $studentSession = [
-                    'student_session_id' => $studentSessionId,
-                    'examination_id' => $request->input('examination_id'),
-                    'is_active' => 1
+                    'student_session_id' => $student->id,
+                    'examination_id' => $validatedData['examination_id'],
+                    'is_active' => 1,
                 ];
-
-                // Update the record if it exists, otherwise create a new one
+    
+                // Update or create the record in the ExamStudent table
                 ExamStudent::updateOrCreate(
                     [
-                        'student_session_id' => $studentSessionId,
-                        'examination_id' => $request->input('examination_id')
+                        'student_session_id' => $student->id,
+                        'examination_id' => $validatedData['examination_id'],
                     ],
                     $studentSession
                 );
             }
-
-            // Return a success response
-            // return response()->json(['message' => 'Assigned successfully']);
-            return back()->withToastSuccess('Assigned successfully');
+    
+            // Commit transaction
+            DB::commit();
+    
+            // Return success response
+            return response()->json(['message' => 'Assigned successfully'], 200);
         } catch (\Exception $e) {
-            // Return an error response if something goes wrong
-            // return response()->json(['message' => 'Error assigning exam', 'error' => $e->getMessage()], 500);
-            return back()->withToastError('Error assigning exam: ' . $e->getMessage());
+            // Rollback transaction on error
+            DB::rollback();
+            // Log the error for debugging
+            Log::error('Error in saveAssignStudentsToExam: ' . $e->getMessage());
+            // Return error response
+            return response()->json(['error' => 'Error occurred while assigning exam. Please try again later.'], 500);
         }
     }
 

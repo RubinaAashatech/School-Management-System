@@ -36,6 +36,10 @@ Route::delete('exam-routines/{routine_id}/destroy', [ExaminationRoutineControlle
 Route::get('assign-students/{exam_id}/create', [ExaminationStudentsController::class, 'assignStudents'])->name('assign-students.create');
 Route::get('assign-students/by-class-section/{exam_id}/{classId}/{sectionId}', [ExaminationStudentsController::class, 'getExamAssignStudents'])->name('getExamAssignStudentsByClassSection');
 Route::post('assign-students/save-assign-exam', [ExaminationStudentsController::class, 'saveAssignStudentsToExam'])->name('assign-students.save');
+Route::get('assign-students/by-class-section/{class_id}/{section_id}', [ExaminationRoutineController::class, 'getStudentsByClassSection'])->name('assign-students.by-class-section');
+Route::get('assign-students/form/{class_id}/{section_id}', [ExaminationStudentsController::class, 'showAssignStudentsForm'])->name('assign-students.form');
+
+
 
 //Schedule or examination Routine for Teachers
 Route::get('assign-teachers/{exam_id}/create', [ExaminationTeachersController::class, 'assignTeachers'])->name('assign-teachers.create');

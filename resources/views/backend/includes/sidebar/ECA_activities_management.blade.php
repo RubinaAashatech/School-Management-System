@@ -25,7 +25,17 @@
                     </a>
                 </li>
             @endcan
+
+            @can('list_eca_activities')
+                <li class="nav-item"><a class="nav-link {{ Request::segment(2) == 'extracurricular-activities' ? 'active' : '' }}"
+                        href="{{ route('admin.eca_activities.index') }}">
+                        <div class="d-flex align-items-center"><i class="fa fa-angle-double-right"></i> {{ __('Extracurricular Activity')}}
+
+                        </div>
+                    </a>
+                </li>
+            @endcan
         </ul>
     </li>
 
- @endhasanyrole
+@endhasanyrole

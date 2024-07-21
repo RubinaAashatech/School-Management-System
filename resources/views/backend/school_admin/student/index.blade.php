@@ -90,6 +90,44 @@
         </div>
     </div>
 
+    <!-- Export All Confirmation Modal -->
+    <div class="modal fade" id="exportAllModal" tabindex="-1" role="dialog" aria-labelledby="exportAllModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportAllModalLabel">Confirm Export</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to export all students?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" id="confirmExportAllButton">Export All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Bulk Delete Confirmation Modal -->
+     <div class="modal fade" id="bulkDeleteModal" tabindex="-1" role="dialog" aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bulkDeleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete selected students?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmBulkDeleteButton">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function() {
             $.ajaxSetup({
@@ -159,27 +197,38 @@
                     return;
                 }
 
-                if (confirm('Are you sure you want to delete selected students?')) {
-                    $.ajax({
-                        url: '{{ route('admin.students.bulk-delete') }}',
-                        type: 'POST',
-                        data: {
-                            studentIds: studentIds
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                dataTable.ajax.reload();
-                                alert(response.success);
-                            } else {
-                                alert('Error deleting students.');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error deleting students:', error);
-                        }
-                    });
-                }
+                $('#bulkDeleteModal').modal('show');
             });
+
+            $('#confirmBulkDeleteButton').on('click', function() {
+                var studentIds = [];
+
+                $('.student-checkbox:checked').each(function() {
+                    studentIds.push($(this).data('student-id'));
+                });
+
+                $.ajax({
+                    url: '{{ route('admin.students.bulk-delete') }}',
+                    type: 'POST',
+                    data: {
+                        studentIds: studentIds
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            dataTable.ajax.reload();
+                            alert(response.success);
+                        } else {
+                            alert('Error deleting students.');
+                        }
+                        $('#bulkDeleteModal').modal('hide');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error deleting students:', error);
+                        $('#bulkDeleteModal').modal('hide');
+                    }
+                });
+            });
+          
 
             $('#addRollNumbersButton').on('click', function() {
                 var studentRows = dataTable.rows().nodes();
@@ -273,6 +322,11 @@
             });
 
             $('#exportAllButton').on('click', function() {
+                $('#exportAllModal').modal('show');
+            });
+
+            $('#confirmExportAllButton').on('click', function() {
+                $('#exportAllModal').modal('hide'); // Close the modal before redirecting
                 window.location.href = '{{ route('admin.students.export-all') }}';
             });
         });

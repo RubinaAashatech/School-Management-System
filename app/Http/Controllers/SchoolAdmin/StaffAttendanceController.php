@@ -162,4 +162,55 @@ class StaffAttendanceController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function markHolidayRange(Request $request)
+    {
+        try {
+            $schoolId = session('school_id');
+            $startDate = Carbon::parse($request->input('start_date'));
+            $endDate = Carbon::parse($request->input('end_date'));
+            $reason = $request->input('reason');
+    
+            DB::beginTransaction();
+    
+            // Iterate through each date in the range
+            for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+                // Update existing attendance records to holiday for all staff in the school
+                $updatedCount = StaffAttendance::where('school_id', $schoolId)
+                    ->where('date', $date->toDateString())
+                    ->update(['attendance_type_id' => 4, 'remarks' => $reason]);
+    
+                // Insert new attendance records for staff without existing records for the date
+                $staffMembers = Staff::where('school_id', $schoolId)->get();
+    
+                foreach ($staffMembers as $staff) {
+                    // Check if attendance record already exists for the staff and date
+                    $existingAttendance = StaffAttendance::where('staff_id', $staff->id)
+                        ->where('date', $date->toDateString())
+                        ->first();
+    
+                    if (!$existingAttendance) {
+                        // Create a new attendance record
+                        $newAttendance = new StaffAttendance();
+                        $newAttendance->staff_id = $staff->id;
+                        $newAttendance->school_id = $schoolId;
+                        $newAttendance->date = $date->toDateString();
+                        $newAttendance->attendance_type_id = 4; // Set to 4 for holiday
+                        $newAttendance->remarks = $reason; // Optional: Add remarks if needed
+                        $newAttendance->role = $staff->role;
+    
+                        $newAttendance->save();
+                    }
+                }
+            }
+    
+            DB::commit();
+    
+            return response()->json(['success' => true, 'message' => "Staff attendances updated/inserted successfully for holiday range."]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update/insert staff attendances for holiday range: ' . $e->getMessage(), ['stack' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Failed to update/insert staff attendances for holiday range: ' . $e->getMessage()]);
+        }
+    }
 }

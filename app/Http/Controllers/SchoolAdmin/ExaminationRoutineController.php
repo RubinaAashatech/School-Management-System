@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SchoolAdmin;
 use Log;
 use Validator;
 use App\Models\Classg;
+use App\Models\Section;
 use App\Models\Student;
 use App\Models\Examination;
 use App\Models\ExamSchedule;
@@ -220,22 +221,31 @@ class ExaminationRoutineController extends Controller
         return $data;
     }
 
-    public function assignStudentsForExamRoutine($exam_id, $routine_id)
-    {
-        $examinations = Examination::find($exam_id);
-        $routines = ExamSchedule::find($routine_id);
 
-        $classId = $routines->class_id;
-        $className = $routines->classes->class;
+    public function getStudentsByClassSection($class_id, $section_id)
+{
+    $students = Student::where('class_id', $class_id)
+        ->where('section_id', $section_id)
+        ->with('user') // Assuming there's a relationship to fetch user details
+        ->get();
 
-        $sectionId = $routines->section_id;
-        $sectionName = $routines->sections->section_name;
+    return response()->json($students);
+}
 
-        // dd($sectionName);
-        $page_title = "Assign Students To " . $examinations->exam;
+public function assignStudentsForExamRoutine($exam_id, $routine_id)
+{
+    $examinations = Examination::find($exam_id);
+    $routines = ExamSchedule::find($routine_id);
 
-        return view('backend.school_admin.examination.routine.exam_student.create', compact('page_title', 'examinations', 'routines', 'classId', 'className', 'sectionId', 'sectionName'));
-    }
+    $classId = $routines->class_id;
+    $className = $routines->classes->class;
+
+    $sectionId = $routines->section_id;
+    $sectionName = $routines->sections->section_name;
+    $page_title = "Assign Students To " . $examinations->exam;
+
+    return view('backend.school_admin.examination.routine.exam_student.create', compact('page_title', 'examinations', 'routines', 'classId', 'className', 'sectionId', 'sectionName'));
+}
 
     public function assignStudentsForExamResult($exam_id, $routine_id)
     {
