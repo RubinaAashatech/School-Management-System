@@ -14,12 +14,16 @@
                 <td>{{ $schedule->exam_date }}</td>
                 <td>{{ $schedule->credit_hour }}</td>
                 <td><span data-toggle="tooltip" title="Exam Marks" data-original-title="Exam Marks">
-                        <button type="button" class="btn btn-default btn-xs assignMarks"
-                            data-exam_schedule_id="{{ $schedule->id }}" data-exam_id="{{ $schedule->examination_id }}"
-                            data-subject_id="{{ $schedule->subject_id }}" data-class_id="{{ $schedule->class_id }}"
-                            data-section_id="{{ $schedule->section_id }}"
-                            data-subject_group_id="{{ $schedule->subject_group_id }}" autocomplete="off"><i
-                                class="fa fa-address-card" aria-hidden="true"></i></button></span>
+                    <button type="button" class="btn btn-default btn-xs assignMarks"
+                    data-exam_schedule_id="{{ $schedule->id }}"
+                    data-exam_id="{{ $schedule->examination_id }}"
+                    data-subject_id="{{ $schedule->subject_id }}"
+                    data-class_id="{{ $schedule->class_id }}"
+                    data-section_id="{{ $schedule->section_id }}"
+                    data-subject_group_id="{{ $schedule->subject_group_id }}"
+                    autocomplete="off">
+                <i class="fa fa-address-card" aria-hidden="true"></i>
+            </button><span>
                 </td>
                 <!-- Add other table cells for schedule information -->
             </tr>

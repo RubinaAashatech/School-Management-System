@@ -113,6 +113,8 @@
         </div>
     </div>
 
+    @include('backend.includes.nepalidate')
+
     <script>
         $(document).ready(function() {
             $.ajaxSetup({
@@ -236,7 +238,7 @@
                             // Append cells with subject information to the new row
                             newRow.append('<td>' + subject.subject + '</td>');
                             newRow.append(
-                                '<td><input class="form-control" name="exam_date[]" type="text" value="" required></td>'
+                                '<td><input class="form-control nepali-datepicker" name="exam_date[]" type="text" value="" required></td>'
                             );
                             newRow.append(
                                 '<td><input class="form-control" name="exam_time[]" type="text" value="" required></td>'
@@ -259,6 +261,8 @@
                             $('#item_table tbody').append(newRow);
                         });
                     });
+                    // Initialize Nepali Date Picker for dynamically added rows
+                    $('.nepali-datepicker').nepaliDatePicker();
                 }
             });
         }

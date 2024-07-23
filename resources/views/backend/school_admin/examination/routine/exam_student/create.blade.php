@@ -33,8 +33,8 @@
                         <div class="studentAllotForm">
                             <form method="post" id="allot_exam_student">
                                 @csrf
-                                {{-- <!-- Add a hidden input for examination_id -->
-                                <input type="hidden" name="examination_id" id="examination_id" value="{{ $examinationId }}"> --}}
+                                 <!-- Add a hidden input for examination_id -->
+                                <input type="hidden" name="examination_id" id="examination_id" value="{{ $examinationId }}">
                                 
                                 <div class="row mb-2">
                                     <div class="col-sm-12 col-md-12 col-12 d-flex justify-content-end">

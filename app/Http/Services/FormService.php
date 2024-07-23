@@ -21,6 +21,8 @@ use App\Models\PrimaryMarks;
 use App\Models\SubjectGroup;
 use App\Models\StudentSession;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use App\Models\ExamStudent;
 
 class FormService
 {
@@ -189,26 +191,30 @@ class FormService
         // dd($data);
         return response()->json($data);
     }
-    public function getExamAssignStudents($examination_id, $classId, $sectionId)
-    {
-        $query = StudentSession::with([
-            'user',
-            'student',
-            'examStudents' => function ($examassignedStudentQuery) use ($examination_id) {
-                if ($examination_id) {
-                    $examassignedStudentQuery->where('examination_id', $examination_id);
-                }
-            }
-        ])
-            ->where('school_id', session('school_id'))
-            ->where('academic_session_id', session('academic_session_id'))
-            ->where('class_id', $classId)
-            ->where('section_id', $sectionId);
+    public function getExamAssignStudents(Request $request)
+{
+    $sectionId = $request->input('section_id');
+    $classId = $request->input('class_id');
+    $subjectId = $request->input('subject_id');
+    $examinationId = $request->input('examination_id');
+    $examinationScheduleId = $request->input('examination_schedule_id');
 
-        $data = $query->get();
-        return response()->json($data);
-    }
-    public function getExamAssignStudentDetails($examination_id, $examinationScheduleId, $subjectId, $classId, $sectionId)
+    // Fetch the exam students details
+    $examStudents = ExamStudent::with(['student', 'student.user'])
+        ->whereHas('student', function ($query) use ($classId, $sectionId) {
+            $query->where('class_id', $classId)
+                  ->where('section_id', $sectionId);
+        })
+        ->where('subject_id', $subjectId)
+        ->where('examination_id', $examinationId) 
+        ->where('examination_schedule_id', $examinationScheduleId)
+        ->get(); // Get the data here
+
+    // Return the data as JSON
+    return response()->json($examStudents);
+}
+ 
+public function getExamAssignStudentDetails($examination_id, $examinationScheduleId, $subjectId, $classId, $sectionId)
     {
         $data = StudentSession::with(['user', 'student', 'examStudents', 'examStudents.examResult'])
             ->join('users', 'student_sessions.user_id', '=', 'users.id')

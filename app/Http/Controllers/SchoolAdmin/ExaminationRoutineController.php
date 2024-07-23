@@ -236,15 +236,17 @@ public function assignStudentsForExamRoutine($exam_id, $routine_id)
 {
     $examinations = Examination::find($exam_id);
     $routines = ExamSchedule::find($routine_id);
+    $examinationId=$examinations->id;
+    
 
     $classId = $routines->class_id;
     $className = $routines->classes->class;
-
+    
     $sectionId = $routines->section_id;
     $sectionName = $routines->sections->section_name;
     $page_title = "Assign Students To " . $examinations->exam;
 
-    return view('backend.school_admin.examination.routine.exam_student.create', compact('page_title', 'examinations', 'routines', 'classId', 'className', 'sectionId', 'sectionName'));
+    return view('backend.school_admin.examination.routine.exam_student.create', compact('page_title', 'examinations', 'routines', 'classId', 'className', 'sectionId', 'sectionName','examinationId'));
 }
 
     public function assignStudentsForExamResult($exam_id, $routine_id)
@@ -252,9 +254,7 @@ public function assignStudentsForExamRoutine($exam_id, $routine_id)
         $examinations = Examination::find($exam_id);
         $routines = ExamSchedule::find($routine_id);
 
-        // dd($examinations);
-        // dd($routines);
-
+       
         $page_title = "Assign Students To " . $examinations->exam;
 
         $classId = $routines->class_id;
