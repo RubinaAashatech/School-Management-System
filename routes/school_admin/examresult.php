@@ -13,3 +13,4 @@ Route::get('exam-results/by-class-section/{exam_id}/{classId}/{sectionId}', [Exa
 Route::post('exam-results/save-students-marks', [ExamResultController::class, 'saveStudentsMarks'])->name('students-mark.save');
 Route::post('exam-results/import', [ExamResultController::class, 'import'])->name('exam-results.bulkimport');
 Route::post('/school/exam-results/save-students-marks', [ExamResultController::class, 'saveStudentMarks'])->name('school.exam-results.save-students-marks');
+Route::get('exam-results/export-sample', [ExamResultController::class, 'exportAll'])->name('exam-results.export-sample');

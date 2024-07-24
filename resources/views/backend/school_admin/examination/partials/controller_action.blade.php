@@ -52,12 +52,12 @@
     </a>
 @endcan
 
-@can('create_assign_students')
+{{-- @can('create_assign_students')
     <a href="{{ route('admin.assign-students.create', $examination->id) }}" class="btn btn-outline-dark btn-sm mx-1"
         data-toggle="tooltip" data-placement="top" title="Assign Students">
         <i class="fas fa-link"></i>
     </a>
-@endcan
+@endcan --}}
 
 @can('create_assign_teachers')
 

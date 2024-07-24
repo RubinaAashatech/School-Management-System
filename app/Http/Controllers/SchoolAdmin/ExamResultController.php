@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+use App\Exports\ExamResultExport;
 
 class ExamResultController extends Controller
 {
@@ -91,67 +95,42 @@ class ExamResultController extends Controller
     }
 
     public function getStudentsDetails(Request $request)
-    {
+{
+    try {
         $sectionId = $request->input('section_id');
         $classId = $request->input('class_id');
         $subjectId = $request->input('subject_id');
         $examinationId = $request->input('examination_id');
         $examinationScheduleId = $request->input('examination_schedule_id');
-        $subjectName = Subject::findOrFail($request->subject_id)->subject;
-        // $examStudent = collect([
-        //     (object) [
-        //         'student' => (object) [
-        //             'id' => 1,
-        //             'user_id' => 'ADM001',
-        //             'roll_no' => 'R001'
-        //         ],
-        //         'user' => (object) [
-        //             'f_name' => 'John',
-        //             'm_name' => 'Doe',
-        //             'l_name' => 'Smith',
-        //             'father_name' => 'Mr. Smith',
-        //             'gender' => 'Male'
-        //         ],
-        //         'exam_student_id' => 1,
-        //         'id' => 1,
-        //         'attendance' => '1',
-        //         'participant_assessment' => 10,
-        //         'practical_assessment' => 20,
-        //         'theory_assessment' => 30,
-        //         'notes' => 'Good'
-        //     ],
-        //     (object) [
-        //         'student' => (object) [
-        //             'id' => 2,
-        //             'user_id' => 'ADM002',
-        //             'roll_no' => 'R002'
-        //         ],
-        //         'user' => (object) [
-        //             'f_name' => 'Jane',
-        //             'm_name' => 'Doe',
-        //             'l_name' => 'Smith',
-        //             'father_name' => 'Mr. Smith',
-        //             'gender' => 'Female'
-        //         ],
-        //         'exam_student_id' => 2,
-        //         'id' => 2,
-        //         'attendance' => '0',
-        //         'participant_assessment' => 15,
-        //         'practical_assessment' => 25,
-        //         'theory_assessment' => 35,
-        //         'notes' => 'Very Good'
-        //     ]
-        // ]);
-        $examStudent = $this->formService->getExamAssignStudentDetails(
-            $request->examination_id,
-            $request->examination_schedule_id,
-            $request->subject_id,
-            $request->class_id,
-            $request->section_id
-        );
-    
-        return view('backend.school_admin.examination.results.ajax_student', compact('examStudent', 'examinationScheduleId', 'subjectId', 'subjectName'));
+        
+        Log::info('Input parameters:', $request->all());
+
+        $subject = Subject::findOrFail($subjectId);
+        $subjectName = $subject->subject;
+        
+        Log::info('Subject found:', ['id' => $subject->id, 'name' => $subjectName]);
+
+        $examStudents = ExamStudent::with([
+                'studentSession.student', 
+                'studentSession.student.user'
+            ])
+            ->where('examination_id', $examinationId)
+            ->whereHas('studentSession', function ($query) use ($classId, $sectionId) {
+                $query->where('class_id', $classId)
+                      ->where('section_id', $sectionId);
+            })
+            ->get();
+
+        Log::info('ExamStudent query results:', ['count' => $examStudents->count()]);
+
+        return view('backend.school_admin.examination.results.ajax_student', compact('examStudents', 'examinationScheduleId', 'subjectId', 'subjectName'))
+            ->render();
+
+    } catch (\Exception $e) {
+        Log::error('Error in getStudentsDetails: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
     }
+}
     /**
      * Show the form for creating a new resource.
      */
@@ -221,6 +200,12 @@ class ExamResultController extends Controller
             DB::rollback();
             return back()->withToastError($e->getMessage());
         }
+    }
+
+
+    public function exportAll()
+    {
+        return Excel::download(new ExamResultExport(), 'all_students.xlsx');
     }
 
 }
